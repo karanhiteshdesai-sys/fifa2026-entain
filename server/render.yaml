@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: fifa2026-entain-api
+    runtime: node
+    buildCommand: npm install && npm run seed
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        sync: false
+      - key: FOOTBALL_API_KEY
+        sync: false
