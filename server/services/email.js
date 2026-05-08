@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 // Gmail SMTP configuration
 const GMAIL_USER = process.env.GMAIL_USER || 'fifa2026et@gmail.com';
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || 'jkdqzfnlmunipyrw';
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || 'jkdq zfnl muni pyrw';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
