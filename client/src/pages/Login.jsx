@@ -246,7 +246,7 @@ function Login({ onLogin }) {
             disabled={loading}
             className="w-full bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition disabled:opacity-50"
           >
-            {loading ? 'Loading...' : isRegister ? 'Send Verification Code' : 'Sign In'}
+            {loading ? 'Loading...' : isRegister ? 'Create Account' : 'Sign In'}
           </button>
 
           {loginType === 'employee' && (

@@ -24,9 +24,6 @@ function Admin() {
       setMatches(matchRes.data);
       setUsers(userRes.data);
       setAllBets(betsRes.data);
-      ]);
-      setMatches(matchRes.data);
-      setUsers(userRes.data);
     } catch (err) {
       console.error('Failed to fetch admin data:', err);
     }
