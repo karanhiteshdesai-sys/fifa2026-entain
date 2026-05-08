@@ -19,16 +19,10 @@ function Login({ onLogin }) {
 
     try {
       if (isRegister) {
-        // Step 1: Send OTP or direct registration
+        // Step 1: Send OTP
         const { data } = await api.post('/auth/register', form);
-        if (data.requiresOTP) {
-          setMessage(data.message);
-          setStep('otp');
-        } else {
-          // Account created directly (email service unavailable)
-          localStorage.setItem('token', data.token);
-          onLogin(data.user);
-        }
+        setMessage(data.message);
+        setStep('otp');
       } else {
         // Login directly
         const { data } = await api.post('/auth/login', { email: form.email, password: form.password });

@@ -20,7 +20,7 @@ router.post('/register', async (req, res) => {
   }
 
   if (!email.endsWith('@entaingroup.com')) {
-    return res.status(400).json({ error: 'Only @entaingroup.com email addresses are allowed.' });
+    return res.status(400).json({ error: 'Please use your company email address (@entaingroup.com) only.' });
   }
 
   if (password.length < 6) {
@@ -51,30 +51,8 @@ router.post('/register', async (req, res) => {
     res.json({ message: 'Verification code sent to your email.', email, requiresOTP: true });
   } catch (err) {
     console.error('Failed to send OTP:', err.message);
-    // Fallback: create account without OTP if email service is unavailable
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const user = db.createUser({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'user',
-      points: 20
-    });
     pendingRegistrations.delete(email);
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: 'user' },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    res.status(201).json({
-      token,
-      user: { id: user.id, name, email, role: 'user', points: 20 },
-      requiresOTP: false
-    });
-
-    generateExcel().catch(e => console.error('Excel update failed:', e));
+    res.status(500).json({ error: 'Failed to send verification email. Please try again.' });
   }
 });
 
