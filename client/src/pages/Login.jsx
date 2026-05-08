@@ -79,7 +79,7 @@ function Login({ onLogin }) {
             <h2 className="text-white text-xl font-semibold mb-6 text-center">Select Login Type</h2>
             <div className="flex flex-col gap-4">
               <button
-                onClick={() => setLoginType('admin')}
+                onClick={() => { setLoginType('admin'); setIsRegister(false); }}
                 className="w-full bg-entain-blue/50 hover:bg-entain-blue border border-entain-blue/30 text-white font-semibold py-4 rounded-lg transition flex items-center justify-center gap-3"
               >
                 <span className="text-2xl">🛡️</span>
