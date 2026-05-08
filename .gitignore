@@ -2,3 +2,4 @@ node_modules/
 server/db/data.json
 server/db/fifa2026_data.xlsx
 .env.local
+client/dist/
