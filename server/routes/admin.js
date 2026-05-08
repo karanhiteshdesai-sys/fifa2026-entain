@@ -62,6 +62,25 @@ router.get('/users', authenticate, requireAdmin, (req, res) => {
   res.json(users);
 });
 
+// Get all bets (admin) - see everyone's bets
+router.get('/bets', authenticate, requireAdmin, (req, res) => {
+  const data = db.getData();
+  const bets = data.bets.map(bet => {
+    const user = data.users.find(u => u.id === bet.user_id);
+    const match = data.matches.find(m => m.id === bet.match_id);
+    return {
+      ...bet,
+      user_name: user?.name || 'Unknown',
+      user_email: user?.email || 'Unknown',
+      home_team: match?.home_team,
+      away_team: match?.away_team,
+      match_date: match?.match_date,
+      group_name: match?.group_name
+    };
+  }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  res.json(bets);
+});
+
 // Reset user points (admin)
 router.post('/users/:id/reset-points', authenticate, requireAdmin, (req, res) => {
   const { points } = req.body;

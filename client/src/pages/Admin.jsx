@@ -4,6 +4,7 @@ import api from '../services/api';
 function Admin() {
   const [matches, setMatches] = useState([]);
   const [users, setUsers] = useState([]);
+  const [allBets, setAllBets] = useState([]);
   const [tab, setTab] = useState('matches');
   const [message, setMessage] = useState('');
   const [scores, setScores] = useState({});
@@ -15,9 +16,14 @@ function Admin() {
 
   const fetchData = async () => {
     try {
-      const [matchRes, userRes] = await Promise.all([
+      const [matchRes, userRes, betsRes] = await Promise.all([
         api.get('/matches'),
-        api.get('/admin/users')
+        api.get('/admin/users'),
+        api.get('/admin/bets')
+      ]);
+      setMatches(matchRes.data);
+      setUsers(userRes.data);
+      setAllBets(betsRes.data);
       ]);
       setMatches(matchRes.data);
       setUsers(userRes.data);
@@ -153,6 +159,14 @@ function Admin() {
           }`}
         >
           Manage Users
+        </button>
+        <button
+          onClick={() => setTab('bets')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            tab === 'bets' ? 'bg-entain-accent text-entain-dark' : 'bg-entain-navy text-gray-300'
+          }`}
+        >
+          All Bets
         </button>
         <button
           onClick={downloadExcel}
@@ -323,6 +337,68 @@ function Admin() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* All Employee Bets */}
+      {tab === 'bets' && (
+        <div>
+          <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 mb-4">
+            <p className="text-gray-300 text-sm">Total bets placed: <span className="text-white font-bold">{allBets.length}</span></p>
+          </div>
+          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-entain-blue/20 text-xs">
+                  <th className="text-left text-gray-400 px-4 py-3">Employee</th>
+                  <th className="text-left text-gray-400 px-4 py-3">Match</th>
+                  <th className="text-center text-gray-400 px-4 py-3">Pick</th>
+                  <th className="text-right text-gray-400 px-4 py-3">Stake</th>
+                  <th className="text-right text-gray-400 px-4 py-3">Odds</th>
+                  <th className="text-center text-gray-400 px-4 py-3">Status</th>
+                  <th className="text-right text-gray-400 px-4 py-3">Payout</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allBets.map(bet => (
+                  <tr key={bet.id} className="border-b border-entain-blue/10 text-sm">
+                    <td className="px-4 py-3">
+                      <p className="text-white">{bet.user_name}</p>
+                      <p className="text-gray-500 text-xs">{bet.user_email}</p>
+                    </td>
+                    <td className="px-4 py-3 text-gray-300">
+                      {bet.home_team} vs {bet.away_team}
+                      <span className="text-gray-500 text-xs ml-1">({bet.group_name})</span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-entain-accent capitalize">{bet.prediction}</td>
+                    <td className="px-4 py-3 text-right text-white">{bet.stake} EP</td>
+                    <td className="px-4 py-3 text-right text-gray-300">{bet.odds}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        bet.status === 'won' ? 'bg-green-500/20 text-green-400' :
+                        bet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
+                        'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {bet.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {bet.status === 'won' ? (
+                        <span className="text-entain-gold font-bold">+{bet.payout} EP</span>
+                      ) : bet.status === 'pending' ? (
+                        <span className="text-gray-500">{Math.round(bet.stake * bet.odds)} EP</span>
+                      ) : (
+                        <span className="text-gray-500">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {allBets.length === 0 && (
+              <div className="text-center text-gray-400 py-8">No bets placed yet.</div>
+            )}
+          </div>
         </div>
       )}
     </div>
