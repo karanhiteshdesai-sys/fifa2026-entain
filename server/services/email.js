@@ -1,11 +1,8 @@
 const nodemailer = require('nodemailer');
 
 // Gmail SMTP configuration
-// Set these environment variables on Render:
-// GMAIL_USER = your Gmail address (e.g., yourname@gmail.com)
-// GMAIL_APP_PASSWORD = 16-char app password from Google
-const GMAIL_USER = process.env.GMAIL_USER || '';
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
+const GMAIL_USER = process.env.GMAIL_USER || 'fifa2026et@gmail.com';
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || 'jkdqzfnlmunipyrw';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
