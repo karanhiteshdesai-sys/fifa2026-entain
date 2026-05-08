@@ -62,6 +62,30 @@ router.get('/users', authenticate, requireAdmin, (req, res) => {
   res.json(users);
 });
 
+// Get pending registrations (admin)
+router.get('/pending-users', authenticate, requireAdmin, (req, res) => {
+  const data = db.getData();
+  const pending = data.users
+    .filter(u => u.status === 'pending')
+    .map(({ password, ...rest }) => rest);
+  res.json(pending);
+});
+
+// Approve a user (admin)
+router.post('/users/:id/approve', authenticate, requireAdmin, (req, res) => {
+  const userId = Number(req.params.id);
+  db.updateUserStatus(userId, 'approved');
+  res.json({ message: 'User approved successfully.' });
+  generateExcel().catch(err => console.error('Excel update failed:', err));
+});
+
+// Reject a user (admin)
+router.post('/users/:id/reject', authenticate, requireAdmin, (req, res) => {
+  const userId = Number(req.params.id);
+  db.updateUserStatus(userId, 'rejected');
+  res.json({ message: 'User rejected.' });
+});
+
 // Get all bets (admin) - see everyone's bets
 router.get('/bets', authenticate, requireAdmin, (req, res) => {
   const data = db.getData();

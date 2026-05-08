@@ -93,6 +93,15 @@ const db = {
     }
   },
 
+  updateUserStatus(userId, status) {
+    const data = loadDb();
+    const user = data.users.find(u => u.id === userId);
+    if (user) {
+      user.status = status;
+      saveDb(data);
+    }
+  },
+
   getAllUsers() {
     const data = loadDb();
     return data.users.map(({ password, ...rest }) => rest);

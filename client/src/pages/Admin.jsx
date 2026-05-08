@@ -306,34 +306,43 @@ function Admin() {
 
       {/* Manage Users */}
       {tab === 'users' && (
-        <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-entain-blue/20">
-                <th className="text-left text-gray-400 text-sm px-6 py-3">Name</th>
-                <th className="text-left text-gray-400 text-sm px-6 py-3">Email</th>
-                <th className="text-right text-gray-400 text-sm px-6 py-3">Points</th>
-                <th className="text-right text-gray-400 text-sm px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.filter(u => u.role !== 'admin').map(user => (
-                <tr key={user.id} className="border-b border-entain-blue/10">
-                  <td className="px-6 py-3 text-white">{user.name}</td>
-                  <td className="px-6 py-3 text-gray-400">{user.email}</td>
-                  <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
-                  <td className="px-6 py-3 text-right">
-                    <button
-                      onClick={() => resetPoints(user.id)}
-                      className="text-entain-accent text-sm hover:underline"
-                    >
-                      Reset Points
-                    </button>
-                  </td>
+        <div className="space-y-6">
+          {/* Pending Approvals */}
+          <PendingApprovals onAction={fetchData} setMessage={setMessage} />
+
+          {/* Approved Users */}
+          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+            <div className="px-6 py-3 border-b border-entain-blue/20">
+              <h3 className="text-white font-semibold">Approved Users</h3>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-entain-blue/20">
+                  <th className="text-left text-gray-400 text-sm px-6 py-3">Name</th>
+                  <th className="text-left text-gray-400 text-sm px-6 py-3">Email</th>
+                  <th className="text-right text-gray-400 text-sm px-6 py-3">Points</th>
+                  <th className="text-right text-gray-400 text-sm px-6 py-3">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.filter(u => u.role !== 'admin').map(user => (
+                  <tr key={user.id} className="border-b border-entain-blue/10">
+                    <td className="px-6 py-3 text-white">{user.name}</td>
+                    <td className="px-6 py-3 text-gray-400">{user.email}</td>
+                    <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
+                    <td className="px-6 py-3 text-right">
+                      <button
+                        onClick={() => resetPoints(user.id)}
+                        className="text-entain-accent text-sm hover:underline"
+                      >
+                        Reset Points
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -398,6 +407,87 @@ function Admin() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function PendingApprovals({ onAction, setMessage }) {
+  const [pending, setPending] = useState([]);
+
+  useEffect(() => {
+    fetchPending();
+  }, []);
+
+  const fetchPending = async () => {
+    try {
+      const { data } = await api.get('/admin/pending-users');
+      setPending(data);
+    } catch (err) {
+      console.error('Failed to fetch pending users:', err);
+    }
+  };
+
+  const approve = async (userId) => {
+    try {
+      await api.post(`/admin/users/${userId}/approve`);
+      setMessage('User approved!');
+      fetchPending();
+      onAction();
+    } catch (err) {
+      setMessage('Failed to approve user.');
+    }
+  };
+
+  const reject = async (userId) => {
+    try {
+      await api.post(`/admin/users/${userId}/reject`);
+      setMessage('User rejected.');
+      fetchPending();
+      onAction();
+    } catch (err) {
+      setMessage('Failed to reject user.');
+    }
+  };
+
+  if (pending.length === 0) {
+    return (
+      <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
+        <p className="text-gray-400 text-sm">No pending registrations.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+      <div className="px-6 py-3 border-b border-entain-blue/20 flex items-center justify-between">
+        <h3 className="text-white font-semibold">⏳ Pending Approvals</h3>
+        <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded">{pending.length} pending</span>
+      </div>
+      <div className="divide-y divide-entain-blue/10">
+        {pending.map(user => (
+          <div key={user.id} className="px-6 py-4 flex items-center justify-between">
+            <div>
+              <p className="text-white font-medium">{user.name}</p>
+              <p className="text-gray-400 text-sm">{user.email}</p>
+              <p className="text-gray-500 text-xs">Registered: {new Date(user.created_at).toLocaleDateString()}</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => approve(user.id)}
+                className="bg-entain-green text-entain-dark text-sm font-bold px-4 py-1.5 rounded-lg hover:bg-entain-green/90 transition"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => reject(user.id)}
+                className="bg-entain-red/80 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-entain-red transition"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

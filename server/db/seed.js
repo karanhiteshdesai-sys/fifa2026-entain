@@ -11,11 +11,11 @@ const userPassword = bcrypt.hashSync('user123', 10);
 
 const data = {
   users: [
-    { id: 1, name: 'Admin', email: 'admin@entaingroup.com', password: adminPassword, role: 'admin', points: 99999, created_at: new Date().toISOString() },
-    { id: 2, name: 'Karan Desai', email: 'karan.desai@entaingroup.com', password: userPassword, role: 'admin', points: 99999, created_at: new Date().toISOString() },
-    { id: 3, name: 'Sarah Connor', email: 'sarah.connor@entaingroup.com', password: userPassword, role: 'user', points: 20, created_at: new Date().toISOString() },
-    { id: 4, name: 'Mike Johnson', email: 'mike.johnson@entaingroup.com', password: userPassword, role: 'user', points: 20, created_at: new Date().toISOString() },
-    { id: 5, name: 'Emma Wilson', email: 'emma.wilson@entaingroup.com', password: userPassword, role: 'user', points: 20, created_at: new Date().toISOString() },
+    { id: 1, name: 'Admin', email: 'admin@entaingroup.com', password: adminPassword, role: 'admin', status: 'approved', points: 99999, created_at: new Date().toISOString() },
+    { id: 2, name: 'Karan Desai', email: 'karan.desai@entaingroup.com', password: userPassword, role: 'admin', status: 'approved', points: 99999, created_at: new Date().toISOString() },
+    { id: 3, name: 'Sarah Connor', email: 'sarah.connor@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
+    { id: 4, name: 'Mike Johnson', email: 'mike.johnson@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
+    { id: 5, name: 'Emma Wilson', email: 'emma.wilson@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
   ],
   matches: [
     // ===== GROUP A =====
