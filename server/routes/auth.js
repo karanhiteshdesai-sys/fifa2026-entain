@@ -48,10 +48,33 @@ router.post('/register', async (req, res) => {
   // Send OTP email
   try {
     await sendOTP(email, otp, name);
-    res.json({ message: 'Verification code sent to your email.', email });
+    res.json({ message: 'Verification code sent to your email.', email, requiresOTP: true });
   } catch (err) {
     console.error('Failed to send OTP:', err.message);
-    res.status(500).json({ error: 'Failed to send verification email. Please try again.' });
+    // Fallback: create account without OTP if email service is unavailable
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const user = db.createUser({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'user',
+      points: 20
+    });
+    pendingRegistrations.delete(email);
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: 'user' },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      token,
+      user: { id: user.id, name, email, role: 'user', points: 20 },
+      requiresOTP: false
+    });
+
+    generateExcel().catch(e => console.error('Excel update failed:', e));
   }
 });
 
