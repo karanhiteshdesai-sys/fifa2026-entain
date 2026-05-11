@@ -1,7 +1,7 @@
 const express = require('express');
 const https = require('https');
 const { authenticate } = require('../middleware/auth');
-const db = require('../db/database');
+const { db } = require('../db/database');
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.post('/', authenticate, async (req, res) => {
   }
 
   // Get some context about the user
-  const user = db.findUserById(req.user.id);
+  const user = await db.findUserById(req.user.id);
   const userContext = user ? `The user's name is ${user.name}, they have ${user.points} Entain Points.` : '';
 
   try {
