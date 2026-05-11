@@ -13,9 +13,6 @@ const data = {
   users: [
     { id: 1, name: 'Admin', email: 'admin@entaingroup.com', password: adminPassword, role: 'admin', status: 'approved', points: 99999, created_at: new Date().toISOString() },
     { id: 2, name: 'Karan Desai', email: 'karan.desai@entaingroup.com', password: userPassword, role: 'admin', status: 'approved', points: 99999, created_at: new Date().toISOString() },
-    { id: 3, name: 'Sarah Connor', email: 'sarah.connor@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
-    { id: 4, name: 'Mike Johnson', email: 'mike.johnson@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
-    { id: 5, name: 'Emma Wilson', email: 'emma.wilson@entaingroup.com', password: userPassword, role: 'user', status: 'approved', points: 20, created_at: new Date().toISOString() },
   ],
   matches: [
     // ===== GROUP A =====
@@ -115,7 +112,7 @@ const data = {
     { id: 72, home_team: 'Croatia', away_team: 'Ghana', group_name: 'L', stage: 'group', match_date: '2026-06-27T21:00:00', venue: 'Philadelphia Stadium (Lincoln Financial)', home_odds: 1.8, draw_odds: 3.5, away_odds: 4.5, status: 'upcoming', home_score: null, away_score: null },
   ],
   bets: [],
-  nextId: { users: 6, matches: 73, bets: 1 }
+  nextId: { users: 3, matches: 73, bets: 1 }
 };
 
 fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));

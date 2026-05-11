@@ -189,7 +189,7 @@ const db = {
   getLeaderboard() {
     const data = loadDb();
     return data.users
-      .filter(u => u.role !== 'admin')
+      .filter(u => u.role !== 'admin' && u.status !== 'pending' && u.status !== 'rejected')
       .map(user => {
         const userBets = data.bets.filter(b => b.user_id === user.id);
         return {
@@ -204,6 +204,13 @@ const db = {
       })
       .sort((a, b) => b.points - a.points)
       .slice(0, 50);
+  },
+
+  getAllUsersIncludingStatus() {
+    const data = loadDb();
+    return data.users
+      .filter(u => u.role !== 'admin')
+      .map(({ password, ...rest }) => rest);
   }
 };
 

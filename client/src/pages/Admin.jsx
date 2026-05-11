@@ -310,25 +310,33 @@ function Admin() {
           {/* Pending Approvals */}
           <PendingApprovals onAction={fetchData} setMessage={setMessage} />
 
-          {/* Approved Users */}
+          {/* All Users */}
           <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
             <div className="px-6 py-3 border-b border-entain-blue/20">
-              <h3 className="text-white font-semibold">Approved Users</h3>
+              <h3 className="text-white font-semibold">All Registered Users</h3>
             </div>
             <table className="w-full">
               <thead>
                 <tr className="border-b border-entain-blue/20">
                   <th className="text-left text-gray-400 text-sm px-6 py-3">Name</th>
                   <th className="text-left text-gray-400 text-sm px-6 py-3">Email</th>
+                  <th className="text-center text-gray-400 text-sm px-4 py-3">Status</th>
                   <th className="text-right text-gray-400 text-sm px-6 py-3">Points</th>
                   <th className="text-right text-gray-400 text-sm px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {users.filter(u => u.role !== 'admin').map(user => (
+                {users.map(user => (
                   <tr key={user.id} className="border-b border-entain-blue/10">
                     <td className="px-6 py-3 text-white">{user.name}</td>
-                    <td className="px-6 py-3 text-gray-400">{user.email}</td>
+                    <td className="px-6 py-3 text-gray-400 text-sm">{user.email}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        user.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                        user.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-red-500/20 text-red-400'
+                      }`}>{user.status || 'approved'}</span>
+                    </td>
                     <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
                     <td className="px-6 py-3 text-right">
                       <button

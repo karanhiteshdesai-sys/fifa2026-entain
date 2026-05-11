@@ -56,9 +56,9 @@ router.put('/matches/:id/result', authenticate, requireAdmin, (req, res) => {
   generateExcel().catch(err => console.error('Excel update failed:', err));
 });
 
-// Get all users (admin)
+// Get all users (admin) - shows all registered users with status
 router.get('/users', authenticate, requireAdmin, (req, res) => {
-  const users = db.getAllUsers();
+  const users = db.getAllUsersIncludingStatus();
   res.json(users);
 });
 
