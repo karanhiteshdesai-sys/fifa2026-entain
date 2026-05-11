@@ -4,7 +4,7 @@ import api from '../services/api';
 function Login({ onLogin }) {
   const [loginType, setLoginType] = useState(null);
   const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', department: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,9 +17,19 @@ function Login({ onLogin }) {
 
     try {
       if (isRegister) {
-        const { data } = await api.post('/auth/register', form);
+        if (form.password !== form.confirmPassword) {
+          setError('Passwords do not match.');
+          setLoading(false);
+          return;
+        }
+        const { data } = await api.post('/auth/register', {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          department: form.department
+        });
         setSuccess(data.message);
-        setForm({ name: '', email: '', password: '' });
+        setForm({ name: '', email: '', password: '', confirmPassword: '', department: '' });
       } else {
         const { data } = await api.post('/auth/login', { email: form.email, password: form.password });
         localStorage.setItem('token', data.token);
@@ -107,14 +117,14 @@ function Login({ onLogin }) {
 
           {isRegister && (
             <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-300 text-sm mb-1">Name</label>
+              <label htmlFor="name" className="block text-gray-300 text-sm mb-1">Full Name</label>
               <input
                 id="name"
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
-                placeholder="Your name"
+                placeholder="Your full name"
                 required
               />
             </div>
@@ -133,7 +143,7 @@ function Login({ onLogin }) {
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label htmlFor="password" className="block text-gray-300 text-sm mb-1">Password</label>
             <input
               id="password"
@@ -145,6 +155,36 @@ function Login({ onLogin }) {
               required
             />
           </div>
+
+          {isRegister && (
+            <div className="mb-4">
+              <label htmlFor="confirmPassword" className="block text-gray-300 text-sm mb-1">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={form.confirmPassword}
+                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          )}
+
+          {isRegister && (
+            <div className="mb-6">
+              <label htmlFor="department" className="block text-gray-300 text-sm mb-1">Department</label>
+              <input
+                id="department"
+                type="text"
+                value={form.department}
+                onChange={(e) => setForm({ ...form, department: e.target.value })}
+                className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
+                placeholder="e.g. Engineering, QA, Marketing"
+                required
+              />
+            </div>
+          )}
 
           <button
             type="submit"
@@ -182,7 +222,7 @@ function Login({ onLogin }) {
 
           <button
             type="button"
-            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '' }); }}
+            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '', confirmPassword: '', department: '' }); }}
             className="w-full text-gray-500 hover:text-gray-300 text-sm mt-4 transition"
           >
             ← Back to role selection

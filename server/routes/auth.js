@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Register - creates account in "pending" status, needs admin approval
 router.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, department } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Name, email, and password are required.' });
@@ -33,6 +33,7 @@ router.post('/register', (req, res) => {
     name,
     email,
     password: hashedPassword,
+    department: department || '',
     role: 'user',
     status: 'pending',
     points: 20
