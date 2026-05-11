@@ -1,6 +1,7 @@
 const https = require('https');
 const db = require('../db/database');
 const { generateExcel } = require('./excel');
+const { createNotification } = require('./notifications');
 
 // Football-Data.org API (free tier: 10 requests/min)
 // Sign up at https://www.football-data.org/ for a free API key
@@ -102,8 +103,10 @@ function settleMatch(matchId, homeScore, awayScore) {
       const payout = Math.round(bet.stake * bet.odds);
       db.updateBet(bet.id, { status: 'won', payout });
       db.addPoints(bet.user_id, payout);
+      createNotification(bet.user_id, 'Bet Won!', `You won ${payout} EP on your bet! The match ended ${homeScore}-${awayScore}.`);
     } else {
       db.updateBet(bet.id, { status: 'lost', payout: 0 });
+      createNotification(bet.user_id, 'Bet Lost', `Your bet lost. The match ended ${homeScore}-${awayScore}. Better luck next time!`);
     }
   }
 

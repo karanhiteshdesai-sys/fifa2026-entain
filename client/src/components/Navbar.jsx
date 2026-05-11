@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import NotificationBell from './NotificationBell';
 
 function Navbar({ user, onLogout }) {
   const location = useLocation();
@@ -65,6 +66,7 @@ function Navbar({ user, onLogout }) {
 
           {/* User Info Dropdown */}
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}

@@ -18,6 +18,7 @@ const exportRoutes = require('./routes/export');
 const resultsRoutes = require('./routes/results');
 const chatRoutes = require('./routes/chat');
 const groupChatRoutes = require('./routes/groupchat');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -43,6 +44,7 @@ app.use('/api/export', exportRoutes);
 app.use('/api/results', resultsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/groupchat', groupChatRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

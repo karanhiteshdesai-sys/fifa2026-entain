@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db/database');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const { generateExcel } = require('../services/excel');
+const { createNotification } = require('../services/notifications');
 
 const router = express.Router();
 
@@ -75,6 +76,7 @@ router.get('/pending-users', authenticate, requireAdmin, (req, res) => {
 router.post('/users/:id/approve', authenticate, requireAdmin, (req, res) => {
   const userId = Number(req.params.id);
   db.updateUserStatus(userId, 'approved');
+  createNotification(userId, 'Account Approved', 'Your account has been approved! You can now log in and start placing bets.');
   res.json({ message: 'User approved successfully.' });
   generateExcel().catch(err => console.error('Excel update failed:', err));
 });
