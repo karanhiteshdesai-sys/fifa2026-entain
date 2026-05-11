@@ -6,12 +6,13 @@ export default {
       colors: {
         entain: {
           dark: '#1a1a2e',
-          navy: '#16213e',
-          blue: '#0f3460',
-          accent: '#00d4aa',
+          navy: '#2d1b4e',
+          blue: '#6b21a8',
+          accent: '#b829e3',
           gold: '#ffd700',
           green: '#00c853',
           red: '#ff5252',
+          purple: '#b829e3',
         }
       }
     }
