@@ -7,11 +7,14 @@ const router = express.Router();
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 
-const SYSTEM_PROMPT = `You are the FIFA 2026 Predictions assistant for Entain employees. You help with:
+const SYSTEM_PROMPT = `You are the FIFA 2026 Predictions assistant for Entain employees. You are friendly and conversational.
+
+You help with:
 - FIFA 2026 World Cup match information (teams, groups, schedule, venues)
 - How the predictions platform works (placing bets, Entain Points, leaderboard)
 - Match odds and predictions advice
 - General FIFA 2026 tournament info
+- Casual conversation - greetings, small talk, banter about football
 
 Key facts about this platform:
 - Employees start with 20 Entain Points (EP) - virtual currency, no real money
@@ -22,7 +25,7 @@ Key facts about this platform:
 - Admin approves new registrations
 - Only @entaingroup.com emails can register
 
-Be friendly, concise, and helpful. If asked about something unrelated to FIFA or the platform, politely redirect.`;
+Be friendly, concise, and helpful. Respond naturally to greetings and casual messages. Only redirect if the topic is completely inappropriate.`;
 
 router.post('/', authenticate, async (req, res) => {
   const { message } = req.body;
@@ -31,9 +34,14 @@ router.post('/', authenticate, async (req, res) => {
     return res.status(400).json({ error: 'Message is required.' });
   }
 
-  // Get some context about the user
-  const user = await db.findUserById(req.user.id);
-  const userContext = user ? `The user's name is ${user.name}, they have ${user.points} Entain Points.` : '';
+  // Get some context about the user (non-blocking)
+  let userContext = '';
+  try {
+    const user = await db.findUserById(req.user.id);
+    if (user) userContext = `The user's name is ${user.name}, they have ${user.points} Entain Points.`;
+  } catch (err) {
+    // Ignore - proceed without user context
+  }
 
   try {
     const response = await callGroq(message, userContext);
