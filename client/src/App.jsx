@@ -66,16 +66,32 @@ function App() {
 
   return (
     <div className="min-h-screen bg-entain-dark">
-      <div className="bg-yellow-400 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap py-1">
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
-          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+      <div className="bg-yellow-400 overflow-hidden relative">
+        <div className="flex animate-marquee">
+          <div className="flex shrink-0 items-center py-1">
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+          </div>
+          <div className="flex shrink-0 items-center py-1">
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+            <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
+          </div>
         </div>
       </div>
       <Navbar user={user} onLogout={handleLogout} />
