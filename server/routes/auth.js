@@ -15,7 +15,9 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Name, email, and password are required.' });
   }
 
-  if (!email.endsWith('@entaingroup.com')) {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!normalizedEmail.endsWith('@entaingroup.com')) {
     return res.status(400).json({ error: 'Please use your company email address (@entaingroup.com) only.' });
   }
 
@@ -23,7 +25,7 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Password must be at least 6 characters.' });
   }
 
-  const existing = db.findUserByEmail(email);
+  const existing = db.findUserByEmail(normalizedEmail);
   if (existing) {
     return res.status(409).json({ error: 'Email already registered.' });
   }
@@ -31,7 +33,7 @@ router.post('/register', (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   db.createUser({
     name,
-    email,
+    email: normalizedEmail,
     password: hashedPassword,
     department: department || '',
     role: 'user',
@@ -54,7 +56,7 @@ router.post('/login', (req, res) => {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
-  const user = db.findUserByEmail(email);
+  const user = db.findUserByEmail(email.toLowerCase().trim());
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials.' });
   }

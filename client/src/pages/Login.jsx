@@ -28,6 +28,8 @@ function Login({ onLogin }) {
           password: form.password,
           department: form.department
         });
+        // Switch to sign in view with success message
+        setIsRegister(false);
         setSuccess(data.message);
         setForm({ name: '', email: '', password: '', confirmPassword: '', department: '' });
       } else {
@@ -115,6 +117,19 @@ function Login({ onLogin }) {
             </div>
           )}
 
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-300 text-sm mb-1">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
+              placeholder="firstname.lastname@entaingroup.com"
+              required
+            />
+          </div>
+
           {isRegister && (
             <div className="mb-4">
               <label htmlFor="name" className="block text-gray-300 text-sm mb-1">Full Name</label>
@@ -129,19 +144,6 @@ function Login({ onLogin }) {
               />
             </div>
           )}
-
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-300 text-sm mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
-              placeholder="firstname.lastname@entaingroup.com"
-              required
-            />
-          </div>
 
           <div className="mb-4">
             <label htmlFor="password" className="block text-gray-300 text-sm mb-1">Password</label>
