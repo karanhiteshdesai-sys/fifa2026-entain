@@ -147,7 +147,7 @@ function Home() {
 
 function AdSlider() {
   const [current, setCurrent] = useState(0);
-  const slides = ['/download.jpg', '/download (1).jpg', '/coral.png'];
+  const slides = ['/download.jpg', '/download (1).jpg', '/coral.png', '/fifa.png'];
 
   useEffect(() => {
     const timer = setInterval(() => {

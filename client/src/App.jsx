@@ -11,6 +11,7 @@ import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Navbar from './components/Navbar';
 import ChatBot from './components/ChatBot';
+import FloatingChat from './components/FloatingChat';
 import api from './services/api';
 
 function App() {
@@ -109,6 +110,7 @@ function App() {
         </Routes>
       </main>
       <ChatBot />
+      <FloatingChat />
     </div>
   );
 }
