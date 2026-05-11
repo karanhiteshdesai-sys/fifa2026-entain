@@ -27,7 +27,7 @@ router.post('/register', (req, res) => {
 
   const existing = db.findUserByEmail(normalizedEmail);
   if (existing) {
-    return res.status(409).json({ error: 'Email already registered.' });
+    return res.status(409).json({ error: 'You have already registered. Please login instead.' });
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
