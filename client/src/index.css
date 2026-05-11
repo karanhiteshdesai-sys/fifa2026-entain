@@ -4,4 +4,15 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #1c1c1c;
+  background-image: 
+    radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%),
+    url('/fifa-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-entain-dark {
+  background-color: rgba(26, 26, 46, 0.88);
 }
