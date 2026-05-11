@@ -1,5 +1,25 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
+
+// Auto-seed if database is missing or outdated
+const dbPath = path.join(__dirname, 'db', 'data.json');
+if (!fs.existsSync(dbPath)) {
+  require('./db/seed');
+} else {
+  try {
+    const data = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    // Re-seed if users don't have status field
+    if (data.users && data.users[0] && !data.users[0].status) {
+      console.log('Database outdated, re-seeding...');
+      require('./db/seed');
+    }
+  } catch (e) {
+    require('./db/seed');
+  }
+}
+
 const authRoutes = require('./routes/auth');
 const matchRoutes = require('./routes/matches');
 const betRoutes = require('./routes/bets');
