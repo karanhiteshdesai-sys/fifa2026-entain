@@ -134,25 +134,44 @@ function Home() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Ad Slider */}
           <div>
-            <h2 className="text-white font-semibold text-lg mb-4">⚡ Quick Links</h2>
-            <div className="space-y-2">
-              <Link to="/matches" className="block bg-entain-navy rounded-lg p-3 border border-entain-blue/20 text-gray-300 hover:text-white hover:border-entain-accent/30 transition text-sm">
-                ⚽ Browse Matches & Place Bets
-              </Link>
-              <Link to="/standings" className="block bg-entain-navy rounded-lg p-3 border border-entain-blue/20 text-gray-300 hover:text-white hover:border-entain-accent/30 transition text-sm">
-                📊 Group Standings
-              </Link>
-              <Link to="/my-bets" className="block bg-entain-navy rounded-lg p-3 border border-entain-blue/20 text-gray-300 hover:text-white hover:border-entain-accent/30 transition text-sm">
-                🎯 My Bet History
-              </Link>
-              <Link to="/leaderboard" className="block bg-entain-navy rounded-lg p-3 border border-entain-blue/20 text-gray-300 hover:text-white hover:border-entain-accent/30 transition text-sm">
-                🏆 Full Leaderboard
-              </Link>
-            </div>
+            <h2 className="text-white font-semibold text-lg mb-4">Sponsors</h2>
+            <AdSlider />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function AdSlider() {
+  const [current, setCurrent] = useState(0);
+  const slides = ['/download.jpg', '/download (1).jpg', '/coral.png'];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent(prev => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="relative rounded-xl overflow-hidden border border-entain-blue/20">
+      <img
+        src={slides[current]}
+        alt="Sponsor"
+        className="w-full h-48 object-cover transition-opacity duration-500"
+      />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`w-2 h-2 rounded-full transition ${i === current ? 'bg-entain-accent' : 'bg-white/40'}`}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
