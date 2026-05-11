@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Navbar from './components/Navbar';
 import ChatBot from './components/ChatBot';
+import api from './services/api';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -19,6 +20,31 @@ function App() {
       setUser(JSON.parse(stored));
     }
   }, []);
+
+  // Auto-refresh user points every 30 seconds
+  useEffect(() => {
+    if (!user) return;
+
+    const refreshUser = async () => {
+      try {
+        const { data } = await api.get('/auth/me');
+        setUser(prev => {
+          const updated = { ...prev, points: data.points };
+          localStorage.setItem('user', JSON.stringify(updated));
+          return updated;
+        });
+      } catch (err) {
+        // Token expired or invalid
+        if (err.response?.status === 401) {
+          handleLogout();
+        }
+      }
+    };
+
+    refreshUser(); // Refresh immediately on load
+    const interval = setInterval(refreshUser, 30000); // Then every 30s
+    return () => clearInterval(interval);
+  }, [user?.id]);
 
   const handleLogin = (userData) => {
     setUser(userData);
