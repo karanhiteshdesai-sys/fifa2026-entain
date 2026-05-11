@@ -128,4 +128,11 @@ router.post('/users/:id/reset-password', authenticate, requireAdmin, (req, res) 
   res.json({ message: 'Password reset successfully.' });
 });
 
+// Delete user (admin)
+router.delete('/users/:id', authenticate, requireAdmin, (req, res) => {
+  const userId = Number(req.params.id);
+  db.deleteUser(userId);
+  res.json({ message: 'User deleted successfully.' });
+});
+
 module.exports = router;

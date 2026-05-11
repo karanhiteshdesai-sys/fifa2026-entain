@@ -358,6 +358,18 @@ function Admin() {
                       >
                         Reset Password
                       </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete ${user.name} (${user.email})? This cannot be undone.`)) {
+                            api.delete(`/admin/users/${user.id}`)
+                              .then(() => { setMessage(`${user.name} deleted.`); fetchData(); })
+                              .catch(() => setMessage('Failed to delete user.'));
+                          }
+                        }}
+                        className="text-red-400 text-sm hover:underline ml-3"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

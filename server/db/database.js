@@ -102,6 +102,13 @@ const db = {
     }
   },
 
+  deleteUser(userId) {
+    const data = loadDb();
+    data.users = data.users.filter(u => u.id !== userId);
+    data.bets = data.bets.filter(b => b.user_id !== userId);
+    saveDb(data);
+  },
+
   getAllUsers() {
     const data = loadDb();
     return data.users.map(({ password, ...rest }) => rest);
