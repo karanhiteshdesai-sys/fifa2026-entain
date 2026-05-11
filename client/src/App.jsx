@@ -8,6 +8,7 @@ import Standings from './pages/Standings';
 import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Navbar from './components/Navbar';
+import ChatBot from './components/ChatBot';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -48,6 +49,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
+      <ChatBot />
     </div>
   );
 }
