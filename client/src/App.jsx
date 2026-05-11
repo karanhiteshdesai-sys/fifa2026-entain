@@ -6,6 +6,7 @@ import Matches from './pages/Matches';
 import Leaderboard from './pages/Leaderboard';
 import MyBets from './pages/MyBets';
 import Standings from './pages/Standings';
+import Chat from './pages/Chat';
 import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Navbar from './components/Navbar';
@@ -72,6 +73,7 @@ function App() {
           <Route path="/standings" element={<Standings />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/my-bets" element={<MyBets />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/change-password" element={<ChangePassword />} />
           {user.role === 'admin' && <Route path="/admin" element={<Admin />} />}
           <Route path="*" element={<Navigate to="/" />} />
