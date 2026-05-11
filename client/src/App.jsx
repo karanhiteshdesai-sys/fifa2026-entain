@@ -66,6 +66,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-entain-dark">
+      <div className="bg-yellow-400 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap py-1">
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+          <span className="text-sm font-bold text-black mx-8">⚽ FIFA 2026</span>
+        </div>
+      </div>
       <Navbar user={user} onLogout={handleLogout} />
       <main className="max-w-7xl mx-auto px-4 py-6">
         <Routes>
