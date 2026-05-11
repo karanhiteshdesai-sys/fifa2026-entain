@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -51,6 +51,7 @@ function App() {
   const handleLogin = (userData) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    window.location.href = '/';
   };
 
   const handleLogout = () => {
