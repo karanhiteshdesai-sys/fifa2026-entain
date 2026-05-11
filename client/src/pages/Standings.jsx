@@ -97,19 +97,19 @@ function Standings() {
         <div className="px-5 py-3 border-b border-entain-blue/20">
           <h3 className="text-white font-semibold">Group {selectedGroup}</h3>
         </div>
-        <table className="w-full">
+        <table className="w-full table-fixed">
           <thead>
             <tr className="border-b border-entain-blue/20 text-xs">
-              <th className="text-left text-gray-400 px-5 py-2 w-8">#</th>
+              <th className="text-left text-gray-400 px-3 py-2 w-10">#</th>
               <th className="text-left text-gray-400 px-3 py-2">Team</th>
-              <th className="text-center text-gray-400 px-2 py-2">P</th>
-              <th className="text-center text-gray-400 px-2 py-2">W</th>
-              <th className="text-center text-gray-400 px-2 py-2">D</th>
-              <th className="text-center text-gray-400 px-2 py-2">L</th>
-              <th className="text-center text-gray-400 px-2 py-2">GF</th>
-              <th className="text-center text-gray-400 px-2 py-2">GA</th>
-              <th className="text-center text-gray-400 px-2 py-2">GD</th>
-              <th className="text-center text-gray-400 px-2 py-2 font-bold">Pts</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">P</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">W</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">D</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">L</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">GF</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">GA</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-10">GD</th>
+              <th className="text-center text-gray-400 px-1 py-2 w-12 font-bold">Pts</th>
             </tr>
           </thead>
           <tbody>
@@ -120,8 +120,8 @@ function Standings() {
                   index < 2 ? 'bg-entain-green/5' : index === 2 ? 'bg-yellow-500/5' : ''
                 }`}
               >
-                <td className="px-5 py-3 text-gray-400 text-sm">{index + 1}</td>
-                <td className="px-3 py-3 text-white font-medium text-sm">{team.team}</td>
+                <td className="px-3 py-3 text-gray-400 text-sm">{index + 1}</td>
+                <td className="px-3 py-3 text-white font-medium text-sm truncate">{team.team}</td>
                 <td className="text-center text-gray-300 text-sm">{team.played}</td>
                 <td className="text-center text-gray-300 text-sm">{team.won}</td>
                 <td className="text-center text-gray-300 text-sm">{team.drawn}</td>
@@ -150,10 +150,10 @@ function Standings() {
           <h3 className="text-white font-semibold mb-3">Results</h3>
           <div className="space-y-2">
             {finishedMatches.map(match => (
-              <div key={match.id} className="bg-entain-navy rounded-lg p-3 border border-entain-blue/20 flex items-center justify-between">
-                <span className="text-white text-sm w-28 text-right">{match.home_team}</span>
-                <span className="text-white font-bold text-lg mx-4">{match.home_score} - {match.away_score}</span>
-                <span className="text-white text-sm w-28">{match.away_team}</span>
+              <div key={match.id} className="bg-entain-navy rounded-lg p-3 border border-entain-blue/20 flex items-center">
+                <span className="text-white text-sm flex-1 text-right">{match.home_team}</span>
+                <span className="text-white font-bold text-lg w-20 text-center">{match.home_score} - {match.away_score}</span>
+                <span className="text-white text-sm flex-1 text-left">{match.away_team}</span>
               </div>
             ))}
           </div>
@@ -166,14 +166,12 @@ function Standings() {
           <h3 className="text-white font-semibold mb-3">Upcoming</h3>
           <div className="space-y-2">
             {upcomingMatches.map(match => (
-              <div key={match.id} className="bg-entain-navy/50 rounded-lg p-3 border border-entain-blue/10 flex items-center justify-between">
-                <span className="text-gray-300 text-sm w-28 text-right">{match.home_team}</span>
-                <div className="text-center mx-4">
-                  <span className="text-gray-500 text-xs">
-                    {new Date(match.match_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                  </span>
-                </div>
-                <span className="text-gray-300 text-sm w-28">{match.away_team}</span>
+              <div key={match.id} className="bg-entain-navy/50 rounded-lg p-3 border border-entain-blue/10 flex items-center">
+                <span className="text-gray-300 text-sm flex-1 text-right">{match.home_team}</span>
+                <span className="text-gray-500 text-xs w-20 text-center">
+                  {new Date(match.match_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </span>
+                <span className="text-gray-300 text-sm flex-1 text-left">{match.away_team}</span>
               </div>
             ))}
           </div>
