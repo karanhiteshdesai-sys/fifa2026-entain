@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import Notification from '../components/Notification';
 
 function Matches() {
   const [matches, setMatches] = useState([]);
@@ -8,6 +9,7 @@ function Matches() {
   const [stake, setStake] = useState(50);
   const [prediction, setPrediction] = useState('');
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -29,13 +31,15 @@ function Matches() {
     if (!prediction || stake <= 0) return;
 
     try {
-      await api.post('/bets', {
+      const { data } = await api.post('/bets', {
         match_id: betModal.id,
         bet_type: 'match_result',
         prediction,
         stake
       });
-      setMessage('Bet placed successfully! 🎉');
+      const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
+      setNotification(`Bet placed! ${betModal.home_team} vs ${betModal.away_team} — ${predLabel} to win — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`);
+      setMessage('');
       setBetModal(null);
       setPrediction('');
       setStake(50);
@@ -59,6 +63,9 @@ function Matches() {
 
   return (
     <div>
+      {notification && (
+        <Notification message={notification} type="success" onClose={() => setNotification(null)} />
+      )}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">FIFA 2026 Matches</h2>
         <div className="flex gap-2">
