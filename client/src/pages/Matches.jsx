@@ -27,16 +27,32 @@ function Matches() {
     }
   };
 
-  const placeBet = async () => {
+  const [confirmBet, setConfirmBet] = useState(null); // holds bet details for confirmation
+
+  const handlePlaceBet = () => {
     if (!prediction || !stake || stake <= 0) return;
 
-    // Check balance before placing bet
+    // Check balance before showing confirmation
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && stake > user.points) {
       setNotification({ message: `Insufficient balance! You have ${user.points} EP but tried to stake ${stake} EP.`, type: 'error' });
       return;
     }
 
+    const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
+    const odds = prediction === 'home' ? betModal.home_odds : prediction === 'away' ? betModal.away_odds : betModal.draw_odds;
+
+    // Show confirmation popup
+    setConfirmBet({
+      match: `${betModal.home_team} vs ${betModal.away_team}`,
+      prediction: predLabel,
+      stake,
+      odds,
+      potentialPayout: Math.round(stake * odds)
+    });
+  };
+
+  const confirmPlaceBet = async () => {
     try {
       const { data } = await api.post('/bets', {
         match_id: betModal.id,
@@ -48,16 +64,17 @@ function Matches() {
       setNotification({ message: `Bet placed! ${betModal.home_team} vs ${betModal.away_team} — ${predLabel} to win — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`, type: 'success' });
       setMessage('');
       setBetModal(null);
+      setConfirmBet(null);
       setPrediction('');
       setStake('');
 
-      // Refresh user points
-      const { data: user } = await api.get('/auth/me');
+      // Refresh user points without page reload
+      const { data: userData } = await api.get('/auth/me');
       const stored = JSON.parse(localStorage.getItem('user'));
-      localStorage.setItem('user', JSON.stringify({ ...stored, points: user.points }));
-      window.location.reload();
+      localStorage.setItem('user', JSON.stringify({ ...stored, points: userData.points }));
     } catch (err) {
       setMessage(err.response?.data?.error || 'Failed to place bet.');
+      setConfirmBet(null);
     }
   };
 
@@ -232,7 +249,7 @@ function Matches() {
                 Cancel
               </button>
               <button
-                onClick={placeBet}
+                onClick={handlePlaceBet}
                 className="flex-1 bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition"
               >
                 Place Bet
@@ -241,6 +258,56 @@ function Matches() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      {confirmBet && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+          <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-entain-blue/30">
+            <h3 className="text-white text-xl font-bold mb-4 text-center">Confirm Your Bet</h3>
+
+            <div className="bg-entain-dark rounded-lg p-4 mb-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Match</span>
+                <span className="text-white font-medium">{confirmBet.match}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Your Pick</span>
+                <span className="text-entain-accent font-medium">{confirmBet.prediction}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Stake</span>
+                <span className="text-white font-medium">{confirmBet.stake} EP</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Odds</span>
+                <span className="text-white font-medium">{confirmBet.odds}</span>
+              </div>
+              <hr className="border-entain-blue/20" />
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Potential Payout</span>
+                <span className="text-entain-gold font-bold">{confirmBet.potentialPayout} EP</span>
+              </div>
+            </div>
+
+            <p className="text-gray-400 text-xs text-center mb-4">Are you sure you want to place this bet?</p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmBet(null)}
+                className="flex-1 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPlaceBet}
+                className="flex-1 bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition"
+              >
+                Confirm Bet
+              </button>
+            </div>
+          </div>
+        </div>
+      )}}
     </div>
   );
 }
