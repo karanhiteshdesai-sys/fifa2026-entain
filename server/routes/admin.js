@@ -1,140 +1,90 @@
 const express = require('express');
-const db = require('../db/database');
+const bcrypt = require('bcryptjs');
+const { db } = require('../db/database');
 const { authenticate, requireAdmin } = require('../middleware/auth');
-const { generateExcel } = require('../services/excel');
-const { createNotification } = require('../services/notifications');
-
 const router = express.Router();
 
-// Update match result and settle bets
-router.put('/matches/:id/result', authenticate, requireAdmin, (req, res) => {
-  const { home_score, away_score } = req.body;
-  const matchId = Number(req.params.id);
+router.put('/matches/:id/result', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { home_score, away_score } = req.body;
+    const matchId = Number(req.params.id);
+    if (home_score === undefined || away_score === undefined) return res.status(400).json({ error: 'Scores required.' });
 
-  if (home_score === undefined || away_score === undefined) {
-    return res.status(400).json({ error: 'home_score and away_score are required.' });
-  }
+    const match = await db.findMatchById(matchId);
+    if (!match) return res.status(404).json({ error: 'Match not found.' });
 
-  const match = db.findMatchById(matchId);
-  if (!match) {
-    return res.status(404).json({ error: 'Match not found.' });
-  }
+    let result = home_score > away_score ? 'home' : home_score < away_score ? 'away' : 'draw';
+    await db.updateMatch(matchId, { home_score: Number(home_score), away_score: Number(away_score), status: 'finished' });
 
-  // Determine result
-  let result;
-  if (home_score > away_score) result = 'home';
-  else if (home_score < away_score) result = 'away';
-  else result = 'draw';
-
-  // Update match
-  db.updateMatch(matchId, {
-    home_score: Number(home_score),
-    away_score: Number(away_score),
-    status: 'finished'
-  });
-
-  // Settle bets
-  const bets = db.getPendingBetsByMatch(matchId);
-
-  for (const bet of bets) {
-    if (bet.prediction === result) {
-      const payout = Math.round(bet.stake * bet.odds);
-      db.updateBet(bet.id, { status: 'won', payout });
-      db.addPoints(bet.user_id, payout);
-    } else {
-      db.updateBet(bet.id, { status: 'lost', payout: 0 });
+    const bets = await db.getPendingBetsByMatch(matchId);
+    for (const bet of bets) {
+      if (bet.prediction === result) {
+        const payout = Math.round(bet.stake * bet.odds);
+        await db.updateBet(bet.id, { status: 'won', payout });
+        await db.addPoints(bet.user_id, payout);
+        await db.createNotification(bet.user_id, 'Bet Won!', `You won ${payout} EP! Match ended ${home_score}-${away_score}.`);
+      } else {
+        await db.updateBet(bet.id, { status: 'lost', payout: 0 });
+        await db.createNotification(bet.user_id, 'Bet Lost', `Your bet lost. Match ended ${home_score}-${away_score}.`);
+      }
     }
-  }
 
-  res.json({
-    message: `Match settled. ${bets.length} bets processed.`,
-    result,
-    home_score,
-    away_score
-  });
-
-  // Auto-update Excel after settling
-  generateExcel().catch(err => console.error('Excel update failed:', err));
+    res.json({ message: `Match settled. ${bets.length} bets processed.`, result, home_score, away_score });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Get all users (admin) - shows all registered users with status
-router.get('/users', authenticate, requireAdmin, (req, res) => {
-  const users = db.getAllUsersIncludingStatus();
-  res.json(users);
+router.get('/users', authenticate, requireAdmin, async (req, res) => {
+  try { res.json(await db.getAllUsersIncludingStatus()); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Get pending registrations (admin)
-router.get('/pending-users', authenticate, requireAdmin, (req, res) => {
-  const data = db.getData();
-  const pending = data.users
-    .filter(u => u.status === 'pending')
-    .map(({ password, ...rest }) => rest);
-  res.json(pending);
+router.get('/pending-users', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const users = await db.getAllUsersIncludingStatus();
+    res.json(users.filter(u => u.status === 'pending'));
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Approve a user (admin)
-router.post('/users/:id/approve', authenticate, requireAdmin, (req, res) => {
-  const userId = Number(req.params.id);
-  db.updateUserStatus(userId, 'approved');
-  createNotification(userId, 'Account Approved', 'Your account has been approved! You can now log in and start placing bets.');
-  res.json({ message: 'User approved successfully.' });
-  generateExcel().catch(err => console.error('Excel update failed:', err));
+router.post('/users/:id/approve', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const userId = Number(req.params.id);
+    await db.updateUserStatus(userId, 'approved');
+    await db.createNotification(userId, 'Account Approved', 'Your account has been approved! You can now log in and start placing bets.');
+    res.json({ message: 'User approved successfully.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Reject a user (admin)
-router.post('/users/:id/reject', authenticate, requireAdmin, (req, res) => {
-  const userId = Number(req.params.id);
-  db.updateUserStatus(userId, 'rejected');
-  res.json({ message: 'User rejected.' });
+router.post('/users/:id/reject', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await db.updateUserStatus(Number(req.params.id), 'rejected');
+    res.json({ message: 'User rejected.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Get all bets (admin) - see everyone's bets
-router.get('/bets', authenticate, requireAdmin, (req, res) => {
-  const data = db.getData();
-  const bets = data.bets.map(bet => {
-    const user = data.users.find(u => u.id === bet.user_id);
-    const match = data.matches.find(m => m.id === bet.match_id);
-    return {
-      ...bet,
-      user_name: user?.name || 'Unknown',
-      user_email: user?.email || 'Unknown',
-      home_team: match?.home_team,
-      away_team: match?.away_team,
-      match_date: match?.match_date,
-      group_name: match?.group_name
-    };
-  }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  res.json(bets);
+router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await db.updateUserPoints(Number(req.params.id), req.body.points || 20);
+    res.json({ message: 'Points reset successfully.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Reset user points (admin)
-router.post('/users/:id/reset-points', authenticate, requireAdmin, (req, res) => {
-  const { points } = req.body;
-  const userId = Number(req.params.id);
-  db.updateUserPoints(userId, points || 20);
-  res.json({ message: 'Points reset successfully.' });
+router.post('/users/:id/reset-password', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    await db.updateUserPassword(Number(req.params.id), bcrypt.hashSync(newPassword, 10));
+    res.json({ message: 'Password reset successfully.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Reset user password (admin)
-router.post('/users/:id/reset-password', authenticate, requireAdmin, (req, res) => {
-  const { newPassword } = req.body;
-  const userId = Number(req.params.id);
-
-  if (!newPassword || newPassword.length < 6) {
-    return res.status(400).json({ error: 'New password must be at least 6 characters.' });
-  }
-
-  const bcrypt = require('bcryptjs');
-  const hashedPassword = bcrypt.hashSync(newPassword, 10);
-  db.updateUserPassword(userId, hashedPassword);
-  res.json({ message: 'Password reset successfully.' });
+router.delete('/users/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await db.deleteUser(Number(req.params.id));
+    res.json({ message: 'User deleted successfully.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Delete user (admin)
-router.delete('/users/:id', authenticate, requireAdmin, (req, res) => {
-  const userId = Number(req.params.id);
-  db.deleteUser(userId);
-  res.json({ message: 'User deleted successfully.' });
+router.get('/bets', authenticate, requireAdmin, async (req, res) => {
+  try { res.json(await db.getAllBets()); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
 module.exports = router;

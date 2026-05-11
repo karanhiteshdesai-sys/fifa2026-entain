@@ -1,41 +1,18 @@
 const express = require('express');
-const db = require('../db/database');
+const { db } = require('../db/database');
 const { authenticate } = require('../middleware/auth');
-
 const router = express.Router();
 
-// Get user's notifications
-router.get('/', authenticate, (req, res) => {
-  const data = db.getData();
-  if (!data.notifications) return res.json([]);
-
-  const userNotifs = data.notifications
-    .filter(n => n.user_id === req.user.id)
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 50);
-
-  res.json(userNotifs);
+router.get('/', authenticate, async (req, res) => {
+  try { res.json(await db.getNotifications(req.user.id)); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Get unread count
-router.get('/unread-count', authenticate, (req, res) => {
-  const data = db.getData();
-  if (!data.notifications) return res.json({ count: 0 });
-
-  const count = data.notifications.filter(n => n.user_id === req.user.id && !n.read).length;
-  res.json({ count });
+router.get('/unread-count', authenticate, async (req, res) => {
+  try { res.json({ count: await db.getUnreadCount(req.user.id) }); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// Mark all as read
-router.post('/mark-read', authenticate, (req, res) => {
-  const data = db.getData();
-  if (!data.notifications) return res.json({ message: 'Done' });
-
-  data.notifications.forEach(n => {
-    if (n.user_id === req.user.id) n.read = true;
-  });
-  db.saveData(data);
-  res.json({ message: 'All notifications marked as read.' });
+router.post('/mark-read', authenticate, async (req, res) => {
+  try { await db.markNotificationsRead(req.user.id); res.json({ message: 'Done' }); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
 module.exports = router;

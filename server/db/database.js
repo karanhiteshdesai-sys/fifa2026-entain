@@ -1,224 +1,269 @@
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
 
-const DB_PATH = path.join(__dirname, 'data.json');
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://fifa2026_db_user:rR8QlA7YhOPS6Qp9e2neCMW9Qzl1HevH@dpg-d80uhjvaqgkc73afiosg-a/fifa2026_db';
 
-// Default empty database structure
-const defaultData = {
-  users: [],
-  matches: [],
-  bets: [],
-  nextId: { users: 1, matches: 1, bets: 1 }
-};
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+  ssl: DATABASE_URL.includes('render.com') ? { rejectUnauthorized: false } : false
+});
 
-function loadDb() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const raw = fs.readFileSync(DB_PATH, 'utf-8');
-      return JSON.parse(raw);
-    }
-  } catch (err) {
-    console.error('Error loading database:', err.message);
-  }
-  return { ...defaultData };
+// Initialize tables
+async function initDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      department TEXT DEFAULT '',
+      role TEXT DEFAULT 'user',
+      status TEXT DEFAULT 'pending',
+      points INTEGER DEFAULT 20,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS matches (
+      id SERIAL PRIMARY KEY,
+      home_team TEXT NOT NULL,
+      away_team TEXT NOT NULL,
+      group_name TEXT,
+      stage TEXT DEFAULT 'group',
+      match_date TIMESTAMP NOT NULL,
+      venue TEXT,
+      home_score INTEGER,
+      away_score INTEGER,
+      status TEXT DEFAULT 'upcoming',
+      home_odds REAL DEFAULT 2.0,
+      draw_odds REAL DEFAULT 3.0,
+      away_odds REAL DEFAULT 2.5,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS bets (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      match_id INTEGER REFERENCES matches(id),
+      bet_type TEXT NOT NULL,
+      prediction TEXT NOT NULL,
+      stake INTEGER NOT NULL,
+      odds REAL NOT NULL,
+      status TEXT DEFAULT 'pending',
+      payout INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      user_name TEXT NOT NULL,
+      user_role TEXT DEFAULT 'user',
+      message TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+  console.log('✅ Database tables initialized');
 }
 
-function saveDb(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
-
-// Simple query-like interface
+// ===== USERS =====
 const db = {
-  getData() {
-    return loadDb();
+  async findUserByEmail(email) {
+    const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    return rows[0] || null;
   },
 
-  saveData(data) {
-    saveDb(data);
+  async findUserById(id) {
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return rows[0] || null;
   },
 
-  // Users
-  findUserByEmail(email) {
-    const data = loadDb();
-    return data.users.find(u => u.email === email) || null;
+  async createUser(user) {
+    const { rows } = await pool.query(
+      'INSERT INTO users (name, email, password, department, role, status, points) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20]
+    );
+    return rows[0];
   },
 
-  findUserById(id) {
-    const data = loadDb();
-    return data.users.find(u => u.id === id) || null;
+  async updateUserPoints(userId, points) {
+    await pool.query('UPDATE users SET points = $1 WHERE id = $2', [points, userId]);
   },
 
-  createUser(user) {
-    const data = loadDb();
-    user.id = data.nextId.users++;
-    user.created_at = new Date().toISOString();
-    data.users.push(user);
-    saveDb(data);
-    return user;
+  async addPoints(userId, amount) {
+    await pool.query('UPDATE users SET points = points + $1 WHERE id = $2', [amount, userId]);
   },
 
-  updateUserPoints(userId, points) {
-    const data = loadDb();
-    const user = data.users.find(u => u.id === userId);
-    if (user) {
-      user.points = points;
-      saveDb(data);
+  async deductPoints(userId, amount) {
+    await pool.query('UPDATE users SET points = points - $1 WHERE id = $2', [amount, userId]);
+  },
+
+  async updateUserPassword(userId, hashedPassword) {
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId]);
+  },
+
+  async updateUserStatus(userId, status) {
+    await pool.query('UPDATE users SET status = $1 WHERE id = $2', [status, userId]);
+  },
+
+  async deleteUser(userId) {
+    await pool.query('DELETE FROM bets WHERE user_id = $1', [userId]);
+    await pool.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
+    await pool.query('DELETE FROM chat_messages WHERE user_id = $1', [userId]);
+    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+  },
+
+  async getAllUsers() {
+    const { rows } = await pool.query('SELECT id, name, email, department, role, status, points, created_at FROM users WHERE role != $1 ORDER BY created_at DESC', ['admin']);
+    return rows;
+  },
+
+  async getAllUsersIncludingStatus() {
+    const { rows } = await pool.query('SELECT id, name, email, department, role, status, points, created_at FROM users WHERE role != $1 ORDER BY created_at DESC', ['admin']);
+    return rows;
+  },
+
+  // ===== MATCHES =====
+  async getAllMatches(filters = {}) {
+    let query = 'SELECT * FROM matches WHERE 1=1';
+    const params = [];
+    let i = 1;
+
+    if (filters.stage) { query += ` AND stage = $${i++}`; params.push(filters.stage); }
+    if (filters.status) { query += ` AND status = $${i++}`; params.push(filters.status); }
+    if (filters.group) { query += ` AND group_name = $${i++}`; params.push(filters.group); }
+
+    query += ' ORDER BY match_date ASC';
+    const { rows } = await pool.query(query, params);
+    return rows;
+  },
+
+  async findMatchById(id) {
+    const { rows } = await pool.query('SELECT * FROM matches WHERE id = $1', [id]);
+    return rows[0] || null;
+  },
+
+  async updateMatch(matchId, updates) {
+    const sets = [];
+    const params = [];
+    let i = 1;
+    for (const [key, value] of Object.entries(updates)) {
+      sets.push(`${key} = $${i++}`);
+      params.push(value);
     }
+    params.push(matchId);
+    await pool.query(`UPDATE matches SET ${sets.join(', ')} WHERE id = $${i}`, params);
   },
 
-  addPoints(userId, amount) {
-    const data = loadDb();
-    const user = data.users.find(u => u.id === userId);
-    if (user) {
-      user.points += amount;
-      saveDb(data);
+  // ===== BETS =====
+  async createBet(bet) {
+    const { rows } = await pool.query(
+      'INSERT INTO bets (user_id, match_id, bet_type, prediction, stake, odds, status, payout) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [bet.user_id, bet.match_id, bet.bet_type, bet.prediction, bet.stake, bet.odds, bet.status || 'pending', bet.payout || 0]
+    );
+    return rows[0];
+  },
+
+  async getBetsByUser(userId) {
+    const { rows } = await pool.query(`
+      SELECT b.*, m.home_team, m.away_team, m.match_date, m.home_score, m.away_score, m.status as match_status
+      FROM bets b JOIN matches m ON b.match_id = m.id
+      WHERE b.user_id = $1 ORDER BY b.created_at DESC
+    `, [userId]);
+    return rows;
+  },
+
+  async getPendingBetsByMatch(matchId) {
+    const { rows } = await pool.query('SELECT * FROM bets WHERE match_id = $1 AND status = $2', [matchId, 'pending']);
+    return rows;
+  },
+
+  async updateBet(betId, updates) {
+    const sets = [];
+    const params = [];
+    let i = 1;
+    for (const [key, value] of Object.entries(updates)) {
+      sets.push(`${key} = $${i++}`);
+      params.push(value);
     }
+    params.push(betId);
+    await pool.query(`UPDATE bets SET ${sets.join(', ')} WHERE id = $${i}`, params);
   },
 
-  deductPoints(userId, amount) {
-    const data = loadDb();
-    const user = data.users.find(u => u.id === userId);
-    if (user) {
-      user.points -= amount;
-      saveDb(data);
-    }
+  async getAllBets() {
+    const { rows } = await pool.query(`
+      SELECT b.*, u.name as user_name, u.email as user_email, m.home_team, m.away_team, m.match_date, m.group_name
+      FROM bets b
+      JOIN users u ON b.user_id = u.id
+      JOIN matches m ON b.match_id = m.id
+      ORDER BY b.created_at DESC
+    `);
+    return rows;
   },
 
-  updateUserPassword(userId, hashedPassword) {
-    const data = loadDb();
-    const user = data.users.find(u => u.id === userId);
-    if (user) {
-      user.password = hashedPassword;
-      saveDb(data);
-    }
+  // ===== LEADERBOARD =====
+  async getLeaderboard() {
+    const { rows } = await pool.query(`
+      SELECT u.id, u.name, u.points,
+        COUNT(b.id) as total_bets,
+        SUM(CASE WHEN b.status = 'won' THEN 1 ELSE 0 END) as bets_won,
+        SUM(CASE WHEN b.status = 'lost' THEN 1 ELSE 0 END) as bets_lost,
+        COALESCE(SUM(CASE WHEN b.status = 'won' THEN b.payout ELSE 0 END), 0) as total_winnings
+      FROM users u
+      LEFT JOIN bets b ON u.id = b.user_id
+      WHERE u.email != 'admin@entaingroup.com' AND u.status != 'pending' AND u.status != 'rejected'
+      GROUP BY u.id
+      ORDER BY u.points DESC
+      LIMIT 50
+    `);
+    return rows.map(r => ({ ...r, total_bets: Number(r.total_bets), bets_won: Number(r.bets_won), bets_lost: Number(r.bets_lost), total_winnings: Number(r.total_winnings) }));
   },
 
-  updateUserStatus(userId, status) {
-    const data = loadDb();
-    const user = data.users.find(u => u.id === userId);
-    if (user) {
-      user.status = status;
-      saveDb(data);
-    }
+  // ===== CHAT =====
+  async getChatMessages() {
+    const { rows } = await pool.query('SELECT * FROM chat_messages ORDER BY created_at ASC LIMIT 100');
+    return rows;
   },
 
-  deleteUser(userId) {
-    const data = loadDb();
-    data.users = data.users.filter(u => u.id !== userId);
-    data.bets = data.bets.filter(b => b.user_id !== userId);
-    saveDb(data);
+  async createChatMessage(msg) {
+    const { rows } = await pool.query(
+      'INSERT INTO chat_messages (user_id, user_name, user_role, message) VALUES ($1, $2, $3, $4) RETURNING *',
+      [msg.user_id, msg.user_name, msg.user_role, msg.message]
+    );
+    return rows[0];
   },
 
-  getAllUsers() {
-    const data = loadDb();
-    return data.users.map(({ password, ...rest }) => rest);
+  // ===== NOTIFICATIONS =====
+  async getNotifications(userId) {
+    const { rows } = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50', [userId]);
+    return rows;
   },
 
-  // Matches
-  getAllMatches(filters = {}) {
-    const data = loadDb();
-    let matches = data.matches;
-    if (filters.stage) matches = matches.filter(m => m.stage === filters.stage);
-    if (filters.status) matches = matches.filter(m => m.status === filters.status);
-    if (filters.group) matches = matches.filter(m => m.group_name === filters.group);
-    return matches.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+  async getUnreadCount(userId) {
+    const { rows } = await pool.query('SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND read = false', [userId]);
+    return Number(rows[0].count);
   },
 
-  findMatchById(id) {
-    const data = loadDb();
-    return data.matches.find(m => m.id === id) || null;
+  async markNotificationsRead(userId) {
+    await pool.query('UPDATE notifications SET read = true WHERE user_id = $1', [userId]);
   },
 
-  updateMatch(matchId, updates) {
-    const data = loadDb();
-    const match = data.matches.find(m => m.id === matchId);
-    if (match) {
-      Object.assign(match, updates);
-      saveDb(data);
-    }
-    return match;
+  async createNotification(userId, title, message) {
+    await pool.query('INSERT INTO notifications (user_id, title, message) VALUES ($1, $2, $3)', [userId, title, message]);
   },
 
-  createMatch(match) {
-    const data = loadDb();
-    match.id = data.nextId.matches++;
-    match.created_at = new Date().toISOString();
-    data.matches.push(match);
-    saveDb(data);
-    return match;
-  },
-
-  // Bets
-  createBet(bet) {
-    const data = loadDb();
-    bet.id = data.nextId.bets++;
-    bet.created_at = new Date().toISOString();
-    data.bets.push(bet);
-    saveDb(data);
-    return bet;
-  },
-
-  getBetsByUser(userId) {
-    const data = loadDb();
-    return data.bets
-      .filter(b => b.user_id === userId)
-      .map(bet => {
-        const match = data.matches.find(m => m.id === bet.match_id);
-        return {
-          ...bet,
-          home_team: match?.home_team,
-          away_team: match?.away_team,
-          match_date: match?.match_date,
-          home_score: match?.home_score,
-          away_score: match?.away_score,
-          match_status: match?.status
-        };
-      })
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  },
-
-  getPendingBetsByMatch(matchId) {
-    const data = loadDb();
-    return data.bets.filter(b => b.match_id === matchId && b.status === 'pending');
-  },
-
-  updateBet(betId, updates) {
-    const data = loadDb();
-    const bet = data.bets.find(b => b.id === betId);
-    if (bet) {
-      Object.assign(bet, updates);
-      saveDb(data);
-    }
-    return bet;
-  },
-
-  // Leaderboard
-  getLeaderboard() {
-    const data = loadDb();
-    return data.users
-      .filter(u => u.email !== 'admin@entaingroup.com' && u.status !== 'pending' && u.status !== 'rejected')
-      .map(user => {
-        const userBets = data.bets.filter(b => b.user_id === user.id);
-        return {
-          id: user.id,
-          name: user.name,
-          points: user.points,
-          total_bets: userBets.length,
-          bets_won: userBets.filter(b => b.status === 'won').length,
-          bets_lost: userBets.filter(b => b.status === 'lost').length,
-          total_winnings: userBets.filter(b => b.status === 'won').reduce((sum, b) => sum + b.payout, 0)
-        };
-      })
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 50);
-  },
-
-  getAllUsersIncludingStatus() {
-    const data = loadDb();
-    return data.users
-      .filter(u => u.role !== 'admin')
-      .map(({ password, ...rest }) => rest);
+  // ===== UTILITY =====
+  async getMatchCount() {
+    const { rows } = await pool.query('SELECT COUNT(*) as count FROM matches');
+    return Number(rows[0].count);
   }
 };
 
-module.exports = db;
+module.exports = { pool, initDb, db };
