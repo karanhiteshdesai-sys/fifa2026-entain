@@ -154,6 +154,19 @@ function Login({ onLogin }) {
             {loading ? 'Loading...' : isRegister ? 'Create Account' : 'Sign In'}
           </button>
 
+          {!isRegister && (
+            <p className="text-gray-500 text-xs text-center mt-3">
+              Forgot your password?{' '}
+              <button
+                type="button"
+                onClick={() => setError('Please contact the admin (karan.desai@entaingroup.com) to reset your password.')}
+                className="text-entain-accent hover:underline"
+              >
+                Reset Password
+              </button>
+            </p>
+          )}
+
           {loginType === 'employee' && (
             <p className="text-gray-400 text-sm text-center mt-4">
               {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}

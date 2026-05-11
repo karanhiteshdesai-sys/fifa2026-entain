@@ -333,9 +333,22 @@ function Admin() {
                     <td className="px-6 py-3 text-right">
                       <button
                         onClick={() => resetPoints(user.id)}
-                        className="text-entain-accent text-sm hover:underline"
+                        className="text-entain-accent text-sm hover:underline mr-3"
                       >
                         Reset Points
+                      </button>
+                      <button
+                        onClick={() => {
+                          const newPass = window.prompt(`Reset password for ${user.name}.\nEnter new password (min 6 chars):`);
+                          if (newPass && newPass.length >= 6) {
+                            api.post(`/admin/users/${user.id}/reset-password`, { newPassword: newPass })
+                              .then(() => setMessage(`Password reset for ${user.name}.`))
+                              .catch(() => setMessage('Failed to reset password.'));
+                          }
+                        }}
+                        className="text-yellow-400 text-sm hover:underline"
+                      >
+                        Reset Password
                       </button>
                     </td>
                   </tr>

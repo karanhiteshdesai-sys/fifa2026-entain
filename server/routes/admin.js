@@ -113,4 +113,19 @@ router.post('/users/:id/reset-points', authenticate, requireAdmin, (req, res) =>
   res.json({ message: 'Points reset successfully.' });
 });
 
+// Reset user password (admin)
+router.post('/users/:id/reset-password', authenticate, requireAdmin, (req, res) => {
+  const { newPassword } = req.body;
+  const userId = Number(req.params.id);
+
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters.' });
+  }
+
+  const bcrypt = require('bcryptjs');
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
+  db.updateUserPassword(userId, hashedPassword);
+  res.json({ message: 'Password reset successfully.' });
+});
+
 module.exports = router;
