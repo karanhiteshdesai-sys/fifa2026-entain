@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Notification from '../components/Notification';
-import { getFlag } from '../utils/flags';
 
 function Matches() {
   const [matches, setMatches] = useState([]);
@@ -141,7 +140,7 @@ function Matches() {
                 </div>
 
                 <div className="flex items-center gap-4 mt-3">
-                  <span className="text-white font-semibold text-lg w-40 text-right">{getFlag(match.home_team)} {match.home_team}</span>
+                  <span className="text-white font-semibold text-lg w-32 text-right">{match.home_team}</span>
                   <div className="text-center">
                     {match.status === 'finished' ? (
                       <span className="text-white font-bold text-xl">{match.home_score} - {match.away_score}</span>
@@ -149,7 +148,7 @@ function Matches() {
                       <span className="text-gray-500 font-medium">vs</span>
                     )}
                   </div>
-                  <span className="text-white font-semibold text-lg w-40">{match.away_team} {getFlag(match.away_team)}</span>
+                  <span className="text-white font-semibold text-lg w-32">{match.away_team}</span>
                 </div>
 
                 <p className="text-gray-400 text-xs mt-2">
