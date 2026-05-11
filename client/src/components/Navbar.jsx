@@ -1,14 +1,27 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 function Navbar({ user, onLogout }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   const isActive = (path) =>
     location.pathname === path
       ? 'text-entain-accent border-b-2 border-entain-accent'
       : 'text-gray-300 hover:text-white';
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-entain-navy border-b border-entain-blue/30">
@@ -50,23 +63,45 @@ function Navbar({ user, onLogout }) {
             )}
           </div>
 
-          {/* User Info + Mobile Menu */}
+          {/* User Info Dropdown */}
           <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-white text-xs font-medium">{user.name}</p>
-              <p className="text-entain-gold text-[10px] font-bold">{user.points?.toLocaleString()} EP</p>
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 hover:opacity-80 transition"
+              >
+                <div className="text-right hidden sm:block">
+                  <p className="text-white text-xs font-medium">{user.name}</p>
+                  <p className="text-entain-gold text-[10px] font-bold">{user.points?.toLocaleString()} EP</p>
+                </div>
+                <span className="text-entain-gold text-xs font-bold sm:hidden">{user.points?.toLocaleString()} EP</span>
+                <span className="text-gray-400 text-xs">▼</span>
+              </button>
+
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-entain-navy border border-entain-blue/30 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-entain-blue/20">
+                    <p className="text-white text-sm font-medium">{user.name}</p>
+                    <p className="text-gray-400 text-xs">{user.email}</p>
+                    <p className="text-entain-gold text-xs font-bold mt-1">{user.points?.toLocaleString()} EP</p>
+                  </div>
+                  <Link
+                    to="/change-password"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2.5 text-gray-300 hover:bg-entain-blue/20 hover:text-white text-sm transition"
+                  >
+                    🔑 Change Password
+                  </Link>
+                  <button
+                    onClick={() => { onLogout(); setProfileOpen(false); }}
+                    className="block w-full text-left px-4 py-2.5 text-red-400 hover:bg-red-500/10 text-sm transition"
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              )}
             </div>
-            <span className="text-entain-gold text-xs font-bold sm:hidden">{user.points?.toLocaleString()} EP</span>
-            <Link to="/change-password" className="text-gray-400 hover:text-white text-sm transition hidden sm:block" title="Change Password">
-              ⚙️
-            </Link>
-            <button
-              onClick={onLogout}
-              className="text-gray-400 hover:text-white text-xs transition hidden md:block"
-              aria-label="Logout"
-            >
-              Logout
-            </button>
+
             {/* Mobile hamburger */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -104,15 +139,6 @@ function Navbar({ user, onLogout }) {
                 Admin
               </Link>
             )}
-            <Link to="/change-password" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
-              Change Password
-            </Link>
-            <button
-              onClick={() => { onLogout(); setMenuOpen(false); }}
-              className="block text-entain-red text-sm py-2 w-full text-left"
-            >
-              Logout
-            </button>
           </div>
         )}
       </div>
