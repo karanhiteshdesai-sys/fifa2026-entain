@@ -52,7 +52,7 @@ function Home() {
     <div>
       {/* Welcome Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
+        <h1 className="text-3xl font-bold text-white">Welcome, {user?.name?.split(' ')[0]}!</h1>
         <p className="text-gray-400 mt-1">
           {daysUntil > 0
             ? `${daysUntil} days until FIFA 2026 kicks off!`
