@@ -4,15 +4,11 @@ const jwt = require('jsonwebtoken');
 const db = require('../db/database');
 const { JWT_SECRET, authenticate } = require('../middleware/auth');
 const { generateExcel } = require('../services/excel');
-const { sendOTP, generateOTP } = require('../services/email');
 
 const router = express.Router();
 
-// In-memory store for pending OTP verifications
-const pendingOTPs = new Map();
-
-// Step 1: Register - sends OTP to email
-router.post('/register', async (req, res) => {
+// Register - creates account in "pending" status, needs admin approval
+router.post('/register', (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -32,98 +28,21 @@ router.post('/register', async (req, res) => {
     return res.status(409).json({ error: 'Email already registered.' });
   }
 
-  // Generate OTP
-  const otp = generateOTP();
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-  pendingOTPs.set(email, {
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  db.createUser({
     name,
     email,
-    password,
-    otp,
-    expiresAt,
-    attempts: 0
-  });
-
-  // Send OTP email
-  try {
-    await sendOTP(email, otp, name);
-    res.json({ message: 'Verification code sent to your email.', email });
-  } catch (err) {
-    console.error('Failed to send OTP:', err.message);
-    pendingOTPs.delete(email);
-    res.status(500).json({ error: 'Failed to send verification email. Please try again.' });
-  }
-});
-
-// Step 2: Verify OTP - creates account in "pending" status (needs admin approval)
-router.post('/verify-otp', (req, res) => {
-  const { email, otp } = req.body;
-
-  if (!email || !otp) {
-    return res.status(400).json({ error: 'Email and verification code are required.' });
-  }
-
-  const pending = pendingOTPs.get(email);
-  if (!pending) {
-    return res.status(400).json({ error: 'No pending registration found. Please register again.' });
-  }
-
-  if (Date.now() > pending.expiresAt) {
-    pendingOTPs.delete(email);
-    return res.status(400).json({ error: 'Verification code expired. Please register again.' });
-  }
-
-  if (pending.attempts >= 5) {
-    pendingOTPs.delete(email);
-    return res.status(400).json({ error: 'Too many attempts. Please register again.' });
-  }
-
-  if (pending.otp !== otp) {
-    pending.attempts++;
-    return res.status(400).json({ error: 'Invalid verification code.' });
-  }
-
-  // OTP verified — create account in pending status (needs admin approval)
-  const hashedPassword = bcrypt.hashSync(pending.password, 10);
-  const user = db.createUser({
-    name: pending.name,
-    email: pending.email,
     password: hashedPassword,
     role: 'user',
     status: 'pending',
     points: 20
   });
 
-  pendingOTPs.delete(email);
-
   res.status(201).json({
-    message: 'Email verified! Your account is pending admin approval. You will be able to log in once approved.'
+    message: 'Registration submitted! Please wait for admin approval before you can log in.'
   });
 
   generateExcel().catch(err => console.error('Excel update failed:', err));
-});
-
-// Resend OTP
-router.post('/resend-otp', async (req, res) => {
-  const { email } = req.body;
-
-  const pending = pendingOTPs.get(email);
-  if (!pending) {
-    return res.status(400).json({ error: 'No pending registration found. Please register again.' });
-  }
-
-  const otp = generateOTP();
-  pending.otp = otp;
-  pending.expiresAt = Date.now() + 10 * 60 * 1000;
-  pending.attempts = 0;
-
-  try {
-    await sendOTP(email, otp, pending.name);
-    res.json({ message: 'New verification code sent.' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to resend verification email.' });
-  }
 });
 
 // Login
