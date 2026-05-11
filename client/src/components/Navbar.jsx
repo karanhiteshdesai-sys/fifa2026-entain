@@ -26,6 +26,9 @@ function Navbar({ user, onLogout }) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-5">
             <Link to="/" className={`pb-1 text-sm font-medium transition ${isActive('/')}`}>
+              Home
+            </Link>
+            <Link to="/matches" className={`pb-1 text-sm font-medium transition ${isActive('/matches')}`}>
               Matches
             </Link>
             <Link to="/standings" className={`pb-1 text-sm font-medium transition ${isActive('/standings')}`}>
@@ -76,6 +79,9 @@ function Navbar({ user, onLogout }) {
         {menuOpen && (
           <div className="md:hidden border-t border-entain-blue/20 py-3 space-y-2">
             <Link to="/" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
+              Home
+            </Link>
+            <Link to="/matches" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
               Matches
             </Link>
             <Link to="/standings" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">

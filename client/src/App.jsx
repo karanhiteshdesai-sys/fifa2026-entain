@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Login from './pages/Login';
+import Home from './pages/Home';
 import Matches from './pages/Matches';
 import Leaderboard from './pages/Leaderboard';
 import MyBets from './pages/MyBets';
@@ -66,7 +67,8 @@ function App() {
       <Navbar user={user} onLogout={handleLogout} />
       <main className="max-w-7xl mx-auto px-4 py-6">
         <Routes>
-          <Route path="/" element={<Matches />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/matches" element={<Matches />} />
           <Route path="/standings" element={<Standings />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/my-bets" element={<MyBets />} />
