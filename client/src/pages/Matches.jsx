@@ -6,10 +6,10 @@ function Matches() {
   const [matches, setMatches] = useState([]);
   const [filter, setFilter] = useState('all');
   const [betModal, setBetModal] = useState(null);
-  const [stake, setStake] = useState(50);
+  const [stake, setStake] = useState('');
   const [prediction, setPrediction] = useState('');
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState(null);
+  const [notification, setNotification] = useState(null); // { message, type }
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -28,7 +28,14 @@ function Matches() {
   };
 
   const placeBet = async () => {
-    if (!prediction || stake <= 0) return;
+    if (!prediction || !stake || stake <= 0) return;
+
+    // Check balance before placing bet
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && stake > user.points) {
+      setNotification({ message: `Insufficient balance! You have ${user.points} EP but tried to stake ${stake} EP.`, type: 'error' });
+      return;
+    }
 
     try {
       const { data } = await api.post('/bets', {
@@ -38,11 +45,11 @@ function Matches() {
         stake
       });
       const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
-      setNotification(`Bet placed! ${betModal.home_team} vs ${betModal.away_team} — ${predLabel} to win — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`);
+      setNotification({ message: `Bet placed! ${betModal.home_team} vs ${betModal.away_team} — ${predLabel} to win — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`, type: 'success' });
       setMessage('');
       setBetModal(null);
       setPrediction('');
-      setStake(50);
+      setStake('');
 
       // Refresh user points
       const { data: user } = await api.get('/auth/me');
@@ -64,7 +71,7 @@ function Matches() {
   return (
     <div>
       {notification && (
-        <Notification message={notification} type="success" onClose={() => setNotification(null)} />
+        <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
       )}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">FIFA 2026 Matches</h2>
@@ -197,7 +204,7 @@ function Matches() {
                 type="number"
                 min="1"
                 value={stake}
-                onChange={(e) => setStake(Number(e.target.value))}
+                onChange={(e) => setStake(e.target.value === '' ? '' : Number(e.target.value))}
                 className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent"
               />
             </div>
