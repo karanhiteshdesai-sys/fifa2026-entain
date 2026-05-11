@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { getFlag } from '../utils/flags';
 
 function Standings() {
   const [matches, setMatches] = useState([]);
@@ -121,7 +122,7 @@ function Standings() {
                 }`}
               >
                 <td className="px-3 py-3 text-gray-400 text-sm">{index + 1}</td>
-                <td className="px-3 py-3 text-white font-medium text-sm truncate">{team.team}</td>
+                <td className="px-3 py-3 text-white font-medium text-sm truncate">{getFlag(team.team)} {team.team}</td>
                 <td className="text-center text-gray-300 text-sm">{team.played}</td>
                 <td className="text-center text-gray-300 text-sm">{team.won}</td>
                 <td className="text-center text-gray-300 text-sm">{team.drawn}</td>
@@ -151,9 +152,9 @@ function Standings() {
           <div className="space-y-2">
             {finishedMatches.map(match => (
               <div key={match.id} className="bg-entain-navy rounded-lg p-3 border border-entain-blue/20 flex items-center">
-                <span className="text-white text-sm flex-1 text-right">{match.home_team}</span>
+                <span className="text-white text-sm flex-1 text-right">{getFlag(match.home_team)} {match.home_team}</span>
                 <span className="text-white font-bold text-lg w-20 text-center">{match.home_score} - {match.away_score}</span>
-                <span className="text-white text-sm flex-1 text-left">{match.away_team}</span>
+                <span className="text-white text-sm flex-1 text-left">{match.away_team} {getFlag(match.away_team)}</span>
               </div>
             ))}
           </div>
@@ -167,11 +168,11 @@ function Standings() {
           <div className="space-y-2">
             {upcomingMatches.map(match => (
               <div key={match.id} className="bg-entain-navy/50 rounded-lg p-3 border border-entain-blue/10 flex items-center">
-                <span className="text-gray-300 text-sm flex-1 text-right">{match.home_team}</span>
+                <span className="text-gray-300 text-sm flex-1 text-right">{getFlag(match.home_team)} {match.home_team}</span>
                 <span className="text-gray-500 text-xs w-20 text-center">
                   {new Date(match.match_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </span>
-                <span className="text-gray-300 text-sm flex-1 text-left">{match.away_team}</span>
+                <span className="text-gray-300 text-sm flex-1 text-left">{match.away_team} {getFlag(match.away_team)}</span>
               </div>
             ))}
           </div>
