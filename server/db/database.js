@@ -196,7 +196,7 @@ const db = {
   getLeaderboard() {
     const data = loadDb();
     return data.users
-      .filter(u => u.role !== 'admin' && u.status !== 'pending' && u.status !== 'rejected')
+      .filter(u => u.email !== 'admin@entaingroup.com' && u.status !== 'pending' && u.status !== 'rejected')
       .map(user => {
         const userBets = data.bets.filter(b => b.user_id === user.id);
         return {
