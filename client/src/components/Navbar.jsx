@@ -54,6 +54,9 @@ function Navbar({ user, onLogout }) {
             <Link to="/my-bets" className={`pb-1 text-sm font-medium transition ${isActive('/my-bets')}`}>
               My Bets
             </Link>
+            <Link to="/info" className={`pb-1 text-sm font-medium transition ${isActive('/info')}`}>
+              Info
+            </Link>
             {user.role === 'admin' && (
               <Link to="/admin" className={`pb-1 text-sm font-medium transition ${isActive('/admin')}`}>
                 Admin
@@ -129,6 +132,9 @@ function Navbar({ user, onLogout }) {
             </Link>
             <Link to="/my-bets" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
               My Bets
+            </Link>
+            <Link to="/info" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
+              Info
             </Link>
             {user.role === 'admin' && (
               <Link to="/admin" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white text-sm py-2">
