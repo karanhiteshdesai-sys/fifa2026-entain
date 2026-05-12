@@ -328,6 +328,10 @@ const db = {
   async findUserByReferralCode(code) {
     const { rows } = await pool.query('SELECT * FROM users WHERE referral_code = $1', [code.toUpperCase().trim()]);
     return rows[0] || null;
+  },
+
+  async updateUserReferralCode(userId, code) {
+    await pool.query('UPDATE users SET referral_code = $1 WHERE id = $2', [code, userId]);
   }
 };
 

@@ -64,10 +64,19 @@ router.get('/referrals', authenticate, async (req, res) => {
   try {
     const user = await db.findUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found.' });
-    const referralCode = user.referral_code || '';
+
+    // Generate referral code for existing users who don't have one
+    let referralCode = user.referral_code;
+    if (!referralCode) {
+      const prefix = user.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
+      const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+      referralCode = `FIFA-${prefix}${randomPart}`;
+      await db.updateUserReferralCode(req.user.id, referralCode);
+    }
+
     const referrals = await db.getReferralsByUser(req.user.id);
     res.json({ referralCode, referrals, totalBonus: referrals.length * 25 });
-  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 
 router.put('/change-password', authenticate, async (req, res) => {
