@@ -153,7 +153,7 @@ function Matches() {
       {notification && (
         <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
       )}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
         <h2 className="text-2xl font-bold text-white">FIFA 2026 Matches</h2>
         <div className="relative">
           <input
@@ -161,15 +161,15 @@ function Matches() {
             placeholder="Search team, date, time..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm w-64 focus:outline-none focus:border-entain-accent placeholder-gray-500"
+            className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm w-full md:w-64 focus:outline-none focus:border-entain-accent placeholder-gray-500"
           />
           <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex gap-2 flex-wrap">
+      <div className="mb-6 overflow-x-auto">
+        <div className="flex gap-2 flex-nowrap pb-2">
           <button
             onClick={() => setFilter('all')}
             className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
@@ -200,8 +200,8 @@ function Matches() {
 
       <div className="space-y-3">
         {filteredMatches.map(match => (
-          <div key={match.id} className="bg-entain-navy rounded-xl border border-entain-blue/20 px-5 py-4">
-            <div className="flex items-center justify-between">
+          <div key={match.id} className="bg-entain-navy rounded-xl border border-entain-blue/20 px-4 md:px-5 py-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               {/* Left: Match Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-2">
@@ -217,16 +217,16 @@ function Matches() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-white font-semibold text-base w-40 text-right whitespace-nowrap overflow-hidden text-ellipsis">{match.home_team}</span>
-                  <div className="text-center w-12 flex-shrink-0">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="text-white font-semibold text-sm md:text-base flex-1 md:flex-none md:w-40 text-right whitespace-nowrap overflow-hidden text-ellipsis">{match.home_team}</span>
+                  <div className="text-center w-10 flex-shrink-0">
                     {match.status === 'finished' ? (
-                      <span className="text-white font-bold text-lg whitespace-nowrap">{match.home_score} - {match.away_score}</span>
+                      <span className="text-white font-bold text-base md:text-lg whitespace-nowrap">{match.home_score} - {match.away_score}</span>
                     ) : (
                       <span className="text-gray-500 text-sm font-medium">vs</span>
                     )}
                   </div>
-                  <span className="text-white font-semibold text-base w-40 whitespace-nowrap overflow-hidden text-ellipsis">{match.away_team}</span>
+                  <span className="text-white font-semibold text-sm md:text-base flex-1 md:flex-none md:w-40 whitespace-nowrap overflow-hidden text-ellipsis">{match.away_team}</span>
                 </div>
 
                 <p className="text-gray-500 text-xs mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -239,31 +239,31 @@ function Matches() {
 
               {/* Right: Bet Buttons */}
               {match.status === 'upcoming' && (
-                <div className="flex gap-2 ml-4 flex-shrink-0">
+                <div className="flex gap-2 flex-shrink-0">
                   <button
                     onClick={() => { setBetModal(match); setPrediction('home'); setBetType('match_result'); }}
-                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg w-[60px] py-2 flex flex-col items-center justify-center transition"
+                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Home</div>
                     <div className="text-entain-accent font-bold text-sm">{match.home_odds}</div>
                   </button>
                   <button
                     onClick={() => { setBetModal(match); setPrediction('draw'); setBetType('match_result'); }}
-                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg w-[60px] py-2 flex flex-col items-center justify-center transition"
+                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Draw</div>
                     <div className="text-entain-accent font-bold text-sm">{match.draw_odds}</div>
                   </button>
                   <button
                     onClick={() => { setBetModal(match); setPrediction('away'); setBetType('match_result'); }}
-                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg w-[60px] py-2 flex flex-col items-center justify-center transition"
+                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Away</div>
                     <div className="text-entain-accent font-bold text-sm">{match.away_odds}</div>
                   </button>
                   <button
                     onClick={() => { setBetModal(match); setPrediction(''); setBetType('match_result'); setCorrectScoreHome(''); setCorrectScoreAway(''); setStake(''); }}
-                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg w-[60px] py-2 flex flex-col items-center justify-center transition"
+                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">More</div>
                     <div className="text-entain-accent font-bold text-sm">+</div>
@@ -272,7 +272,7 @@ function Matches() {
               )}
 
               {match.status === 'finished' && (
-                <div className="ml-4 flex-shrink-0">
+                <div className="flex-shrink-0">
                   <span className="text-gray-500 text-xs bg-gray-500/10 px-3 py-1.5 rounded-lg">Final</span>
                 </div>
               )}
