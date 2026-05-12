@@ -199,7 +199,12 @@ function Matches() {
       )}
 
       <div className="space-y-3">
-        {filteredMatches.map(match => (
+        {filteredMatches.map(match => {
+          const kickoff = new Date(match.match_date).getTime();
+          const now = Date.now();
+          const bettingClosed = match.status === 'upcoming' && (kickoff - now) < 60000; // 1 minute before
+
+          return (
           <div key={match.id} className="bg-entain-navy rounded-xl border border-entain-blue/20 px-4 md:px-5 py-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               {/* Left: Match Info */}
@@ -209,11 +214,12 @@ function Matches() {
                     Group {match.group_name}
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
-                    match.status === 'upcoming' ? 'bg-green-500/20 text-green-400' :
+                    match.status === 'upcoming' && !bettingClosed ? 'bg-green-500/20 text-green-400' :
                     match.status === 'finished' ? 'bg-gray-500/20 text-gray-400' :
+                    bettingClosed ? 'bg-red-500/20 text-red-400' :
                     'bg-yellow-500/20 text-yellow-400'
                   }`}>
-                    {match.status}
+                    {bettingClosed ? 'betting closed' : match.status}
                   </span>
                 </div>
 
@@ -238,7 +244,7 @@ function Matches() {
               </div>
 
               {/* Right: Bet Buttons */}
-              {match.status === 'upcoming' && (
+              {match.status === 'upcoming' && !bettingClosed && (
                 <div className="flex gap-2 flex-shrink-0">
                   <button
                     onClick={() => { setBetModal(match); setPrediction('home'); setBetType('match_result'); }}
@@ -271,6 +277,28 @@ function Matches() {
                 </div>
               )}
 
+              {/* Grayed out buttons when betting is closed */}
+              {match.status === 'upcoming' && bettingClosed && (
+                <div className="flex gap-2 flex-shrink-0 opacity-50">
+                  <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
+                    <div className="text-gray-500 text-[10px]">Home</div>
+                    <div className="text-gray-500 font-bold text-sm">{match.home_odds}</div>
+                  </div>
+                  <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
+                    <div className="text-gray-500 text-[10px]">Draw</div>
+                    <div className="text-gray-500 font-bold text-sm">{match.draw_odds}</div>
+                  </div>
+                  <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
+                    <div className="text-gray-500 text-[10px]">Away</div>
+                    <div className="text-gray-500 font-bold text-sm">{match.away_odds}</div>
+                  </div>
+                  <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
+                    <div className="text-gray-500 text-[10px]">Closed</div>
+                    <div className="text-gray-500 font-bold text-sm">🔒</div>
+                  </div>
+                </div>
+              )}
+
               {match.status === 'finished' && (
                 <div className="flex-shrink-0">
                   <span className="text-gray-500 text-xs bg-gray-500/10 px-3 py-1.5 rounded-lg">Final</span>
@@ -278,7 +306,8 @@ function Matches() {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Bet Modal */}

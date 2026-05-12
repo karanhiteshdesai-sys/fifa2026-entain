@@ -13,6 +13,10 @@ router.post('/', authenticate, async (req, res) => {
     if (!match) return res.status(404).json({ error: 'Match not found.' });
     if (match.status !== 'upcoming') return res.status(400).json({ error: 'Cannot bet on a match that has already started or finished.' });
 
+    // Betting closes 1 minute before kickoff
+    const kickoff = new Date(match.match_date).getTime();
+    if (Date.now() >= kickoff - 60000) return res.status(400).json({ error: 'Betting is closed. Bets must be placed at least 1 minute before kickoff.' });
+
     const user = await db.findUserById(req.user.id);
     if (user.points < stake) return res.status(400).json({ error: 'Insufficient Entain Points.' });
 
