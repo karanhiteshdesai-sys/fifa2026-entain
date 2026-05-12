@@ -14,6 +14,7 @@ function Matches() {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null); // { message, type }
   const [message, setMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchMatches();
@@ -127,7 +128,21 @@ function Matches() {
   };
 
   const groups = [...new Set(matches.map(m => m.group_name))].filter(Boolean).sort();
-  const filteredMatches = filter === 'all' ? matches : matches.filter(m => m.group_name === filter);
+  const filteredMatches = (filter === 'all' ? matches : matches.filter(m => m.group_name === filter))
+    .filter(m => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      const matchDate = new Date(m.match_date);
+      const dateStr = matchDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).toLowerCase();
+      const timeStr = matchDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }).toLowerCase();
+      return (
+        m.home_team.toLowerCase().includes(q) ||
+        m.away_team.toLowerCase().includes(q) ||
+        (m.venue && m.venue.toLowerCase().includes(q)) ||
+        dateStr.includes(q) ||
+        timeStr.includes(q)
+      );
+    });
 
   if (loading) {
     return <div className="text-center text-gray-400 py-12">Loading matches...</div>;
@@ -138,9 +153,23 @@ function Matches() {
       {notification && (
         <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
       )}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-white">FIFA 2026 Matches</h2>
-        <div className="flex gap-2">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search team, date, time..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm w-64 focus:outline-none focus:border-entain-accent placeholder-gray-500"
+          />
+          <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setFilter('all')}
             className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
