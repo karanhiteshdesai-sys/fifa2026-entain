@@ -67,25 +67,25 @@ function App() {
 
   return (
     <div className="min-h-screen bg-entain-dark">
-      <div className="bg-yellow-400 overflow-hidden relative">
+      <div className="bg-yellow-400 overflow-hidden relative sticky top-0 z-40">
         <div className="flex animate-marquee">
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer a friend and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer a friend and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
           </div>
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer a friend and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer a friend and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
           </div>
