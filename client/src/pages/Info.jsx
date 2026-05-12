@@ -64,15 +64,6 @@ function Info() {
           { label: 'Auto timezone', desc: 'Match times automatically display in your local timezone.' },
         ]} />
 
-        <Section title="🛡️ Admin Features" items={[
-          { label: 'Settle Matches', desc: 'Enter final scores to settle all bets for a match.' },
-          { label: 'Simulate', desc: 'Generate random results for testing. Bets auto-settle.' },
-          { label: 'Broadcast', desc: 'Send a notification to all employees at once.' },
-          { label: 'Manage Users', desc: 'Approve/reject registrations, reset points, add EP, delete users.' },
-          { label: 'Approve All', desc: 'One-click approve all pending registrations.' },
-          { label: 'Export Excel', desc: 'Download a full report of all bets and users.' },
-        ]} />
-
       </div>
 
       {/* Footer */}
