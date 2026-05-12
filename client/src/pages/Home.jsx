@@ -60,6 +60,14 @@ function Home() {
         </p>
       </div>
 
+      {/* Refer & Earn */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-3">
+          <h2 className="text-white font-semibold text-lg">🎁 Refer & Earn</h2>
+        </div>
+        <ReferralCard />
+      </div>
+
       {/* Balance & Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20 col-span-2 md:col-span-1">
@@ -138,12 +146,6 @@ function Home() {
           <div>
             <h2 className="text-white font-semibold text-lg mb-4">Sponsors</h2>
             <AdSlider />
-          </div>
-
-          {/* Referral Card */}
-          <div>
-            <h2 className="text-white font-semibold text-lg mb-4">🎁 Refer & Earn</h2>
-            <ReferralCard />
           </div>
         </div>
       </div>
