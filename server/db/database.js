@@ -70,6 +70,44 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     );
   `);
+    CREATE TABLE IF NOT EXISTS players (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      team TEXT NOT NULL,
+      position TEXT NOT NULL,
+      shirt_number INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS dream_teams (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      match_id INTEGER REFERENCES matches(id),
+      player_ids INTEGER[] NOT NULL,
+      total_points INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, match_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS player_performances (
+      id SERIAL PRIMARY KEY,
+      match_id INTEGER REFERENCES matches(id),
+      player_id INTEGER REFERENCES players(id),
+      goals INTEGER DEFAULT 0,
+      assists INTEGER DEFAULT 0,
+      clean_sheet BOOLEAN DEFAULT FALSE,
+      yellow_cards INTEGER DEFAULT 0,
+      red_card BOOLEAN DEFAULT FALSE,
+      own_goals INTEGER DEFAULT 0,
+      penalty_saved INTEGER DEFAULT 0,
+      penalty_missed INTEGER DEFAULT 0,
+      man_of_match BOOLEAN DEFAULT FALSE,
+      minutes_played INTEGER DEFAULT 0,
+      fantasy_points INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(match_id, player_id)
+    );
+  `);
   console.log('✅ Database tables initialized');
 }
 

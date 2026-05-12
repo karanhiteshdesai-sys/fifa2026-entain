@@ -10,8 +10,34 @@ function settleMatch(matchId, homeScore, awayScore) {
     await db.updateMatch(matchId, { home_score: homeScore, away_score: awayScore, status: 'finished' });
 
     const bets = await db.getPendingBetsByMatch(matchId);
+    const totalGoals = homeScore + awayScore;
+    const correctScore = `${homeScore}-${awayScore}`;
+    const bothScored = homeScore > 0 && awayScore > 0;
+
     for (const bet of bets) {
-      if (bet.prediction === result) {
+      let won = false;
+
+      if (bet.bet_type === 'match_result') {
+        won = bet.prediction === result;
+      } else if (bet.bet_type === 'correct_score') {
+        won = bet.prediction === correctScore;
+      } else if (bet.bet_type === 'total_goals') {
+        const [direction, line] = bet.prediction.split('_');
+        const lineNum = parseFloat(line);
+        won = direction === 'over' ? totalGoals > lineNum : totalGoals < lineNum;
+      } else if (bet.bet_type === 'both_teams_score') {
+        won = bet.prediction === 'yes' ? bothScored : !bothScored;
+      } else if (bet.bet_type === 'first_to_score') {
+        // Simplified: if home scored more or equal and scored at least 1, assume home scored first
+        // In reality this would need minute-by-minute data
+        let firstScorer = 'no_goal';
+        if (totalGoals > 0) {
+          firstScorer = homeScore >= awayScore ? 'home' : 'away';
+        }
+        won = bet.prediction === firstScorer;
+      }
+
+      if (won) {
         const payout = Math.round(bet.stake * bet.odds);
         await db.updateBet(bet.id, { status: 'won', payout });
         await db.addPoints(bet.user_id, payout);
