@@ -20,16 +20,9 @@ async function initDb() {
       status TEXT DEFAULT 'pending',
       points INTEGER DEFAULT 20,
       referred_by INTEGER,
-      referral_code TEXT UNIQUE,
+      referral_code TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     );
-
-    -- Add columns if they don't exist (for existing databases)
-    DO $$ BEGIN
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER;
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code TEXT;
-    EXCEPTION WHEN others THEN NULL;
-    END $$;
 
     CREATE TABLE IF NOT EXISTS matches (
       id SERIAL PRIMARY KEY,
@@ -117,6 +110,13 @@ async function initDb() {
       UNIQUE(match_id, player_id)
     );
   `);
+
+  // Add new columns for existing databases (safe to run multiple times)
+  try {
+    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
+    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code TEXT');
+  } catch (e) { /* columns may already exist */ }
+
   console.log('✅ Database tables initialized');
 }
 

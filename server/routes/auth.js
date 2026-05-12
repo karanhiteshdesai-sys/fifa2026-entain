@@ -65,18 +65,25 @@ router.get('/referrals', authenticate, async (req, res) => {
     const user = await db.findUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
-    // Generate referral code for existing users who don't have one
+    // Generate referral code from user data (deterministic, no DB column needed)
     let referralCode = user.referral_code;
     if (!referralCode) {
       const prefix = user.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
-      const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-      referralCode = `FIFA-${prefix}${randomPart}`;
-      await db.updateUserReferralCode(req.user.id, referralCode);
+      const idPart = (user.id * 7919).toString(36).substring(0, 4).toUpperCase();
+      referralCode = `FIFA-${prefix}${idPart}`;
+      // Try to save it, but don't fail if column doesn't exist
+      try {
+        await db.updateUserReferralCode(req.user.id, referralCode);
+      } catch (e) { /* column may not exist yet */ }
     }
 
-    const referrals = await db.getReferralsByUser(req.user.id);
+    let referrals = [];
+    try {
+      referrals = await db.getReferralsByUser(req.user.id);
+    } catch (e) { /* referred_by column may not exist */ }
+
     res.json({ referralCode, referrals, totalBonus: referrals.length * 25 });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
+  } catch (err) { console.error('Referral error:', err); res.status(500).json({ error: 'Server error.' }); }
 });
 
 router.put('/change-password', authenticate, async (req, res) => {
