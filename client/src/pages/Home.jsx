@@ -50,22 +50,19 @@ function Home() {
 
   return (
     <div>
-      {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Welcome, {user?.name?.split(' ')[0]}!</h1>
-        <p className="text-gray-400 mt-1">
-          {daysUntil > 0
-            ? `${daysUntil} days until FIFA 2026 kicks off!`
-            : 'FIFA 2026 is underway! Place your bets now.'}
-        </p>
-      </div>
-
-      {/* Refer & Earn */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-3">
-          <h2 className="text-white font-semibold text-lg">🎁 Refer & Earn</h2>
+      {/* Welcome Header + Refer & Earn */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Welcome, {user?.name?.split(' ')[0]}!</h1>
+          <p className="text-gray-400 mt-1">
+            {daysUntil > 0
+              ? `${daysUntil} days until FIFA 2026 kicks off!`
+              : 'FIFA 2026 is underway! Place your bets now.'}
+          </p>
         </div>
-        <ReferralCard />
+        <div className="w-full md:w-auto">
+          <ReferralCard />
+        </div>
       </div>
 
       {/* Balance & Stats */}
