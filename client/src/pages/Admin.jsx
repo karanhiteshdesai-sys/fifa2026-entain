@@ -166,6 +166,14 @@ function Admin() {
           All Bets
         </button>
         <button
+          onClick={() => setTab('broadcast')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            tab === 'broadcast' ? 'bg-entain-accent text-entain-dark' : 'bg-entain-navy text-gray-300'
+          }`}
+        >
+          📢 Broadcast
+        </button>
+        <button
           onClick={downloadExcel}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-entain-gold/20 text-entain-gold hover:bg-entain-gold/30 transition"
         >
@@ -440,6 +448,85 @@ function Admin() {
           </div>
         </div>
       )}
+
+      {/* Broadcast Tab */}
+      {tab === 'broadcast' && (
+        <BroadcastPanel setMessage={setMessage} userCount={users.length} />
+      )}
+    </div>
+  );
+}
+
+function BroadcastPanel({ setMessage, userCount }) {
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const handleSend = async () => {
+    if (!title.trim() || !body.trim()) {
+      setMessage('Please enter both a title and message.');
+      return;
+    }
+    setSending(true);
+    try {
+      const { data } = await api.post('/admin/broadcast', { title: title.trim(), message: body.trim() });
+      setMessage(data.message);
+      setTitle('');
+      setBody('');
+    } catch (err) {
+      setMessage(err.response?.data?.error || 'Failed to send broadcast.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-entain-navy rounded-xl p-6 border border-entain-blue/20">
+        <h3 className="text-white font-semibold mb-1">📢 Broadcast to All Employees</h3>
+        <p className="text-gray-400 text-sm mb-5">Send a notification to all {userCount} registered employees at once.</p>
+
+        <div className="mb-4">
+          <label htmlFor="broadcast-title" className="block text-gray-300 text-sm mb-1">Title</label>
+          <input
+            id="broadcast-title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. 🎉 Bonus Round! Double EP this weekend"
+            className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent placeholder-gray-500"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="broadcast-body" className="block text-gray-300 text-sm mb-1">Message</label>
+          <textarea
+            id="broadcast-body"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="Write your message here..."
+            rows={4}
+            className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent placeholder-gray-500 resize-none"
+          />
+        </div>
+
+        {/* Preview */}
+        {(title || body) && (
+          <div className="bg-entain-dark rounded-lg p-4 mb-4 border border-entain-blue/10">
+            <p className="text-gray-500 text-xs mb-2">Preview:</p>
+            <p className="text-white font-medium text-sm">{title || 'Untitled'}</p>
+            <p className="text-gray-300 text-sm mt-1">{body || 'No message'}</p>
+          </div>
+        )}
+
+        <button
+          onClick={handleSend}
+          disabled={sending || !title.trim() || !body.trim()}
+          className="bg-entain-accent text-entain-dark font-bold px-6 py-2.5 rounded-lg hover:bg-entain-accent/90 transition disabled:opacity-50"
+        >
+          {sending ? 'Sending...' : `Send to All ${userCount} Employees`}
+        </button>
+      </div>
     </div>
   );
 }

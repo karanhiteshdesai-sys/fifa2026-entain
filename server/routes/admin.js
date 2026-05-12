@@ -97,4 +97,19 @@ router.get('/bets', authenticate, requireAdmin, async (req, res) => {
   try { res.json(await db.getAllBets()); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
+router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { title, message } = req.body;
+    if (!title || !message) return res.status(400).json({ error: 'Title and message are required.' });
+
+    const users = await db.getAllUsers();
+    let sent = 0;
+    for (const user of users) {
+      await db.createNotification(user.id, title, message);
+      sent++;
+    }
+    res.json({ message: `Broadcast sent to ${sent} employee(s).` });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
+});
+
 module.exports = router;
