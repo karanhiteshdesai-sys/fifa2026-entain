@@ -102,14 +102,18 @@ router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
     const { title, message } = req.body;
     if (!title || !message) return res.status(400).json({ error: 'Title and message are required.' });
 
-    const users = await db.getAllUsers();
+    // Get ALL users including admin so broadcast always works
+    const { rows: allUsers } = await require('../db/database').pool.query(
+      'SELECT id FROM users WHERE status != $1', ['rejected']
+    );
+
     let sent = 0;
-    for (const user of users) {
+    for (const user of allUsers) {
       await db.createNotification(user.id, title, message);
       sent++;
     }
-    res.json({ message: `Broadcast sent to ${sent} employee(s).` });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
+    res.json({ message: `Broadcast sent to ${sent} user(s).` });
+  } catch (err) { console.error('Broadcast error:', err); res.status(500).json({ error: 'Failed to send broadcast: ' + err.message }); }
 });
 
 module.exports = router;
