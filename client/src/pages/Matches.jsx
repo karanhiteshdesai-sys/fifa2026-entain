@@ -262,7 +262,7 @@ function Matches() {
                     <div className="text-entain-accent font-bold text-sm">{match.away_odds}</div>
                   </button>
                   <button
-                    onClick={() => { setBetModal(match); setPrediction(''); setBetType('correct_score'); }}
+                    onClick={() => { setBetModal(match); setPrediction(''); setBetType('match_result'); setCorrectScoreHome(''); setCorrectScoreAway(''); setStake(''); }}
                     className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">More</div>
