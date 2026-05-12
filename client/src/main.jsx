@@ -12,17 +12,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>
 );
 
-// Register service worker and auto-reload on updates
+// Unregister service workers to prevent caching issues
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then((reg) => {
-    // Check for updates every 60 seconds
-    setInterval(() => reg.update(), 60000);
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((reg) => reg.unregister());
   });
-
-  // Listen for SW update message and reload automatically
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data?.type === 'SW_UPDATED') {
-      window.location.reload();
-    }
-  });
+  // Clear all caches
+  if ('caches' in window) {
+    caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+  }
 }
