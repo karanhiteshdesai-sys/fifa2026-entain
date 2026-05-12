@@ -315,6 +315,28 @@ function Admin() {
       {/* Manage Users */}
       {tab === 'users' && (
         <div className="space-y-6">
+          {/* Admin Self EP */}
+          <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 flex items-center justify-between">
+            <div>
+              <p className="text-white font-medium">Your Admin Account</p>
+              <p className="text-gray-400 text-sm">Add EP to your own account</p>
+            </div>
+            <button
+              onClick={() => {
+                const amount = window.prompt('Add EP to your account.\nEnter amount:');
+                if (amount && Number(amount) > 0) {
+                  const adminUser = JSON.parse(localStorage.getItem('user'));
+                  api.post(`/admin/users/${adminUser.id}/add-points`, { amount: Number(amount) })
+                    .then((res) => { setMessage(res.data.message); fetchData(); })
+                    .catch(() => setMessage('Failed to add points.'));
+                }
+              }}
+              className="bg-entain-gold/20 text-entain-gold font-bold px-4 py-2 rounded-lg hover:bg-entain-gold/30 transition text-sm"
+            >
+              + Add EP to Self
+            </button>
+          </div>
+
           {/* Pending Approvals */}
           <PendingApprovals onAction={fetchData} setMessage={setMessage} />
 
@@ -347,6 +369,19 @@ function Admin() {
                     </td>
                     <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
                     <td className="px-6 py-3 text-right">
+                      <button
+                        onClick={() => {
+                          const amount = window.prompt(`Add EP to ${user.name}.\nEnter amount:`);
+                          if (amount && Number(amount) > 0) {
+                            api.post(`/admin/users/${user.id}/add-points`, { amount: Number(amount) })
+                              .then((res) => { setMessage(res.data.message); fetchData(); })
+                              .catch(() => setMessage('Failed to add points.'));
+                          }
+                        }}
+                        className="text-entain-gold text-sm hover:underline mr-3"
+                      >
+                        + Add EP
+                      </button>
                       <button
                         onClick={() => resetPoints(user.id)}
                         className="text-entain-accent text-sm hover:underline mr-3"

@@ -90,6 +90,17 @@ router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, r
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
+router.post('/users/:id/add-points', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'Amount must be positive.' });
+    await db.addPoints(Number(req.params.id), Number(amount));
+    const user = await db.findUserById(Number(req.params.id));
+    await db.createNotification(Number(req.params.id), 'Points Added! 🎁', `Admin added ${amount} EP to your account. New balance: ${user.points} EP.`);
+    res.json({ message: `${amount} EP added successfully.` });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
+});
+
 router.post('/users/:id/reset-password', authenticate, requireAdmin, async (req, res) => {
   try {
     const { newPassword } = req.body;
