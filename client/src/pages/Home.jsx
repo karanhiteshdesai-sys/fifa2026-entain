@@ -156,13 +156,32 @@ function AdSlider() {
     return () => clearInterval(timer);
   }, []);
 
+  const goToPrev = () => setCurrent(prev => (prev - 1 + slides.length) % slides.length);
+  const goToNext = () => setCurrent(prev => (prev + 1) % slides.length);
+
   return (
-    <div className="relative rounded-xl overflow-hidden border border-entain-blue/20">
+    <div className="relative rounded-xl overflow-hidden border border-entain-blue/20 group">
       <img
         src={slides[current]}
         alt="Sponsor"
         className="w-full h-48 object-cover transition-opacity duration-500"
       />
+      {/* Left Arrow */}
+      <button
+        onClick={goToPrev}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+        aria-label="Previous slide"
+      >
+        ‹
+      </button>
+      {/* Right Arrow */}
+      <button
+        onClick={goToNext}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+        aria-label="Next slide"
+      >
+        ›
+      </button>
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
         {slides.map((_, i) => (
           <button
