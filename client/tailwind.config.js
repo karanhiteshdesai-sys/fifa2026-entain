@@ -6,7 +6,7 @@ export default {
       colors: {
         entain: {
           dark: '#1a1a2e',
-          navy: '#2a1545',
+          navy: '#351a52',
           blue: '#6b21a8',
           accent: '#b829e3',
           gold: '#ffd700',
