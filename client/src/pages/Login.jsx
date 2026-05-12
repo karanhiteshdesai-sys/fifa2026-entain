@@ -198,7 +198,7 @@ function Login({ onLogin }) {
                 value={form.referralCode}
                 onChange={(e) => setForm({ ...form, referralCode: e.target.value })}
                 className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
-                placeholder="colleague's email (e.g. john.doe@entaingroup.com)"
+                placeholder="e.g. FIFA-KAR8X2M1"
               />
               <p className="text-gray-500 text-xs mt-1">Your referrer gets 25 EP bonus when you're approved!</p>
             </div>

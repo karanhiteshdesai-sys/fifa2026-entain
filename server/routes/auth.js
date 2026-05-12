@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
     // Validate referral code if provided
     let referrerId = null;
     if (referral_code && referral_code.trim()) {
-      const referrer = await db.findUserByEmail(referral_code.toLowerCase().trim());
+      const referrer = await db.findUserByReferralCode(referral_code.trim());
       if (!referrer) return res.status(400).json({ error: 'Invalid referral code. Please check and try again.' });
       if (referrer.email === normalizedEmail) return res.status(400).json({ error: 'You cannot refer yourself.' });
       referrerId = referrer.id;
@@ -64,7 +64,7 @@ router.get('/referrals', authenticate, async (req, res) => {
   try {
     const user = await db.findUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found.' });
-    const referralCode = user.email;
+    const referralCode = user.referral_code || '';
     const referrals = await db.getReferralsByUser(req.user.id);
     res.json({ referralCode, referrals, totalBonus: referrals.length * 25 });
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }

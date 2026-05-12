@@ -20,12 +20,14 @@ async function initDb() {
       status TEXT DEFAULT 'pending',
       points INTEGER DEFAULT 20,
       referred_by INTEGER,
+      referral_code TEXT UNIQUE,
       created_at TIMESTAMP DEFAULT NOW()
     );
 
-    -- Add referred_by column if it doesn't exist (for existing databases)
+    -- Add columns if they don't exist (for existing databases)
     DO $$ BEGIN
       ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code TEXT;
     EXCEPTION WHEN others THEN NULL;
     END $$;
 
@@ -131,9 +133,14 @@ const db = {
   },
 
   async createUser(user) {
+    // Generate unique referral code: first 3 chars of name + random 5 chars
+    const prefix = user.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
+    const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+    const referralCode = `FIFA-${prefix}${randomPart}`;
+
     const { rows } = await pool.query(
-      'INSERT INTO users (name, email, password, department, role, status, points, referred_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20, user.referred_by || null]
+      'INSERT INTO users (name, email, password, department, role, status, points, referred_by, referral_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20, user.referred_by || null, referralCode]
     );
     return rows[0];
   },
@@ -316,6 +323,11 @@ const db = {
       [userId]
     );
     return rows;
+  },
+
+  async findUserByReferralCode(code) {
+    const { rows } = await pool.query('SELECT * FROM users WHERE referral_code = $1', [code.toUpperCase().trim()]);
+    return rows[0] || null;
   }
 };
 

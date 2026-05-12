@@ -143,24 +143,7 @@ function Home() {
           {/* Referral Card */}
           <div>
             <h2 className="text-white font-semibold text-lg mb-4">🎁 Refer & Earn</h2>
-            <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
-              <p className="text-gray-400 text-sm mb-3">Share your referral code with colleagues. You earn <span className="text-entain-gold font-bold">25 EP</span> for each approved referral!</p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  readOnly
-                  value={user?.email || ''}
-                  className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm"
-                />
-                <button
-                  onClick={() => { navigator.clipboard.writeText(user?.email || ''); }}
-                  className="bg-entain-accent text-entain-dark text-xs font-bold px-3 py-2 rounded-lg hover:bg-entain-accent/90 transition whitespace-nowrap"
-                >
-                  Copy
-                </button>
-              </div>
-              <p className="text-gray-500 text-xs mt-2">New users enter this as their referral code during registration.</p>
-            </div>
+            <ReferralCard />
           </div>
         </div>
       </div>
@@ -215,6 +198,54 @@ function AdSlider() {
           />
         ))}
       </div>
+    </div>
+  );
+}
+
+function ReferralCard() {
+  const [referralData, setReferralData] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchReferral = async () => {
+      try {
+        const { data } = await api.get('/auth/referrals');
+        setReferralData(data);
+      } catch (err) {
+        console.error('Failed to fetch referral data:', err);
+      }
+    };
+    fetchReferral();
+  }, []);
+
+  const handleCopy = () => {
+    if (referralData?.referralCode) {
+      navigator.clipboard.writeText(referralData.referralCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
+      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. You earn <span className="text-entain-gold font-bold">25 EP</span> for each approved referral!</p>
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          readOnly
+          value={referralData?.referralCode || 'Loading...'}
+          className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm font-mono tracking-wider"
+        />
+        <button
+          onClick={handleCopy}
+          className="bg-entain-accent text-entain-dark text-xs font-bold px-3 py-2 rounded-lg hover:bg-entain-accent/90 transition whitespace-nowrap"
+        >
+          {copied ? '✓ Copied' : 'Copy'}
+        </button>
+      </div>
+      {referralData && referralData.referrals.length > 0 && (
+        <p className="text-entain-green text-xs mt-2">✓ {referralData.referrals.length} referral(s) — {referralData.totalBonus} EP earned!</p>
+      )}
     </div>
   );
 }
