@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, department } = req.body;
+    const { name, email, password, department, referral_code } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email, and password are required.' });
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -18,8 +18,17 @@ router.post('/register', async (req, res) => {
     const existing = await db.findUserByEmail(normalizedEmail);
     if (existing) return res.status(409).json({ error: 'You have already registered. Please login instead.' });
 
+    // Validate referral code if provided
+    let referrerId = null;
+    if (referral_code && referral_code.trim()) {
+      const referrer = await db.findUserByEmail(referral_code.toLowerCase().trim());
+      if (!referrer) return res.status(400).json({ error: 'Invalid referral code. Please check and try again.' });
+      if (referrer.email === normalizedEmail) return res.status(400).json({ error: 'You cannot refer yourself.' });
+      referrerId = referrer.id;
+    }
+
     const hashedPassword = bcrypt.hashSync(password, 10);
-    await db.createUser({ name, email: normalizedEmail, password: hashedPassword, department: department || '', role: 'user', status: 'pending', points: 20 });
+    await db.createUser({ name, email: normalizedEmail, password: hashedPassword, department: department || '', role: 'user', status: 'pending', points: 20, referred_by: referrerId });
 
     res.status(201).json({ message: 'Registration submitted! Please wait for admin approval before you can log in.' });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
@@ -48,6 +57,16 @@ router.get('/me', authenticate, async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found.' });
     const { password, ...safeUser } = user;
     res.json(safeUser);
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+});
+
+router.get('/referrals', authenticate, async (req, res) => {
+  try {
+    const user = await db.findUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const referralCode = user.email;
+    const referrals = await db.getReferralsByUser(req.user.id);
+    res.json({ referralCode, referrals, totalBonus: referrals.length * 25 });
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 

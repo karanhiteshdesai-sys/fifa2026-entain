@@ -4,7 +4,7 @@ import api from '../services/api';
 function Login({ onLogin }) {
   const [loginType, setLoginType] = useState(null);
   const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', department: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,12 +26,13 @@ function Login({ onLogin }) {
           name: form.name,
           email: form.email,
           password: form.password,
-          department: form.department
+          department: form.department,
+          referral_code: form.referralCode
         });
         // Switch to sign in view with success message
         setIsRegister(false);
         setSuccess(data.message);
-        setForm({ name: '', email: '', password: '', confirmPassword: '', department: '' });
+        setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' });
       } else {
         const { data } = await api.post('/auth/login', { email: form.email, password: form.password });
         localStorage.setItem('token', data.token);
@@ -188,6 +189,21 @@ function Login({ onLogin }) {
             </div>
           )}
 
+          {isRegister && (
+            <div className="mb-6">
+              <label htmlFor="referralCode" className="block text-gray-300 text-sm mb-1">Referral Code <span className="text-gray-500">(optional)</span></label>
+              <input
+                id="referralCode"
+                type="text"
+                value={form.referralCode}
+                onChange={(e) => setForm({ ...form, referralCode: e.target.value })}
+                className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
+                placeholder="colleague's email (e.g. john.doe@entaingroup.com)"
+              />
+              <p className="text-gray-500 text-xs mt-1">Your referrer gets 25 EP bonus when you're approved!</p>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -224,7 +240,7 @@ function Login({ onLogin }) {
 
           <button
             type="button"
-            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '', confirmPassword: '', department: '' }); }}
+            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' }); }}
             className="w-full text-gray-500 hover:text-gray-300 text-sm mt-4 transition"
           >
             ← Back to role selection

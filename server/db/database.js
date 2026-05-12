@@ -19,8 +19,15 @@ async function initDb() {
       role TEXT DEFAULT 'user',
       status TEXT DEFAULT 'pending',
       points INTEGER DEFAULT 20,
+      referred_by INTEGER,
       created_at TIMESTAMP DEFAULT NOW()
     );
+
+    -- Add referred_by column if it doesn't exist (for existing databases)
+    DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER;
+    EXCEPTION WHEN others THEN NULL;
+    END $$;
 
     CREATE TABLE IF NOT EXISTS matches (
       id SERIAL PRIMARY KEY,
@@ -125,8 +132,8 @@ const db = {
 
   async createUser(user) {
     const { rows } = await pool.query(
-      'INSERT INTO users (name, email, password, department, role, status, points) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20]
+      'INSERT INTO users (name, email, password, department, role, status, points, referred_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20, user.referred_by || null]
     );
     return rows[0];
   },
@@ -301,6 +308,14 @@ const db = {
   async getMatchCount() {
     const { rows } = await pool.query('SELECT COUNT(*) as count FROM matches');
     return Number(rows[0].count);
+  },
+
+  async getReferralsByUser(userId) {
+    const { rows } = await pool.query(
+      'SELECT id, name, email, status, created_at FROM users WHERE referred_by = $1 ORDER BY created_at DESC',
+      [userId]
+    );
+    return rows;
   }
 };
 

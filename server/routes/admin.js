@@ -47,8 +47,18 @@ router.get('/pending-users', authenticate, requireAdmin, async (req, res) => {
 router.post('/users/:id/approve', authenticate, requireAdmin, async (req, res) => {
   try {
     const userId = Number(req.params.id);
+    const user = await db.findUserById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
     await db.updateUserStatus(userId, 'approved');
     await db.createNotification(userId, 'Account Approved', 'Your account has been approved! You can now log in and start placing bets.');
+
+    // Award referral bonus if user was referred
+    if (user.referred_by) {
+      await db.addPoints(user.referred_by, 25);
+      await db.createNotification(user.referred_by, 'Referral Bonus! 🎉', `You earned 25 EP for referring ${user.name}! Keep sharing your referral code.`);
+    }
+
     res.json({ message: 'User approved successfully.' });
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });

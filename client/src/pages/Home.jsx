@@ -139,6 +139,29 @@ function Home() {
             <h2 className="text-white font-semibold text-lg mb-4">Sponsors</h2>
             <AdSlider />
           </div>
+
+          {/* Referral Card */}
+          <div>
+            <h2 className="text-white font-semibold text-lg mb-4">🎁 Refer & Earn</h2>
+            <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
+              <p className="text-gray-400 text-sm mb-3">Share your referral code with colleagues. You earn <span className="text-entain-gold font-bold">25 EP</span> for each approved referral!</p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={user?.email || ''}
+                  className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm"
+                />
+                <button
+                  onClick={() => { navigator.clipboard.writeText(user?.email || ''); }}
+                  className="bg-entain-accent text-entain-dark text-xs font-bold px-3 py-2 rounded-lg hover:bg-entain-accent/90 transition whitespace-nowrap"
+                >
+                  Copy
+                </button>
+              </div>
+              <p className="text-gray-500 text-xs mt-2">New users enter this as their referral code during registration.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
