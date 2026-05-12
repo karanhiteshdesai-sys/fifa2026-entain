@@ -461,7 +461,7 @@ function Admin() {
                         bet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
                         'bg-yellow-500/20 text-yellow-400'
                       }`}>
-                        {bet.status}
+                        {bet.status === 'pending' ? 'Bet Placed' : bet.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
