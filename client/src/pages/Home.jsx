@@ -86,8 +86,11 @@ function Home() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Upcoming Matches */}
+        {/* Upcoming Matches + Live Scores */}
         <div className="md:col-span-2">
+          {/* Live Scores Widget */}
+          <LiveScoresWidget matches={matches} />
+
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white font-semibold text-lg">🏟️ Upcoming Matches</h2>
             <Link to="/matches" className="text-entain-accent text-sm hover:underline">View all →</Link>
@@ -146,6 +149,98 @@ function Home() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function LiveScoresWidget({ matches }) {
+  const tournamentStart = new Date('2026-06-11T19:00:00');
+  const now = new Date();
+  const tournamentStarted = now >= tournamentStart;
+
+  // Get today's matches or most recent finished matches
+  const todayStr = now.toISOString().split('T')[0];
+  const liveMatches = matches.filter(m => m.status === 'live');
+  const todayFinished = matches.filter(m => {
+    const matchDay = new Date(m.match_date).toISOString().split('T')[0];
+    return matchDay === todayStr && m.status === 'finished';
+  });
+  const recentFinished = matches.filter(m => m.status === 'finished')
+    .sort((a, b) => new Date(b.match_date) - new Date(a.match_date))
+    .slice(0, 3);
+
+  const displayMatches = liveMatches.length > 0 ? liveMatches : todayFinished.length > 0 ? todayFinished : recentFinished;
+
+  if (!tournamentStarted) {
+    // Countdown mode
+    const diff = tournamentStart - now;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return (
+      <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-5 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-white font-semibold text-lg">🔴 Live Scores</h2>
+          <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">Coming Soon</span>
+        </div>
+        <div className="text-center py-4">
+          <p className="text-gray-400 text-sm mb-3">Tournament kicks off in</p>
+          <div className="flex justify-center gap-4">
+            <div className="bg-entain-dark rounded-lg px-4 py-3 min-w-[70px]">
+              <p className="text-entain-accent text-2xl font-bold">{days}</p>
+              <p className="text-gray-500 text-xs">days</p>
+            </div>
+            <div className="bg-entain-dark rounded-lg px-4 py-3 min-w-[70px]">
+              <p className="text-entain-accent text-2xl font-bold">{hours}</p>
+              <p className="text-gray-500 text-xs">hours</p>
+            </div>
+            <div className="bg-entain-dark rounded-lg px-4 py-3 min-w-[70px]">
+              <p className="text-entain-accent text-2xl font-bold">{mins}</p>
+              <p className="text-gray-500 text-xs">mins</p>
+            </div>
+          </div>
+          <p className="text-gray-500 text-xs mt-4">Mexico vs South Africa • June 11, 2026 • Estadio Azteca</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Tournament is live
+  return (
+    <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-5 mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-white font-semibold text-lg">🔴 Live Scores</h2>
+        {liveMatches.length > 0 && (
+          <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded animate-pulse">● LIVE</span>
+        )}
+        {liveMatches.length === 0 && (
+          <span className="text-xs bg-gray-500/20 text-gray-400 px-2 py-0.5 rounded">Latest Results</span>
+        )}
+      </div>
+      {displayMatches.length === 0 ? (
+        <p className="text-gray-400 text-sm text-center py-4">No matches today. Check back on match day!</p>
+      ) : (
+        <div className="space-y-2">
+          {displayMatches.map(m => (
+            <div key={m.id} className="bg-entain-dark rounded-lg p-3 flex items-center">
+              <span className="text-white text-sm flex-1 text-right truncate">{m.home_team}</span>
+              <div className="w-20 text-center flex-shrink-0">
+                {m.status === 'finished' ? (
+                  <span className="text-white font-bold text-lg">{m.home_score} - {m.away_score}</span>
+                ) : m.status === 'live' ? (
+                  <span className="text-red-400 font-bold text-lg animate-pulse">{m.home_score || 0} - {m.away_score || 0}</span>
+                ) : (
+                  <span className="text-gray-500 text-xs">{new Date(m.match_date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                )}
+              </div>
+              <span className="text-white text-sm flex-1 truncate">{m.away_team}</span>
+              {m.status === 'live' && <span className="text-red-400 text-xs ml-2 animate-pulse">●</span>}
+              {m.status === 'finished' && <span className="text-gray-500 text-xs ml-2">FT</span>}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
