@@ -604,6 +604,19 @@ function PendingApprovals({ onAction, setMessage }) {
     }
   };
 
+  const approveAll = async () => {
+    try {
+      for (const user of pending) {
+        await api.post(`/admin/users/${user.id}/approve`);
+      }
+      setMessage(`All ${pending.length} users approved!`);
+      fetchPending();
+      onAction();
+    } catch (err) {
+      setMessage('Failed to approve all users.');
+    }
+  };
+
   if (pending.length === 0) {
     return (
       <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
@@ -615,8 +628,16 @@ function PendingApprovals({ onAction, setMessage }) {
   return (
     <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
       <div className="px-6 py-3 border-b border-entain-blue/20 flex items-center justify-between">
-        <h3 className="text-white font-semibold">⏳ Pending Approvals</h3>
-        <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded">{pending.length} pending</span>
+        <div className="flex items-center gap-3">
+          <h3 className="text-white font-semibold">⏳ Pending Approvals</h3>
+          <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded">{pending.length} pending</span>
+        </div>
+        <button
+          onClick={approveAll}
+          className="bg-entain-green text-entain-dark text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-entain-green/90 transition"
+        >
+          ✓ Approve All
+        </button>
       </div>
       <div className="divide-y divide-entain-blue/10">
         {pending.map(user => (
