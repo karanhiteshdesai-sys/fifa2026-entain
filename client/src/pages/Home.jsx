@@ -203,27 +203,18 @@ function AdSlider() {
 }
 
 function ReferralCard() {
-  const [referralData, setReferralData] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const fetchReferral = async () => {
-      try {
-        const { data } = await api.get('/auth/referrals');
-        setReferralData(data);
-      } catch (err) {
-        console.error('Failed to fetch referral data:', err);
-      }
-    };
-    fetchReferral();
-  }, []);
+  // Generate referral code from user data already in localStorage (no API call needed)
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const prefix = (user.name || 'USER').replace(/\s+/g, '').substring(0, 3).toUpperCase();
+  const idPart = ((user.id || 1) * 7919).toString(36).substring(0, 4).toUpperCase();
+  const referralCode = `FIFA-${prefix}${idPart}`;
 
   const handleCopy = () => {
-    if (referralData?.referralCode) {
-      navigator.clipboard.writeText(referralData.referralCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    navigator.clipboard.writeText(referralCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -233,7 +224,7 @@ function ReferralCard() {
         <input
           type="text"
           readOnly
-          value={referralData?.referralCode || 'Loading...'}
+          value={referralCode}
           className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm font-mono tracking-wider"
         />
         <button
@@ -243,9 +234,6 @@ function ReferralCard() {
           {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
-      {referralData && referralData.referrals.length > 0 && (
-        <p className="text-entain-green text-xs mt-2">✓ {referralData.referrals.length} referral(s) — {referralData.totalBonus} EP earned!</p>
-      )}
     </div>
   );
 }

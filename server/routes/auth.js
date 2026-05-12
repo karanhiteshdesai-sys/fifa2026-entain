@@ -21,7 +21,14 @@ router.post('/register', async (req, res) => {
     // Validate referral code if provided
     let referrerId = null;
     if (referral_code && referral_code.trim()) {
-      const referrer = await db.findUserByReferralCode(referral_code.trim());
+      const code = referral_code.trim().toUpperCase();
+      // Look up referrer by matching the deterministic code formula
+      const allUsers = await db.getAllUsers();
+      const referrer = allUsers.find(u => {
+        const prefix = u.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
+        const idPart = (u.id * 7919).toString(36).substring(0, 4).toUpperCase();
+        return `FIFA-${prefix}${idPart}` === code;
+      });
       if (!referrer) return res.status(400).json({ error: 'Invalid referral code. Please check and try again.' });
       if (referrer.email === normalizedEmail) return res.status(400).json({ error: 'You cannot refer yourself.' });
       referrerId = referrer.id;
@@ -65,17 +72,10 @@ router.get('/referrals', authenticate, async (req, res) => {
     const user = await db.findUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
-    // Generate referral code from user data (deterministic, no DB column needed)
-    let referralCode = user.referral_code;
-    if (!referralCode) {
-      const prefix = user.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
-      const idPart = (user.id * 7919).toString(36).substring(0, 4).toUpperCase();
-      referralCode = `FIFA-${prefix}${idPart}`;
-      // Try to save it, but don't fail if column doesn't exist
-      try {
-        await db.updateUserReferralCode(req.user.id, referralCode);
-      } catch (e) { /* column may not exist yet */ }
-    }
+    // Deterministic referral code from user data
+    const prefix = user.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
+    const idPart = (user.id * 7919).toString(36).substring(0, 4).toUpperCase();
+    const referralCode = `FIFA-${prefix}${idPart}`;
 
     let referrals = [];
     try {
