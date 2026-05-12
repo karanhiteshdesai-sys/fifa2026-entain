@@ -70,6 +70,19 @@ router.post('/users/:id/reject', authenticate, requireAdmin, async (req, res) =>
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
+router.post('/users/:id/credit-referral', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { referrer_id } = req.body;
+    if (!referrer_id) return res.status(400).json({ error: 'referrer_id required.' });
+    await db.addPoints(referrer_id, 25);
+    const user = await db.findUserById(Number(req.params.id));
+    await db.createNotification(referrer_id, 'Referral Bonus! 🎉', `You earned 25 EP for referring ${user?.name || 'a new user'}! Keep sharing your referral code.`);
+    // Update referred_by on the user
+    await pool.query('UPDATE users SET referred_by = $1 WHERE id = $2', [referrer_id, Number(req.params.id)]);
+    res.json({ message: 'Referral bonus credited.' });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
+});
+
 router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, res) => {
   try {
     await db.updateUserPoints(Number(req.params.id), req.body.points || 20);

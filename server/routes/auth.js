@@ -22,8 +22,10 @@ router.post('/register', async (req, res) => {
     let referrerId = null;
     if (referral_code && referral_code.trim()) {
       const code = referral_code.trim().toUpperCase();
-      // Look up referrer by matching the deterministic code formula
-      const allUsers = await db.getAllUsers();
+      // Look up referrer by matching the deterministic code formula (include ALL users)
+      const { rows: allUsers } = await require('../db/database').pool.query(
+        'SELECT id, name, email FROM users'
+      );
       const referrer = allUsers.find(u => {
         const prefix = u.name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
         const idPart = (u.id * 7919).toString(36).substring(0, 4).toUpperCase();
