@@ -10,6 +10,7 @@ import Chat from './pages/Chat';
 import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Info from './pages/Info';
+import Team from './pages/Team';
 import Navbar from './components/Navbar';
 import ChatBot from './components/ChatBot';
 import FloatingChat from './components/FloatingChat';
@@ -103,6 +104,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/info" element={<Info />} />
+          <Route path="/team" element={<Team />} />
           {user.role === 'admin' && <Route path="/admin" element={<Admin />} />}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
