@@ -70,6 +70,7 @@ function Info() {
       <div className="mt-8 bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
         <p className="text-gray-400 text-sm">Built by <a href="/team" className="text-entain-accent hover:underline">Vibe Tribe - Social Committee</a></p>
         <p className="text-gray-500 text-xs mt-1">For fun only. No real money. Play responsibly! ⚽</p>
+        <a href="/team" className="inline-block mt-3 text-entain-accent text-sm hover:underline">👋 Click here to meet our Social Committee team →</a>
       </div>
     </div>
   );
