@@ -27,7 +27,7 @@ function Leaderboard() {
     if (index === 0) return <span className="text-3xl">🥇</span>;
     if (index === 1) return <span className="text-3xl">🥈</span>;
     if (index === 2) return <span className="text-3xl">🥉</span>;
-    return `#${index + 1}`;
+    return <span className="text-white font-bold text-lg">#{index + 1}</span>;
   };
 
   return (
