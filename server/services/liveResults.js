@@ -85,7 +85,99 @@ function weightedRandomScore() {
   return 0;
 }
 
-function startPolling(intervalMs = 120000) { if (!pollingInterval) pollingInterval = setInterval(() => {}, intervalMs); }
-function stopPolling() { if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; } }
+function startPolling(intervalMs = 120000) {
+  if (pollingInterval) return;
+  console.log('📡 Live polling started — checking every 2 minutes');
+  pollForResults(); // Check immediately
+  pollingInterval = setInterval(pollForResults, intervalMs);
+}
+
+async function pollForResults() {
+  if (!API_KEY) {
+    console.log('⚠️ No FOOTBALL_API_KEY set, skipping poll');
+    return;
+  }
+
+  try {
+    // Fetch FIFA 2026 World Cup matches from football-data.org
+    const data = await fetchFromAPI('/v4/competitions/WC/matches?status=FINISHED');
+    if (!data || !data.matches) return;
+
+    const dbMatches = await db.getAllMatches({ status: 'upcoming' });
+    let settled = 0;
+
+    for (const apiMatch of data.matches) {
+      const homeTeam = apiMatch.homeTeam.name;
+      const awayTeam = apiMatch.awayTeam.name;
+      const homeScore = apiMatch.score.fullTime.home;
+      const awayScore = apiMatch.score.fullTime.away;
+
+      if (homeScore === null || awayScore === null) continue;
+
+      // Find matching DB match by team names
+      const dbMatch = dbMatches.find(m =>
+        normalizeTeam(m.home_team) === normalizeTeam(homeTeam) &&
+        normalizeTeam(m.away_team) === normalizeTeam(awayTeam)
+      );
+
+      if (dbMatch) {
+        await settleMatch(dbMatch.id, homeScore, awayScore);
+        settled++;
+        console.log(`✅ Settled: ${dbMatch.home_team} ${homeScore}-${awayScore} ${dbMatch.away_team}`);
+      }
+    }
+
+    if (settled > 0) console.log(`📡 Poll complete: ${settled} match(es) settled`);
+  } catch (err) {
+    console.error('📡 Polling error:', err.message);
+  }
+}
+
+function normalizeTeam(name) {
+  // Normalize team names for matching between API and DB
+  const map = {
+    'korea republic': 'south korea',
+    'republic of korea': 'south korea',
+    'korea, republic of': 'south korea',
+    'côte d\'ivoire': 'ivory coast',
+    'cote d\'ivoire': 'ivory coast',
+    'türkiye': 'turkiye',
+    'turkey': 'turkiye',
+    'congo dr': 'dr congo',
+    'dem. rep. congo': 'dr congo',
+    'democratic republic of congo': 'dr congo',
+    'bosnia & herzegovina': 'bosnia and herzegovina',
+    'bosnia-herzegovina': 'bosnia and herzegovina',
+    'cape verde': 'cabo verde',
+    'united states': 'usa',
+    'united states of america': 'usa',
+  };
+  const lower = name.toLowerCase().trim();
+  return map[lower] || lower;
+}
+
+function fetchFromAPI(path) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.football-data.org',
+      path: path,
+      method: 'GET',
+      headers: { 'X-Auth-Token': API_KEY }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch { reject(new Error('Invalid JSON response')); }
+      });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+function stopPolling() { if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; console.log('📡 Live polling stopped'); } }
 
 module.exports = { settleMatch, simulateMatch, simulateAll, simulateNext, startPolling, stopPolling };
