@@ -48,7 +48,7 @@ function ChatBot() {
       {/* Tooltip label */}
       {!isOpen && (
         <div className="fixed bottom-[6.5rem] right-2 bg-white text-entain-dark text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg z-[60] max-w-[180px] text-center leading-tight">
-          Think you know the winner? Let's find out together
+          {messages.length <= 1 ? "Let's begin..." : "Ask me more about the matches"}
           <div className="absolute -bottom-1.5 right-8 w-3 h-3 bg-white rotate-45"></div>
         </div>
       )}
