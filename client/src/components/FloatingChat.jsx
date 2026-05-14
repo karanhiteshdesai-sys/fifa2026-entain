@@ -13,33 +13,30 @@ function FloatingChat() {
   const typingTimeout = useRef(null);
   const currentUser = JSON.parse(localStorage.getItem('user'));
 
-  // Poll for new messages even when chat is closed
+  // Poll for new messages
   useEffect(() => {
     const checkNewMessages = async () => {
       try {
         const { data } = await api.get('/groupchat');
-        if (!isOpen) {
-          const newCount = data.length - lastSeenCount.current;
-          if (newCount > 0) setUnreadCount(newCount);
-        } else {
-          setMessages(data);
+        setMessages(data);
+        if (isOpen) {
+          // Chat is open — always mark as read
           lastSeenCount.current = data.length;
           setUnreadCount(0);
+        } else {
+          // Chat is closed — count new messages since last seen
+          const newCount = data.length - lastSeenCount.current;
+          if (newCount > 0) setUnreadCount(newCount);
         }
       } catch {}
     };
 
+    // Reset immediately when opening
+    if (isOpen) setUnreadCount(0);
+
     checkNewMessages();
     const interval = setInterval(checkNewMessages, 5000);
     return () => clearInterval(interval);
-  }, [isOpen]);
-
-  // When chat opens, mark as read
-  useEffect(() => {
-    if (isOpen) {
-      setUnreadCount(0);
-      lastSeenCount.current = messages.length;
-    }
   }, [isOpen]);
 
   useEffect(() => {
