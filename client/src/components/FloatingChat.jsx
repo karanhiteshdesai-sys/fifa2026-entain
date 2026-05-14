@@ -7,8 +7,10 @@ function FloatingChat() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [typingUsers, setTypingUsers] = useState([]);
   const messagesEndRef = useRef(null);
   const lastSeenCount = useRef(0);
+  const typingTimeout = useRef(null);
   const currentUser = JSON.parse(localStorage.getItem('user'));
 
   // Poll for new messages even when chat is closed
@@ -43,6 +45,29 @@ function FloatingChat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Poll typing indicators when chat is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const pollTyping = async () => {
+      try {
+        const { data } = await api.get('/groupchat/typing');
+        setTypingUsers(data);
+      } catch {}
+    };
+    pollTyping();
+    const interval = setInterval(pollTyping, 2000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    // Send typing indicator (throttled)
+    if (!typingTimeout.current) {
+      api.post('/groupchat/typing').catch(() => {});
+      typingTimeout.current = setTimeout(() => { typingTimeout.current = null; }, 2000);
+    }
+  };
 
   const fetchMessages = async () => {
     try {
@@ -136,12 +161,21 @@ function FloatingChat() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Typing indicator */}
+          {typingUsers.length > 0 && (
+            <div className="px-4 py-1">
+              <p className="text-gray-400 text-xs italic">
+                {typingUsers.map(u => u.name).join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+              </p>
+            </div>
+          )}
+
           {/* Input */}
           <form onSubmit={sendMessage} className="p-3 border-t border-entain-blue/20 flex gap-2">
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               placeholder="Type a message..."
               maxLength={500}
               className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent transition"
