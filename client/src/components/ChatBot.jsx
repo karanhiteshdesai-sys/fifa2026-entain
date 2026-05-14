@@ -35,7 +35,7 @@ function ChatBot() {
         setPendingBet(data.betData);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, I\'m having trouble right now. Please try again.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: err.response?.data?.error || 'Sorry, I\'m having trouble right now. Please try again.' }]);
     } finally {
       setLoading(false);
     }

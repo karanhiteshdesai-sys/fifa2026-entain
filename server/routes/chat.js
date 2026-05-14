@@ -151,7 +151,7 @@ If the user just asks about odds or matches without wanting to bet, answer norma
     res.json({ reply: response });
   } catch (err) {
     console.error('Groq API error:', err.message);
-    res.status(500).json({ error: 'AI assistant is temporarily unavailable. Please try again.' });
+    res.status(500).json({ error: 'AI assistant error: ' + err.message });
   }
 });
 
@@ -170,7 +170,7 @@ function callGroq(userMessage, userContext, matchContext) {
     messages.push({ role: 'user', content: userMessage });
 
     const payload = JSON.stringify({
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       messages,
       temperature: 0.1,
       max_tokens: 200
