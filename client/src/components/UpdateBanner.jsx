@@ -29,7 +29,8 @@ function UpdateBanner() {
   const handleRefresh = () => {
     // Save current path so user stays on the same page after refresh
     sessionStorage.setItem('returnPath', window.location.pathname);
-    window.location.reload();
+    // Hard refresh — bypass cache completely
+    window.location.href = window.location.pathname + '?_=' + Date.now();
   };
 
   // On mount, check if we need to navigate back after a refresh
