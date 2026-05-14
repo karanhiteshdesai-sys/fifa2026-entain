@@ -6,14 +6,37 @@ function FloatingChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef(null);
+  const lastSeenCount = useRef(0);
   const currentUser = JSON.parse(localStorage.getItem('user'));
 
+  // Poll for new messages even when chat is closed
+  useEffect(() => {
+    const checkNewMessages = async () => {
+      try {
+        const { data } = await api.get('/groupchat');
+        if (!isOpen) {
+          const newCount = data.length - lastSeenCount.current;
+          if (newCount > 0) setUnreadCount(newCount);
+        } else {
+          setMessages(data);
+          lastSeenCount.current = data.length;
+          setUnreadCount(0);
+        }
+      } catch {}
+    };
+
+    checkNewMessages();
+    const interval = setInterval(checkNewMessages, 5000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
+  // When chat opens, mark as read
   useEffect(() => {
     if (isOpen) {
-      fetchMessages();
-      const interval = setInterval(fetchMessages, 3000);
-      return () => clearInterval(interval);
+      setUnreadCount(0);
+      lastSeenCount.current = messages.length;
     }
   }, [isOpen]);
 
@@ -59,6 +82,11 @@ function FloatingChat() {
         title="Group Chat"
       >
         {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/group-chat-icon.png" alt="Group Chat" className="w-18 h-18 brightness-0 invert" style={{width: '4.5rem', height: '4.5rem'}} />}
+        {!isOpen && unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-lg">
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
       </button>
 
       {/* Chat Window */}
