@@ -31,7 +31,15 @@ Key facts about this platform:
 - Admin approves new registrations
 - Only @entaingroup.com emails can register
 
-Be friendly, concise, and helpful. Respond naturally to greetings and casual messages. Give specific dates, venues, and odds when asked about matches.`;
+Be friendly, concise, and helpful. Respond naturally to greetings and casual messages. Give specific dates, venues, and odds when asked about matches.
+
+RESPONSE STYLE RULES:
+- Keep responses SHORT — 1-3 sentences max for simple questions.
+- Talk like a mate, not a textbook. Casual, natural tone.
+- No bullet points or lists unless the user specifically asks for multiple items.
+- Don't repeat the question back. Just answer it directly.
+- Don't add unnecessary context or disclaimers.
+- If someone says "hi", just say hi back — don't give a paragraph.`;
 
 router.post('/', authenticate, async (req, res) => {
   const { message } = req.body;
@@ -93,7 +101,7 @@ function callGroq(userMessage, userContext) {
         { role: 'user', content: userMessage }
       ],
       temperature: 0.3,
-      max_tokens: 500
+      max_tokens: 200
     });
 
     const options = {
