@@ -9,6 +9,10 @@ function Admin() {
   const [message, setMessage] = useState('');
   const [scores, setScores] = useState({});
   const [simulating, setSimulating] = useState(false);
+  const [userSearch, setUserSearch] = useState('');
+  const [userStatusFilter, setUserStatusFilter] = useState('all');
+  const [betSearch, setBetSearch] = useState('');
+  const [betStatusFilter, setBetStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchData();
@@ -120,6 +124,20 @@ function Admin() {
 
   const upcomingMatches = matches.filter(m => m.status === 'upcoming');
   const finishedMatches = matches.filter(m => m.status === 'finished');
+
+  const filteredUsers = users.filter(u => {
+    const q = userSearch.toLowerCase();
+    const matchesSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+    const matchesStatus = userStatusFilter === 'all' || (u.status || 'approved') === userStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const filteredBets = allBets.filter(b => {
+    const q = betSearch.toLowerCase();
+    const matchesSearch = !q || b.user_name.toLowerCase().includes(q) || b.user_email.toLowerCase().includes(q) || b.home_team.toLowerCase().includes(q) || b.away_team.toLowerCase().includes(q);
+    const matchesStatus = betStatusFilter === 'all' || b.status === betStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div>
@@ -340,10 +358,36 @@ function Admin() {
           {/* Pending Approvals */}
           <PendingApprovals onAction={fetchData} setMessage={setMessage} />
 
+          {/* Search & Filter */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search by name or email..."
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                className="w-full bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500"
+              />
+              <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <select
+              value={userStatusFilter}
+              onChange={(e) => setUserStatusFilter(e.target.value)}
+              className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-entain-accent"
+            >
+              <option value="all">All Status</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
           {/* All Users */}
           <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
             <div className="px-6 py-3 border-b border-entain-blue/20">
-              <h3 className="text-white font-semibold">All Registered Users</h3>
+              <h3 className="text-white font-semibold">All Registered Users ({filteredUsers.length})</h3>
             </div>
             <table className="w-full">
               <thead>
@@ -356,7 +400,7 @@ function Admin() {
                 </tr>
               </thead>
               <tbody>
-                {users.map(user => (
+                {filteredUsers.map(user => (
                   <tr key={user.id} className="border-b border-entain-blue/10">
                     <td className="px-6 py-3 text-white">{user.name}</td>
                     <td className="px-6 py-3 text-gray-400 text-sm">{user.email}</td>
@@ -426,8 +470,35 @@ function Admin() {
       {tab === 'bets' && (
         <div>
           <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 mb-4">
-            <p className="text-gray-300 text-sm">Total bets placed: <span className="text-white font-bold">{allBets.length}</span></p>
+            <p className="text-gray-300 text-sm">Total bets placed: <span className="text-white font-bold">{allBets.length}</span>{filteredBets.length !== allBets.length && <span className="text-gray-500"> (showing {filteredBets.length})</span>}</p>
           </div>
+
+          {/* Search & Filter */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search by employee, team..."
+                value={betSearch}
+                onChange={(e) => setBetSearch(e.target.value)}
+                className="w-full bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500"
+              />
+              <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <select
+              value={betStatusFilter}
+              onChange={(e) => setBetStatusFilter(e.target.value)}
+              className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-entain-accent"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="won">Won</option>
+              <option value="lost">Lost</option>
+            </select>
+          </div>
+
           <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
             <table className="w-full">
               <thead>
@@ -442,7 +513,7 @@ function Admin() {
                 </tr>
               </thead>
               <tbody>
-                {allBets.map(bet => (
+                {filteredBets.map(bet => (
                   <tr key={bet.id} className="border-b border-entain-blue/10 text-sm">
                     <td className="px-4 py-3">
                       <p className="text-white">{bet.user_name}</p>
@@ -477,8 +548,8 @@ function Admin() {
                 ))}
               </tbody>
             </table>
-            {allBets.length === 0 && (
-              <div className="text-center text-gray-400 py-8">No bets placed yet.</div>
+            {filteredBets.length === 0 && (
+              <div className="text-center text-gray-400 py-8">{allBets.length === 0 ? 'No bets placed yet.' : 'No bets match your search.'}</div>
             )}
           </div>
         </div>
