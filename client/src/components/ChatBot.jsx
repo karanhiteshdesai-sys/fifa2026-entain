@@ -14,6 +14,8 @@ function ChatBot() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const [pendingBet, setPendingBet] = useState(null);
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -26,11 +28,39 @@ function ChatBot() {
     try {
       const { data } = await api.post('/chat', { message: userMsg });
       setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+      if (data.betData) {
+        setPendingBet(data.betData);
+      }
     } catch (err) {
       setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, I\'m having trouble right now. Please try again.' }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const confirmBet = async () => {
+    if (!pendingBet) return;
+    setLoading(true);
+    setPendingBet(null);
+    setMessages(prev => [...prev, { role: 'user', text: 'Yes, confirm the bet!' }]);
+
+    try {
+      const { data } = await api.post('/chat', { message: '__CONFIRM_BET__', betData: pendingBet });
+      setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+      // Refresh user points
+      const { data: userData } = await api.get('/auth/me');
+      const stored = JSON.parse(localStorage.getItem('user'));
+      localStorage.setItem('user', JSON.stringify({ ...stored, points: userData.points }));
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'bot', text: 'Failed to place the bet. Try again or do it manually from Matches.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelBet = () => {
+    setPendingBet(null);
+    setMessages(prev => [...prev, { role: 'user', text: 'No, cancel it.' }, { role: 'bot', text: 'No worries, bet cancelled. Let me know if you want to try something else.' }]);
   };
 
   return (
@@ -82,6 +112,24 @@ function ChatBot() {
               <div className="flex justify-start">
                 <div className="bg-entain-dark text-gray-400 px-3 py-2 rounded-lg text-sm border border-entain-blue/20">
                   Thinking...
+                </div>
+              </div>
+            )}
+            {pendingBet && !loading && (
+              <div className="flex justify-start">
+                <div className="flex gap-2">
+                  <button
+                    onClick={confirmBet}
+                    className="bg-entain-green text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-entain-green/90 transition"
+                  >
+                    Confirm Bet
+                  </button>
+                  <button
+                    onClick={cancelBet}
+                    className="bg-entain-red/80 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-entain-red transition"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}

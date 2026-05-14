@@ -64,17 +64,18 @@ router.post('/', authenticate, async (req, res) => {
 
   // Get some context about the user (non-blocking)
   let userContext = '';
+  let user;
   try {
-    const user = await db.findUserById(req.user.id);
+    user = await db.findUserById(req.user.id);
     if (user) userContext = `The user's name is ${user.name}, they have ${user.points} Entain Points.`;
-  } catch (err) {
-    // Ignore - proceed without user context
-  }
+  } catch (err) {}
 
   // Get actual match data from the database for accurate answers
   let matchContext = '';
+  let upcomingMatches = [];
   try {
     const matches = await db.getAllMatches();
+    upcomingMatches = matches.filter(m => m.status === 'upcoming');
     const groupMap = {};
     matches.forEach(m => {
       if (!groupMap[m.group_name]) groupMap[m.group_name] = { teams: new Set(), matches: [] };
@@ -90,16 +91,61 @@ router.post('/', authenticate, async (req, res) => {
         const d = new Date(m.match_date);
         const date = `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`;
         const time = `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC`;
-        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [Odds: H${m.home_odds}/D${m.draw_odds}/A${m.away_odds}]`;
+        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [ID:${m.id} Odds: H${m.home_odds}/D${m.draw_odds}/A${m.away_odds}]`;
         matchContext += `  ${m.home_team} vs ${m.away_team} | ${date} ${time} | ${m.venue}${score}\n`;
       });
     }
-  } catch (err) {
-    // Proceed without match context if DB query fails
+  } catch (err) {}
+
+  // Check if this is a bet confirmation
+  if (message === '__CONFIRM_BET__' && req.body.betData) {
+    try {
+      const { match_id, prediction, stake } = req.body.betData;
+      const match = await db.findMatchById(match_id);
+      if (!match) return res.json({ reply: "Sorry, that match doesn't exist anymore." });
+      if (match.status !== 'upcoming') return res.json({ reply: "That match is no longer open for betting." });
+      if (user.points < stake) return res.json({ reply: `You only have ${user.points} EP but tried to stake ${stake} EP.` });
+
+      let odds;
+      if (prediction === 'home') odds = match.home_odds;
+      else if (prediction === 'draw') odds = match.draw_odds;
+      else odds = match.away_odds;
+
+      await db.deductPoints(req.user.id, stake);
+      await db.createBet({ user_id: req.user.id, match_id, bet_type: 'match_result', prediction, stake, odds, status: 'pending', payout: 0 });
+
+      const payout = Math.round(stake * odds);
+      const teamName = prediction === 'home' ? match.home_team : prediction === 'away' ? match.away_team : 'Draw';
+      return res.json({ reply: `Done! Bet placed: ${stake} EP on ${teamName} (${match.home_team} vs ${match.away_team}) at odds ${odds}. Potential payout: ${payout} EP. Good luck!` });
+    } catch (err) {
+      return res.json({ reply: "Something went wrong placing the bet. Try again or place it manually from the Matches page." });
+    }
   }
 
   try {
-    const response = await callGroq(message, userContext, matchContext);
+    const betPrompt = `\n\nBET PLACEMENT FEATURE:
+If the user wants to place a bet, respond with EXACTLY this JSON format (nothing else before or after):
+{"bet":true,"match_id":<id>,"home_team":"<team>","away_team":"<team>","prediction":"<home|draw|away>","stake":<number>,"odds":<number>,"payout":<number>}
+
+Only do this if the user clearly wants to place a bet (e.g. "bet 5 on England", "put 3 EP on Brazil to win").
+Use the match ID from the data above. Calculate payout = stake * odds.
+If you can't determine the match, stake, or prediction clearly, ask the user to clarify instead of guessing.
+If the user just asks about odds or matches without wanting to bet, answer normally without the JSON.`;
+
+    const response = await callGroq(message, userContext + betPrompt, matchContext);
+    
+    // Check if AI returned a bet JSON
+    try {
+      const betMatch = response.match(/\{"bet"\s*:\s*true.*?\}/);
+      if (betMatch) {
+        const betData = JSON.parse(betMatch[0]);
+        return res.json({
+          reply: `I'll place this bet for you:\n\n${betData.home_team} vs ${betData.away_team}\nYour pick: ${betData.prediction === 'home' ? betData.home_team : betData.prediction === 'away' ? betData.away_team : 'Draw'}\nStake: ${betData.stake} EP\nOdds: ${betData.odds}\nPotential payout: ${betData.payout} EP\n\nShall I confirm this bet?`,
+          betData: { match_id: betData.match_id, prediction: betData.prediction, stake: betData.stake }
+        });
+      }
+    } catch (e) {}
+
     res.json({ reply: response });
   } catch (err) {
     console.error('Groq API error:', err.message);
