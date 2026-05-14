@@ -130,7 +130,7 @@ function Home() {
               {top3.map((player, i) => (
                 <div key={player.id} className="flex items-center justify-between px-4 py-3 border-b border-entain-blue/10 last:border-0">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg">{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
+                    <span className="text-3xl">{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
                     <span className="text-white text-sm font-medium">{player.name}</span>
                   </div>
                   <span className="text-entain-gold text-sm font-bold">{player.points} EP</span>

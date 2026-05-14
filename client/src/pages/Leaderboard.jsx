@@ -24,9 +24,9 @@ function Leaderboard() {
   }
 
   const getMedal = (index) => {
-    if (index === 0) return '🥇';
-    if (index === 1) return '🥈';
-    if (index === 2) return '🥉';
+    if (index === 0) return <span className="text-3xl">🥇</span>;
+    if (index === 1) return <span className="text-3xl">🥈</span>;
+    if (index === 2) return <span className="text-3xl">🥉</span>;
     return `#${index + 1}`;
   };
 
