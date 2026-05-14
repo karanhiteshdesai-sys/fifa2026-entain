@@ -16,16 +16,22 @@ You help with:
 - General FIFA 2026 tournament info
 - Casual conversation - greetings, small talk, banter about football
 
+CRITICAL RULES:
+- ONLY use the match data provided below for answering questions about groups, teams, dates, venues, and results.
+- NEVER guess or make up match dates, groups, or opponents. If the data is not provided, say you don't have that information.
+- Be precise with dates, group letters, and team names.
+
 Key facts about this platform:
 - Employees start with 20 Entain Points (EP) - virtual currency, no real money
 - They can bet on match outcomes: home win, draw, or away win
 - Winnings = stake × odds
 - 48 teams in 12 groups (A through L), 72 group stage matches
 - Tournament runs June 11 - July 19, 2026 in USA, Mexico, and Canada
+- Host cities: Mexico City, Guadalajara, Monterrey (Mexico), Toronto, Vancouver (Canada), New York, Los Angeles, Miami, Dallas, Houston, Atlanta, Seattle, San Francisco, Philadelphia, Boston, Kansas City (USA)
 - Admin approves new registrations
 - Only @entaingroup.com emails can register
 
-Be friendly, concise, and helpful. Respond naturally to greetings and casual messages. Only redirect if the topic is completely inappropriate.`;
+Be friendly, concise, and helpful. Respond naturally to greetings and casual messages. Give specific dates, venues, and odds when asked about matches.`;
 
 router.post('/', authenticate, async (req, res) => {
   const { message } = req.body;
@@ -43,8 +49,34 @@ router.post('/', authenticate, async (req, res) => {
     // Ignore - proceed without user context
   }
 
+  // Get actual match data from the database for accurate answers
+  let matchContext = '';
   try {
-    const response = await callGroq(message, userContext);
+    const matches = await db.getAllMatches();
+    const groupMap = {};
+    matches.forEach(m => {
+      if (!groupMap[m.group_name]) groupMap[m.group_name] = { teams: new Set(), matches: [] };
+      groupMap[m.group_name].teams.add(m.home_team);
+      groupMap[m.group_name].teams.add(m.away_team);
+      groupMap[m.group_name].matches.push(m);
+    });
+
+    matchContext = '\n\nACTUAL FIFA 2026 MATCH DATA (use ONLY this data for answers, do NOT guess or make up information):\n';
+    for (const [group, data] of Object.entries(groupMap).sort()) {
+      matchContext += `\nGroup ${group}: ${[...data.teams].join(', ')}\n`;
+      data.matches.forEach(m => {
+        const date = new Date(m.match_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        const time = new Date(m.match_date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [Odds: ${m.home_odds}/${m.draw_odds}/${m.away_odds}]`;
+        matchContext += `  ${m.home_team} vs ${m.away_team} — ${date} ${time} — ${m.venue}${score}\n`;
+      });
+    }
+  } catch (err) {
+    // Proceed without match context if DB query fails
+  }
+
+  try {
+    const response = await callGroq(message, userContext + matchContext);
     res.json({ reply: response });
   } catch (err) {
     console.error('Groq API error:', err.message);
@@ -60,7 +92,7 @@ function callGroq(userMessage, userContext) {
         { role: 'system', content: SYSTEM_PROMPT + '\n' + userContext },
         { role: 'user', content: userMessage }
       ],
-      temperature: 0.7,
+      temperature: 0.3,
       max_tokens: 500
     });
 
