@@ -9,7 +9,7 @@ function FloatingChat() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [typingUsers, setTypingUsers] = useState([]);
   const messagesEndRef = useRef(null);
-  const lastSeenCount = useRef(0);
+  const lastSeenCount = useRef(Number(localStorage.getItem('groupChatLastSeen') || '0'));
   const typingTimeout = useRef(null);
   const currentUser = JSON.parse(localStorage.getItem('user'));
 
@@ -22,6 +22,7 @@ function FloatingChat() {
         if (isOpen) {
           // Chat is open — always mark as read
           lastSeenCount.current = data.length;
+          localStorage.setItem('groupChatLastSeen', String(data.length));
           setUnreadCount(0);
         } else {
           // Chat is closed — count new messages since last seen
