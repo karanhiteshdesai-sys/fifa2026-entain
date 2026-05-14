@@ -30,7 +30,7 @@ function Navbar({ user, onLogout }) {
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src="/entain-logo.svg" alt="Entain" className="w-8 h-8" />
+            <img src="/entain-logo.png" alt="Entain" className="w-8 h-8" />
             <div className="hidden sm:block">
               <h1 className="text-white font-bold text-sm leading-tight">FIFA 2026</h1>
               <p className="text-entain-accent text-[10px] font-medium">ENTAIN PREDICTIONS</p>

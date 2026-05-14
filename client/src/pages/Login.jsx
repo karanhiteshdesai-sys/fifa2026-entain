@@ -51,7 +51,7 @@ function Login({ onLogin }) {
       <div className="min-h-screen bg-entain-dark flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <img src="/entain-logo.svg" alt="Entain" className="w-16 h-16 mx-auto mb-4" />
+            <img src="/entain-logo.png" alt="Entain" className="w-16 h-16 mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-white">FIFA 2026</h1>
             <p className="text-entain-accent font-semibold mt-1">ENTAIN PREDICTIONS</p>
             <p className="text-gray-400 text-sm mt-2">Predict & win Entain Points — no real money!</p>
@@ -92,7 +92,7 @@ function Login({ onLogin }) {
     <div className="min-h-screen bg-entain-dark flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src="/entain-logo.svg" alt="Entain" className="w-16 h-16 mx-auto mb-4" />
+          <img src="/entain-logo.png" alt="Entain" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-white">FIFA 2026</h1>
           <p className="text-entain-accent font-semibold mt-1">ENTAIN PREDICTIONS</p>
           <div className="mt-3 inline-flex items-center gap-2 bg-entain-blue/30 px-3 py-1 rounded-full">
