@@ -14,6 +14,7 @@ import Team from './pages/Team';
 import Navbar from './components/Navbar';
 import ChatBot from './components/ChatBot';
 import FloatingChat from './components/FloatingChat';
+import UpdateBanner from './components/UpdateBanner';
 import api from './services/api';
 
 function App() {
@@ -111,6 +112,7 @@ function App() {
       </main>
       <ChatBot />
       <FloatingChat />
+      <UpdateBanner />
     </div>
   );
 }
