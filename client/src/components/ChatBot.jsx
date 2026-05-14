@@ -45,6 +45,14 @@ function ChatBot() {
         {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/ai-bot-icon.png" alt="AI Assistant" className="w-18 h-18 brightness-0 invert" style={{width: '4.5rem', height: '4.5rem'}} />}
       </button>
 
+      {/* Tooltip label */}
+      {!isOpen && (
+        <div className="fixed bottom-28 right-5 bg-white text-entain-dark text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg z-50 whitespace-nowrap animate-bounce">
+          Talk to me to Predict and Win
+          <div className="absolute -bottom-1 right-6 w-2 h-2 bg-white rotate-45"></div>
+        </div>
+      )}
+
       {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-24 right-5 w-80 sm:w-96 h-[500px] bg-entain-navy rounded-xl shadow-2xl border border-entain-blue/30 flex flex-col z-50 overflow-hidden">
