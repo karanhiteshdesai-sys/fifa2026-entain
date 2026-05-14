@@ -101,17 +101,17 @@ function ChatBot() {
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-      // Auto-send after voice input
+      setInput('');
       setMessages(prev => [...prev, { role: 'user', text: transcript }]);
       setLoading(true);
       api.post('/chat', { message: transcript }).then(({ data }) => {
         setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
         speakText(data.reply);
         if (data.betData) setPendingBet(data.betData);
-      }).catch(() => {
-        setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, something went wrong.' }]);
-      }).finally(() => { setLoading(false); setInput(''); });
+      }).catch((err) => {
+        console.error('Voice chat error:', err);
+        setMessages(prev => [...prev, { role: 'bot', text: err.response?.data?.error || 'Sorry, I\'m having trouble right now. Please try again.' }]);
+      }).finally(() => { setLoading(false); });
     };
 
     recognitionRef.current = recognition;

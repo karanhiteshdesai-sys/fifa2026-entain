@@ -78,6 +78,7 @@ router.post('/', authenticate, async (req, res) => {
     upcomingMatches = matches.filter(m => m.status === 'upcoming');
     const groupMap = {};
     matches.forEach(m => {
+      if (!m.group_name) return; // Skip knockout matches
       if (!groupMap[m.group_name]) groupMap[m.group_name] = { teams: new Set(), matches: [] };
       groupMap[m.group_name].teams.add(m.home_team);
       groupMap[m.group_name].teams.add(m.away_team);
@@ -127,9 +128,9 @@ router.post('/', authenticate, async (req, res) => {
 If the user wants to place a bet, respond with EXACTLY this JSON format (nothing else before or after):
 {"bet":true,"match_id":<id>,"home_team":"<team>","away_team":"<team>","prediction":"<home|draw|away>","stake":<number>,"odds":<number>,"payout":<number>}
 
-Only do this if the user clearly wants to place a bet (e.g. "bet 5 on England", "put 3 EP on Brazil to win").
+Only do this if the user clearly wants to place a bet AND specifies a team and stake amount (e.g. "bet 5 on England", "put 3 EP on Brazil to win").
 Use the match ID from the data above. Calculate payout = stake * odds.
-If you can't determine the match, stake, or prediction clearly, ask the user to clarify instead of guessing.
+If you can't determine the match, stake, or prediction clearly, ask the user to clarify instead of outputting JSON.
 If the user just asks about odds or matches without wanting to bet, answer normally without the JSON.`;
 
     const response = await callGroq(message, userContext + betPrompt, matchContext);
@@ -139,12 +140,14 @@ If the user just asks about odds or matches without wanting to bet, answer norma
       const betMatch = response.match(/\{"bet"\s*:\s*true.*?\}/);
       if (betMatch) {
         const betData = JSON.parse(betMatch[0]);
-        return res.json({
-          reply: `I'll place this bet for you:\n\n${betData.home_team} vs ${betData.away_team}\nYour pick: ${betData.prediction === 'home' ? betData.home_team : betData.prediction === 'away' ? betData.away_team : 'Draw'}\nStake: ${betData.stake} EP\nOdds: ${betData.odds}\nPotential payout: ${betData.payout} EP\n\nShall I confirm this bet?`,
-          betData: { match_id: betData.match_id, prediction: betData.prediction, stake: betData.stake }
-        });
+        if (betData.match_id && betData.prediction && betData.stake) {
+          return res.json({
+            reply: `I'll place this bet for you:\n\n${betData.home_team} vs ${betData.away_team}\nYour pick: ${betData.prediction === 'home' ? betData.home_team : betData.prediction === 'away' ? betData.away_team : 'Draw'}\nStake: ${betData.stake} EP\nOdds: ${betData.odds}\nPotential payout: ${betData.payout} EP\n\nShall I confirm this bet?`,
+            betData: { match_id: betData.match_id, prediction: betData.prediction, stake: betData.stake }
+          });
+        }
       }
-    } catch (e) {}
+    } catch (e) { /* Not a bet response, continue normally */ }
 
     res.json({ reply: response });
   } catch (err) {
