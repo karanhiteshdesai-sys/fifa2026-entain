@@ -142,6 +142,15 @@ router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
   } catch (err) { console.error('Broadcast error:', err); res.status(500).json({ error: 'Broadcast failed: ' + err.message }); }
 });
 
+router.post('/generate-knockout', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { generateKnockoutRound } = require('../services/knockout');
+    const result = await generateKnockoutRound();
+    if (result.error) return res.status(400).json({ error: result.error });
+    res.json(result);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to generate knockout matches.' }); }
+});
+
 router.post('/unsettle-all', authenticate, requireAdmin, async (req, res) => {
   try {
     const matchRes = await pool.query("UPDATE matches SET status = 'upcoming', home_score = NULL, away_score = NULL WHERE status = 'finished'");

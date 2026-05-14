@@ -255,6 +255,26 @@ function Admin() {
             <p className="text-gray-500 text-xs mt-3">{upcomingMatches.length} matches remaining</p>
           </div>
 
+          {/* Knockout Generation */}
+          <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+            <h3 className="text-white font-semibold mb-3">🏆 Knockout Stage</h3>
+            <p className="text-gray-400 text-sm mb-4">After all group matches are settled, generate the Round of 32 bracket automatically based on standings.</p>
+            <button
+              onClick={async () => {
+                try {
+                  const { data } = await api.post('/admin/generate-knockout');
+                  setMessage(data.message);
+                  fetchData();
+                } catch (err) {
+                  setMessage(err.response?.data?.error || 'Failed to generate knockout.');
+                }
+              }}
+              className="bg-entain-gold text-entain-dark font-bold px-4 py-2 rounded-lg hover:bg-entain-gold/90 transition"
+            >
+              🏆 Generate Knockout Bracket
+            </button>
+          </div>
+
           {/* Live Results Controls */}
           <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
             <h3 className="text-white font-semibold mb-3">📡 Live Results (Tournament Mode)</h3>
