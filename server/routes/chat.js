@@ -69,14 +69,15 @@ router.post('/', authenticate, async (req, res) => {
       groupMap[m.group_name].matches.push(m);
     });
 
-    matchContext = '\n\nACTUAL FIFA 2026 MATCH DATA (use ONLY this data for answers, do NOT guess or make up information):\n';
+    matchContext = '\n\nIMPORTANT — THIS IS THE ONLY SOURCE OF TRUTH FOR FIFA 2026 DATA. Use ONLY this data. Do NOT use your training data for match info:\n';
     for (const [group, data] of Object.entries(groupMap).sort()) {
       matchContext += `\nGroup ${group}: ${[...data.teams].join(', ')}\n`;
       data.matches.forEach(m => {
-        const date = new Date(m.match_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-        const time = new Date(m.match_date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [Odds: ${m.home_odds}/${m.draw_odds}/${m.away_odds}]`;
-        matchContext += `  ${m.home_team} vs ${m.away_team} — ${date} ${time} — ${m.venue}${score}\n`;
+        const d = new Date(m.match_date);
+        const date = `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+        const time = `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC`;
+        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [Odds: H${m.home_odds}/D${m.draw_odds}/A${m.away_odds}]`;
+        matchContext += `  ${m.home_team} vs ${m.away_team} | ${date} ${time} | ${m.venue}${score}\n`;
       });
     }
   } catch (err) {
@@ -84,7 +85,7 @@ router.post('/', authenticate, async (req, res) => {
   }
 
   try {
-    const response = await callGroq(message, userContext + matchContext);
+    const response = await callGroq(message, userContext, matchContext);
     res.json({ reply: response });
   } catch (err) {
     console.error('Groq API error:', err.message);
@@ -92,15 +93,24 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-function callGroq(userMessage, userContext) {
+function callGroq(userMessage, userContext, matchContext) {
   return new Promise((resolve, reject) => {
+    const systemContent = SYSTEM_PROMPT + '\n' + userContext;
+    const messages = [
+      { role: 'system', content: systemContent },
+    ];
+
+    // Add match data as a separate system message so it's clearly structured
+    if (matchContext) {
+      messages.push({ role: 'system', content: matchContext });
+    }
+
+    messages.push({ role: 'user', content: userMessage });
+
     const payload = JSON.stringify({
       model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT + '\n' + userContext },
-        { role: 'user', content: userMessage }
-      ],
-      temperature: 0.3,
+      messages,
+      temperature: 0.1,
       max_tokens: 200
     });
 
