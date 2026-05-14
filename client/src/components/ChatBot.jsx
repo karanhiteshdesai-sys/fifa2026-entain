@@ -38,11 +38,11 @@ function ChatBot() {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-5 right-5 w-14 h-14 bg-entain-navy rounded-full shadow-lg flex items-center justify-center text-white text-xl hover:bg-entain-navy/80 border border-entain-blue/30 transition z-50"
+        className="fixed bottom-5 right-5 w-16 h-16 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition z-50"
         aria-label="Open AI assistant"
         title="AI Assistant"
       >
-        {isOpen ? '✕' : '💬'}
+        {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/ai-bot-icon.png" alt="AI Assistant" className="w-14 h-14 brightness-0 invert" />}
       </button>
 
       {/* Chat Window */}
