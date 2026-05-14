@@ -48,7 +48,7 @@ function ChatBot() {
       {/* Tooltip label */}
       {!isOpen && (
         <div className="fixed bottom-24 right-3 bg-white text-entain-dark text-sm font-bold px-4 py-2 rounded-lg shadow-lg z-[60] whitespace-nowrap">
-          Talk to me to Predict and Win
+          Think you know the winner? Let's find out together
           <div className="absolute -bottom-1.5 right-8 w-3 h-3 bg-white rotate-45"></div>
         </div>
       )}
