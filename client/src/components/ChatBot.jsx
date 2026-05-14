@@ -15,6 +15,8 @@ function ChatBot() {
   }, [messages]);
 
   const [pendingBet, setPendingBet] = useState(null);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef(null);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ function ChatBot() {
     try {
       const { data } = await api.post('/chat', { message: userMsg });
       setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+      speakText(data.reply);
       if (data.betData) {
         setPendingBet(data.betData);
       }
@@ -61,6 +64,58 @@ function ChatBot() {
   const cancelBet = () => {
     setPendingBet(null);
     setMessages(prev => [...prev, { role: 'user', text: 'No, cancel it.' }, { role: 'bot', text: 'No worries, bet cancelled. Let me know if you want to try something else.' }]);
+  };
+
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, your browser does not support voice input.' }]);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
+    recognition.onerror = () => setListening(false);
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      // Auto-send after voice input
+      setMessages(prev => [...prev, { role: 'user', text: transcript }]);
+      setLoading(true);
+      api.post('/chat', { message: transcript }).then(({ data }) => {
+        setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+        speakText(data.reply);
+        if (data.betData) setPendingBet(data.betData);
+      }).catch(() => {
+        setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, something went wrong.' }]);
+      }).finally(() => { setLoading(false); setInput(''); });
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   return (
@@ -146,6 +201,18 @@ function ChatBot() {
               className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent transition"
               disabled={loading}
             />
+            <button
+              type="button"
+              onClick={toggleListening}
+              className={`px-3 py-2 rounded-lg text-sm transition ${
+                listening
+                  ? 'bg-red-500 text-white animate-pulse'
+                  : 'bg-entain-dark text-gray-300 border border-entain-blue/30 hover:text-white'
+              }`}
+              title={listening ? 'Stop listening' : 'Speak'}
+            >
+              🎤
+            </button>
             <button
               type="submit"
               disabled={loading || !input.trim()}
