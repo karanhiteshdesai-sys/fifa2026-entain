@@ -58,7 +58,7 @@ function FloatingChat() {
         aria-label="Open group chat"
         title="Group Chat"
       >
-        {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/group-chat-icon.png" alt="Group Chat" className="w-14 h-14" />}
+        {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/group-chat-icon.png" alt="Group Chat" className="w-14 h-14 brightness-0 invert" />}
       </button>
 
       {/* Chat Window */}
