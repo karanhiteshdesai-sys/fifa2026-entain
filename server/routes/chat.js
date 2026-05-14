@@ -78,22 +78,21 @@ router.post('/', authenticate, async (req, res) => {
     upcomingMatches = matches.filter(m => m.status === 'upcoming');
     const groupMap = {};
     matches.forEach(m => {
-      if (!m.group_name) return; // Skip knockout matches
+      if (!m.group_name) return;
       if (!groupMap[m.group_name]) groupMap[m.group_name] = { teams: new Set(), matches: [] };
       groupMap[m.group_name].teams.add(m.home_team);
       groupMap[m.group_name].teams.add(m.away_team);
       groupMap[m.group_name].matches.push(m);
     });
 
-    matchContext = '\n\nIMPORTANT — THIS IS THE ONLY SOURCE OF TRUTH FOR FIFA 2026 DATA. Use ONLY this data. Do NOT use your training data for match info:\n';
+    matchContext = '\nFIFA 2026 DATA (ONLY source of truth — do NOT use training data):\n';
     for (const [group, data] of Object.entries(groupMap).sort()) {
-      matchContext += `\nGroup ${group}: ${[...data.teams].join(', ')}\n`;
+      matchContext += `\nGrp ${group}: ${[...data.teams].join(', ')}\n`;
       data.matches.forEach(m => {
         const d = new Date(m.match_date);
-        const date = `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-        const time = `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC`;
-        const score = m.status === 'finished' ? ` [RESULT: ${m.home_score}-${m.away_score}]` : ` [ID:${m.id} Odds: H${m.home_odds}/D${m.draw_odds}/A${m.away_odds}]`;
-        matchContext += `  ${m.home_team} vs ${m.away_team} | ${date} ${time} | ${m.venue}${score}\n`;
+        const date = `${d.getUTCDate()}/${d.getUTCMonth()+1}`;
+        const info = m.status === 'finished' ? `${m.home_score}-${m.away_score}` : `ID:${m.id} H${m.home_odds}/D${m.draw_odds}/A${m.away_odds}`;
+        matchContext += `  ${m.home_team} v ${m.away_team} ${date} [${info}]\n`;
       });
     }
   } catch (err) {}
@@ -197,6 +196,7 @@ function callGroq(userMessage, userContext, matchContext) {
           if (parsed.choices && parsed.choices[0]) {
             resolve(parsed.choices[0].message.content);
           } else {
+            console.error('Groq API response error:', parsed.error || parsed);
             reject(new Error(parsed.error?.message || 'No response from AI'));
           }
         } catch (err) {
