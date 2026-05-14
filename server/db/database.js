@@ -71,6 +71,13 @@ async function initDb() {
       read BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS broadcasts (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   // Add new columns for existing databases (safe to run multiple times)
@@ -271,6 +278,23 @@ const db = {
 
   async createNotification(userId, title, message) {
     await pool.query('INSERT INTO notifications (user_id, title, message) VALUES ($1, $2, $3)', [userId, title, message]);
+  },
+
+  // ===== BROADCASTS =====
+  async createBroadcast(title, message) {
+    const { rows } = await pool.query(
+      'INSERT INTO broadcasts (title, message) VALUES ($1, $2) RETURNING *',
+      [title, message]
+    );
+    return rows[0];
+  },
+
+  async getLatestBroadcast(since) {
+    const { rows } = await pool.query(
+      'SELECT * FROM broadcasts WHERE created_at > $1 ORDER BY created_at DESC LIMIT 1',
+      [since]
+    );
+    return rows[0] || null;
   },
 
   // ===== UTILITY =====

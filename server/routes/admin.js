@@ -126,6 +126,9 @@ router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
     const { title, message } = req.body;
     if (!title || !message) return res.status(400).json({ error: 'Title and message are required.' });
 
+    // Store broadcast for real-time polling
+    await db.createBroadcast(title, message);
+
     const { rows: allUsers } = await pool.query(
       'SELECT id FROM users WHERE status != $1 OR status IS NULL', ['rejected']
     );
