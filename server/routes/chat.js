@@ -151,7 +151,8 @@ If the user just asks about odds or matches without wanting to bet, answer norma
     res.json({ reply: response });
   } catch (err) {
     console.error('Groq API error:', err.message);
-    res.status(500).json({ error: 'AI assistant error: ' + err.message });
+    const isRateLimit = err.message && err.message.includes('Rate limit');
+    res.status(500).json({ error: isRateLimit ? 'AI bot is taking a short break (rate limit). Try again in a minute.' : 'AI assistant is temporarily unavailable. Please try again.' });
   }
 });
 
@@ -170,7 +171,7 @@ function callGroq(userMessage, userContext, matchContext) {
     messages.push({ role: 'user', content: userMessage });
 
     const payload = JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       messages,
       temperature: 0.1,
       max_tokens: 200
