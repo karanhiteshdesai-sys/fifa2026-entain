@@ -35,7 +35,7 @@ function NotificationBell() {
       if (document.hidden) {
         new Notification('FIFA 2026 Predictions', {
           body: `You have ${unreadCount} new notification${unreadCount > 1 ? 's' : ''}`,
-          icon: '/entain-logo.png'
+          icon: '/entain-logo.svg'
         });
       }
     }
