@@ -8,9 +8,6 @@ function Matches() {
   const [betModal, setBetModal] = useState(null);
   const [stake, setStake] = useState('');
   const [prediction, setPrediction] = useState('');
-  const [betType, setBetType] = useState('match_result');
-  const [correctScoreHome, setCorrectScoreHome] = useState('');
-  const [correctScoreAway, setCorrectScoreAway] = useState('');
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null); // { message, type }
   const [message, setMessage] = useState('');
@@ -58,42 +55,8 @@ function Matches() {
   const [confirmBet, setConfirmBet] = useState(null); // holds bet details for confirmation
 
   const handlePlaceBet = () => {
-    let finalPrediction = prediction;
-    let odds;
-
-    if (betType === 'match_result') {
-      if (!prediction || !stake || stake <= 0) return;
-      odds = prediction === 'home' ? betModal.home_odds : prediction === 'away' ? betModal.away_odds : betModal.draw_odds;
-    } else if (betType === 'correct_score') {
-      if (correctScoreHome === '' || correctScoreAway === '' || !stake || stake <= 0) return;
-      finalPrediction = `${correctScoreHome}-${correctScoreAway}`;
-      const totalGoals = Number(correctScoreHome) + Number(correctScoreAway);
-      if (finalPrediction === '0-0') odds = 8.0;
-      else if (finalPrediction === '1-0' || finalPrediction === '0-1') odds = 6.0;
-      else if (finalPrediction === '1-1') odds = 5.5;
-      else if (finalPrediction === '2-1' || finalPrediction === '1-2') odds = 7.0;
-      else if (finalPrediction === '2-0' || finalPrediction === '0-2') odds = 7.5;
-      else if (totalGoals <= 3) odds = 9.0;
-      else if (totalGoals <= 5) odds = 15.0;
-      else odds = 25.0;
-    } else if (betType === 'total_goals') {
-      if (!prediction || !stake || stake <= 0) return;
-      finalPrediction = prediction;
-      if (prediction === 'over_1.5') odds = 1.5;
-      else if (prediction === 'under_1.5') odds = 2.5;
-      else if (prediction === 'over_2.5') odds = 1.9;
-      else if (prediction === 'under_2.5') odds = 1.9;
-      else if (prediction === 'over_3.5') odds = 2.8;
-      else if (prediction === 'under_3.5') odds = 1.4;
-    } else if (betType === 'both_teams_score') {
-      if (!prediction || !stake || stake <= 0) return;
-      odds = prediction === 'yes' ? 1.8 : 2.0;
-    } else if (betType === 'first_to_score') {
-      if (!prediction || !stake || stake <= 0) return;
-      if (prediction === 'home') odds = 1.8;
-      else if (prediction === 'away') odds = 2.2;
-      else odds = 9.0;
-    }
+    if (!prediction || !stake || stake <= 0) return;
+    const odds = prediction === 'home' ? betModal.home_odds : prediction === 'away' ? betModal.away_odds : betModal.draw_odds;
 
     // Check balance
     const user = JSON.parse(localStorage.getItem('user'));
@@ -102,21 +65,13 @@ function Matches() {
       return;
     }
 
-    const predLabel = betType === 'match_result'
-      ? (prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw')
-      : betType === 'correct_score'
-      ? `Score: ${correctScoreHome}-${correctScoreAway}`
-      : betType === 'total_goals'
-      ? prediction.replace('_', ' ').replace('.', '.') + ' goals'
-      : betType === 'both_teams_score'
-      ? `Both teams score: ${prediction.toUpperCase()}`
-      : `First to score: ${prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'No Goal'}`;
+    const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
 
     setConfirmBet({
       match: `${betModal.home_team} vs ${betModal.away_team}`,
       prediction: predLabel,
-      finalPrediction,
-      betType,
+      finalPrediction: prediction,
+      betType: 'match_result',
       stake,
       odds,
       potentialPayout: Math.round(stake * odds)
@@ -167,9 +122,6 @@ function Matches() {
       setConfirmBet(null);
       setPrediction('');
       setStake('');
-      setBetType('match_result');
-      setCorrectScoreHome('');
-      setCorrectScoreAway('');
 
       // Refresh user points and matches
       const { data: userData } = await api.get('/auth/me');
@@ -302,32 +254,25 @@ function Matches() {
               {match.status === 'upcoming' && !bettingClosed && (
                 <div className={`flex gap-2 flex-shrink-0 ${changedOdds[match.id] ? 'animate-odds-blink' : ''}`}>
                   <button
-                    onClick={() => { setBetModal(match); setPrediction('home'); setBetType('match_result'); }}
+                    onClick={() => { setBetModal(match); setPrediction('home'); }}
                     className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Home</div>
                     <div className="text-entain-accent font-bold text-sm">{match.home_odds}</div>
                   </button>
                   <button
-                    onClick={() => { setBetModal(match); setPrediction('draw'); setBetType('match_result'); }}
+                    onClick={() => { setBetModal(match); setPrediction('draw'); }}
                     className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Draw</div>
                     <div className="text-entain-accent font-bold text-sm">{match.draw_odds}</div>
                   </button>
                   <button
-                    onClick={() => { setBetModal(match); setPrediction('away'); setBetType('match_result'); }}
+                    onClick={() => { setBetModal(match); setPrediction('away'); }}
                     className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
                   >
                     <div className="text-gray-400 text-[10px]">Away</div>
                     <div className="text-entain-accent font-bold text-sm">{match.away_odds}</div>
-                  </button>
-                  <button
-                    onClick={() => { setBetModal(match); setPrediction(''); setBetType('match_result'); setCorrectScoreHome(''); setCorrectScoreAway(''); setStake(''); }}
-                    className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
-                  >
-                    <div className="text-gray-400 text-[10px]">More</div>
-                    <div className="text-entain-accent font-bold text-sm">+</div>
                   </button>
                 </div>
               )}
@@ -346,10 +291,6 @@ function Matches() {
                   <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
                     <div className="text-gray-500 text-[10px]">Away</div>
                     <div className="text-gray-500 font-bold text-sm">{match.away_odds}</div>
-                  </div>
-                  <div className="bg-gray-700/50 border border-gray-600/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center">
-                    <div className="text-gray-500 text-[10px]">Closed</div>
-                    <div className="text-gray-500 font-bold text-sm">🔒</div>
                   </div>
                 </div>
               )}
@@ -374,168 +315,23 @@ function Matches() {
               {betModal.home_team} vs {betModal.away_team}
             </p>
 
-            {/* Bet Type Tabs */}
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {[
-                { key: 'match_result', label: 'Winner' },
-                { key: 'correct_score', label: 'Correct Score' },
-                { key: 'total_goals', label: 'Total Goals' },
-                { key: 'both_teams_score', label: 'Both Score' },
-                { key: 'first_to_score', label: '1st to Score' },
-              ].map(t => (
+            {/* Match Result */}
+            <div className="flex gap-2 mb-4">
+              {['home', 'draw', 'away'].map(opt => (
                 <button
-                  key={t.key}
-                  onClick={() => { setBetType(t.key); setPrediction(''); }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                    betType === t.key ? 'bg-entain-accent text-entain-dark' : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
+                  key={opt}
+                  onClick={() => setPrediction(opt)}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+                    prediction === opt
+                      ? 'bg-entain-accent text-entain-dark'
+                      : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
                   }`}
                 >
-                  {t.label}
+                  <div className="text-xs opacity-70">{opt === 'home' ? 'Home' : opt === 'away' ? 'Away' : 'Draw'}</div>
+                  <div className="font-bold">{opt === 'home' ? betModal.home_odds : opt === 'away' ? betModal.away_odds : betModal.draw_odds}</div>
                 </button>
               ))}
             </div>
-
-            {/* Match Result */}
-            {betType === 'match_result' && (
-              <div className="flex gap-2 mb-4">
-                {['home', 'draw', 'away'].map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => setPrediction(opt)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
-                      prediction === opt
-                        ? 'bg-entain-accent text-entain-dark'
-                        : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
-                    }`}
-                  >
-                    <div className="text-xs opacity-70">{opt === 'home' ? 'Home' : opt === 'away' ? 'Away' : 'Draw'}</div>
-                    <div className="font-bold">{opt === 'home' ? betModal.home_odds : opt === 'away' ? betModal.away_odds : betModal.draw_odds}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Correct Score */}
-            {betType === 'correct_score' && (
-              <div className="mb-4">
-                <p className="text-gray-400 text-xs mb-2">Predict the exact final score</p>
-                <div className="flex items-center gap-3 justify-center">
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs mb-1">{betModal.home_team}</p>
-                    <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={correctScoreHome}
-                      onChange={(e) => setCorrectScoreHome(e.target.value)}
-                      className="w-14 h-14 bg-entain-dark border border-entain-blue/30 rounded-lg text-white text-2xl text-center focus:outline-none focus:border-entain-accent"
-                    />
-                  </div>
-                  <span className="text-gray-500 text-xl font-bold mt-5">-</span>
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs mb-1">{betModal.away_team}</p>
-                    <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={correctScoreAway}
-                      onChange={(e) => setCorrectScoreAway(e.target.value)}
-                      className="w-14 h-14 bg-entain-dark border border-entain-blue/30 rounded-lg text-white text-2xl text-center focus:outline-none focus:border-entain-accent"
-                    />
-                  </div>
-                </div>
-                {correctScoreHome !== '' && correctScoreAway !== '' && (
-                  <p className="text-center text-entain-accent text-sm mt-2">
-                    Odds: {(() => {
-                      const s = `${correctScoreHome}-${correctScoreAway}`;
-                      const t = Number(correctScoreHome) + Number(correctScoreAway);
-                      if (s === '0-0') return '8.0';
-                      if (s === '1-0' || s === '0-1') return '6.0';
-                      if (s === '1-1') return '5.5';
-                      if (s === '2-1' || s === '1-2') return '7.0';
-                      if (s === '2-0' || s === '0-2') return '7.5';
-                      if (t <= 3) return '9.0';
-                      if (t <= 5) return '15.0';
-                      return '25.0';
-                    })()}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Total Goals */}
-            {betType === 'total_goals' && (
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {[
-                  { key: 'over_1.5', label: 'Over 1.5', odds: '1.5' },
-                  { key: 'under_1.5', label: 'Under 1.5', odds: '2.5' },
-                  { key: 'over_2.5', label: 'Over 2.5', odds: '1.9' },
-                  { key: 'under_2.5', label: 'Under 2.5', odds: '1.9' },
-                  { key: 'over_3.5', label: 'Over 3.5', odds: '2.8' },
-                  { key: 'under_3.5', label: 'Under 3.5', odds: '1.4' },
-                ].map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setPrediction(opt.key)}
-                    className={`py-2.5 rounded-lg text-sm font-medium transition ${
-                      prediction === opt.key
-                        ? 'bg-entain-accent text-entain-dark'
-                        : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
-                    }`}
-                  >
-                    <div>{opt.label}</div>
-                    <div className="text-xs opacity-70">@ {opt.odds}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Both Teams to Score */}
-            {betType === 'both_teams_score' && (
-              <div className="flex gap-3 mb-4">
-                {[
-                  { key: 'yes', label: 'Yes', odds: '1.8' },
-                  { key: 'no', label: 'No', odds: '2.0' },
-                ].map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setPrediction(opt.key)}
-                    className={`flex-1 py-3 rounded-lg text-sm font-medium transition ${
-                      prediction === opt.key
-                        ? 'bg-entain-accent text-entain-dark'
-                        : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
-                    }`}
-                  >
-                    <div className="font-bold">{opt.label}</div>
-                    <div className="text-xs opacity-70">@ {opt.odds}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* First to Score */}
-            {betType === 'first_to_score' && (
-              <div className="flex gap-2 mb-4">
-                {[
-                  { key: 'home', label: betModal.home_team, odds: '1.8' },
-                  { key: 'away', label: betModal.away_team, odds: '2.2' },
-                  { key: 'no_goal', label: 'No Goal', odds: '9.0' },
-                ].map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setPrediction(opt.key)}
-                    className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition ${
-                      prediction === opt.key
-                        ? 'bg-entain-accent text-entain-dark'
-                        : 'bg-entain-dark text-gray-300 border border-entain-blue/30'
-                    }`}
-                  >
-                    <div className="text-xs truncate">{opt.label}</div>
-                    <div className="font-bold">@ {opt.odds}</div>
-                  </button>
-                ))}
-              </div>
-            )}
 
             <div className="mb-4">
               <label htmlFor="stake" className="block text-gray-300 text-sm mb-1">Stake (Entain Points)</label>
@@ -551,7 +347,7 @@ function Matches() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => { setBetModal(null); setPrediction(''); setBetType('match_result'); setCorrectScoreHome(''); setCorrectScoreAway(''); }}
+                onClick={() => { setBetModal(null); setPrediction(''); }}
                 className="flex-1 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition"
               >
                 Cancel
