@@ -54,11 +54,11 @@ function FloatingChat() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-5 left-5 w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-xl hover:bg-blue-500 transition z-50"
+        className="fixed bottom-5 left-5 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white text-3xl hover:scale-110 transition z-50"
         aria-label="Open group chat"
         title="Group Chat"
       >
-        {isOpen ? '✕' : '👥'}
+        {isOpen ? '✕' : '💬'}
       </button>
 
       {/* Chat Window */}
