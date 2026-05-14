@@ -49,7 +49,7 @@ function App() {
     };
 
     refreshUser(); // Refresh immediately on load
-    const interval = setInterval(refreshUser, 30000); // Then every 30s
+    const interval = setInterval(refreshUser, 60000); // Then every 60s
     return () => clearInterval(interval);
   }, [user?.id]);
 

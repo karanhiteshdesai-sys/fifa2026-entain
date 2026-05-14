@@ -17,8 +17,8 @@ function Matches() {
 
   useEffect(() => {
     fetchMatches();
-    // Poll for odds changes every 15 seconds
-    const interval = setInterval(fetchMatches, 15000);
+    // Poll for odds changes every 30 seconds
+    const interval = setInterval(fetchMatches, 30000);
     return () => clearInterval(interval);
   }, []);
 

@@ -24,7 +24,7 @@ function UpdateBanner() {
     };
 
     checkForUpdates();
-    const interval = setInterval(checkForUpdates, 30000); // Check every 30 seconds
+    const interval = setInterval(checkForUpdates, 60000); // Check every 60 seconds
     return () => clearInterval(interval);
   }, []);
 

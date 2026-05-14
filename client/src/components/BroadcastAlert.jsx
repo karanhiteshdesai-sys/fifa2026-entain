@@ -20,7 +20,7 @@ function BroadcastAlert() {
       }
     };
 
-    const interval = setInterval(checkBroadcast, 10000); // Poll every 10 seconds
+    const interval = setInterval(checkBroadcast, 30000); // Poll every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
