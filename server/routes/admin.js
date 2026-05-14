@@ -142,4 +142,13 @@ router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
   } catch (err) { console.error('Broadcast error:', err); res.status(500).json({ error: 'Broadcast failed: ' + err.message }); }
 });
 
+router.post('/unsettle-all', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const matchRes = await pool.query("UPDATE matches SET status = 'upcoming', home_score = NULL, away_score = NULL WHERE status = 'finished'");
+    const betRes = await pool.query("UPDATE bets SET status = 'pending', payout = 0 WHERE status IN ('won', 'lost')");
+    const userRes = await pool.query("UPDATE users SET points = 20 WHERE role != 'admin'");
+    res.json({ message: `Reset complete: ${matchRes.rowCount} match(es), ${betRes.rowCount} bet(s), ${userRes.rowCount} user(s) points reset to 20 EP.` });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to unsettle.' }); }
+});
+
 module.exports = router;

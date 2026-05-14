@@ -235,6 +235,22 @@ function Admin() {
               >
                 Simulate ALL
               </button>
+              <button
+                onClick={async () => {
+                  if (!window.confirm('Unsettle ALL matches and reset all bets & points? This is for testing only.')) return;
+                  try {
+                    const { data } = await api.post('/admin/unsettle-all');
+                    setMessage(data.message);
+                    fetchData();
+                  } catch (err) {
+                    setMessage(err.response?.data?.error || 'Failed to unsettle.');
+                  }
+                }}
+                disabled={simulating || finishedMatches.length === 0}
+                className="bg-yellow-500/80 text-entain-dark font-medium px-4 py-2 rounded-lg hover:bg-yellow-500 transition disabled:opacity-50"
+              >
+                ↩️ Unsettle All
+              </button>
             </div>
             <p className="text-gray-500 text-xs mt-3">{upcomingMatches.length} matches remaining</p>
           </div>
