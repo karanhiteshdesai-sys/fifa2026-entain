@@ -4,6 +4,7 @@ import api from '../services/api';
 function BroadcastAlert() {
   const [broadcast, setBroadcast] = useState(null);
   const lastChecked = useRef(new Date().toISOString());
+  const dismissedIds = useRef(new Set(JSON.parse(localStorage.getItem('dismissedBroadcasts') || '[]')));
 
   useEffect(() => {
     const checkBroadcast = async () => {
@@ -11,8 +12,10 @@ function BroadcastAlert() {
         const { data } = await api.get('/notifications/broadcast/latest', {
           params: { since: lastChecked.current }
         });
-        if (data.broadcast) {
+        if (data.broadcast && !dismissedIds.current.has(data.broadcast.id)) {
           setBroadcast(data.broadcast);
+        }
+        if (data.broadcast) {
           lastChecked.current = data.broadcast.created_at;
         }
       } catch {
@@ -20,9 +23,20 @@ function BroadcastAlert() {
       }
     };
 
-    const interval = setInterval(checkBroadcast, 30000); // Poll every 30 seconds
+    checkBroadcast();
+    const interval = setInterval(checkBroadcast, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleDismiss = () => {
+    if (broadcast) {
+      dismissedIds.current.add(broadcast.id);
+      // Keep only last 50 dismissed IDs to avoid localStorage bloat
+      const ids = [...dismissedIds.current].slice(-50);
+      localStorage.setItem('dismissedBroadcasts', JSON.stringify(ids));
+    }
+    setBroadcast(null);
+  };
 
   if (!broadcast) return null;
 
@@ -47,7 +61,7 @@ function BroadcastAlert() {
         </p>
 
         <button
-          onClick={() => setBroadcast(null)}
+          onClick={handleDismiss}
           className="w-full bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition"
         >
           Got it
