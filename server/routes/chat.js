@@ -170,7 +170,7 @@ function callGroq(userMessage, userContext, matchContext) {
     messages.push({ role: 'user', content: userMessage });
 
     const payload = JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama3-70b-8192',
       messages,
       temperature: 0.1,
       max_tokens: 200
