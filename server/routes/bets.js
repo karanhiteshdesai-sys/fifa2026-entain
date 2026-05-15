@@ -147,4 +147,20 @@ router.get('/', authenticate, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
+router.post('/responsible-gambling-alert', authenticate, async (req, res) => {
+  try {
+    const user = await db.findUserById(req.user.id);
+    // Notify all admins
+    const { rows: admins } = await pool.query("SELECT id FROM users WHERE role = 'admin'");
+    for (const admin of admins) {
+      await db.createNotification(
+        admin.id,
+        '⚠️ Responsible Gambling Alert',
+        `${user.name} (${user.email}) is staking 80%+ of their balance (${user.points} EP). Consider blocking or sending a message.`
+      );
+    }
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+});
+
 module.exports = router;

@@ -53,6 +53,7 @@ function Matches() {
   };
 
   const [confirmBet, setConfirmBet] = useState(null); // holds bet details for confirmation
+  const [responsibleGamblingAlert, setResponsibleGamblingAlert] = useState(null);
 
   const handlePlaceBet = () => {
     if (!prediction || !stake || stake <= 0) return;
@@ -67,7 +68,7 @@ function Matches() {
 
     const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
 
-    setConfirmBet({
+    const betDetails = {
       match: `${betModal.home_team} vs ${betModal.away_team}`,
       prediction: predLabel,
       finalPrediction: prediction,
@@ -75,7 +76,22 @@ function Matches() {
       stake,
       odds,
       potentialPayout: Math.round(stake * odds)
-    });
+    };
+
+    // Responsible gambling check: 80% threshold
+    if (user && stake >= user.points * 0.8) {
+      setResponsibleGamblingAlert(betDetails);
+      return;
+    }
+
+    setConfirmBet(betDetails);
+  };
+
+  const handleResponsibleGamblingConfirm = () => {
+    // User confirmed despite warning — notify admin
+    api.post('/bets/responsible-gambling-alert').catch(() => {});
+    setConfirmBet(responsibleGamblingAlert);
+    setResponsibleGamblingAlert(null);
   };
 
   const confirmPlaceBet = async () => {
@@ -407,6 +423,34 @@ function Matches() {
                 className="flex-1 bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition"
               >
                 Confirm Bet
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Responsible Gambling Alert */}
+      {responsibleGamblingAlert && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] px-4">
+          <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-yellow-500/50 shadow-2xl text-center">
+            <div className="text-4xl mb-3">⚠️</div>
+            <h3 className="text-white text-xl font-bold mb-2">Responsible Gambling</h3>
+            <p className="text-gray-300 text-sm mb-4">
+              You are staking <span className="text-entain-gold font-bold">{responsibleGamblingAlert.stake} EP</span> which is more than 80% of your current balance.
+            </p>
+            <p className="text-gray-400 text-sm mb-6">We recommend responsible gambling. Do you still want to continue?</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setResponsibleGamblingAlert(null)}
+                className="flex-1 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition border border-entain-blue/30"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleResponsibleGamblingConfirm}
+                className="flex-1 bg-yellow-500 text-entain-dark font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition"
+              >
+                Continue
               </button>
             </div>
           </div>
