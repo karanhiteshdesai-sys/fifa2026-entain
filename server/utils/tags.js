@@ -6,13 +6,13 @@
  */
 
 const TAG_TIERS = [
-  { minReferrals: 50, name: 'Diamond Diplomat', emoji: '💎🎖️', boost: 35, color: '#B9F2FF' },
-  { minReferrals: 40, name: 'Gold Diplomat', emoji: '🥇🎖️', boost: 30, color: '#FFD700' },
-  { minReferrals: 30, name: 'Silver Diplomat', emoji: '🥈🎖️', boost: 25, color: '#C0C0C0' },
-  { minReferrals: 20, name: 'Diplomat', emoji: '🎖️', boost: 20, color: '#8B0000' },
+  { minReferrals: 50, name: 'Diamond Diplomat', emoji: '💎👑', boost: 35, color: '#B9F2FF' },
+  { minReferrals: 40, name: 'Gold Diplomat', emoji: '✨👑', boost: 30, color: '#FFD700' },
+  { minReferrals: 30, name: 'Silver Diplomat', emoji: '⚡👑', boost: 25, color: '#C0C0C0' },
+  { minReferrals: 20, name: 'Diplomat', emoji: '👑', boost: 20, color: '#8B0000' },
   { minReferrals: 10, name: 'Diamond', emoji: '💎', boost: 15, color: '#B9F2FF' },
-  { minReferrals: 5, name: 'Gold', emoji: '🥇', boost: 10, color: '#FFD700' },
-  { minReferrals: 3, name: 'Silver', emoji: '🥈', boost: 5, color: '#C0C0C0' },
+  { minReferrals: 5, name: 'Gold', emoji: '✨', boost: 10, color: '#FFD700' },
+  { minReferrals: 3, name: 'Silver', emoji: '⚡', boost: 5, color: '#C0C0C0' },
 ];
 
 /**

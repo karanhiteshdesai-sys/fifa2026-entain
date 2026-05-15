@@ -55,9 +55,19 @@ function Leaderboard() {
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-white font-medium">{player.name}</span>
+                  {player.department && <p className="text-gray-500 text-xs">{player.department}</p>}
                 </td>
                 <td className="px-4 py-4 text-center">
-                  <span className="text-sm" title={player.tag}>{player.tagEmoji || '👤'}</span>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                    player.tag === 'Diamond Diplomat' ? 'bg-cyan-400/20 text-cyan-300' :
+                    player.tag === 'Gold Diplomat' ? 'bg-yellow-400/20 text-yellow-300' :
+                    player.tag === 'Silver Diplomat' ? 'bg-gray-300/20 text-gray-300' :
+                    player.tag === 'Diplomat' ? 'bg-red-400/20 text-red-300' :
+                    player.tag === 'Diamond' ? 'bg-cyan-400/20 text-cyan-300' :
+                    player.tag === 'Gold' ? 'bg-yellow-400/20 text-yellow-300' :
+                    player.tag === 'Silver' ? 'bg-gray-300/20 text-gray-300' :
+                    'bg-gray-500/20 text-gray-400'
+                  }`} title={player.tag}>{player.tag}</span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="text-entain-gold font-bold">{player.points?.toLocaleString()} EP</span>

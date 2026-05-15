@@ -49,13 +49,13 @@ function Info() {
         <Section title="🏷️ VIP Tag System" items={[
           { label: 'What are Tags?', desc: 'Tags are VIP tiers earned by referring colleagues. Higher tags give better odds on every bet.' },
           { label: 'Employee (default)', desc: 'Everyone starts here. Base odds, no boost.' },
-          { label: '🥈 Silver (3+ referrals)', desc: '+5% odds boost on all bets.' },
-          { label: '🥇 Gold (5+ referrals)', desc: '+10% odds boost on all bets.' },
+          { label: '⚡ Silver (3+ referrals)', desc: '+5% odds boost on all bets.' },
+          { label: '✨ Gold (5+ referrals)', desc: '+10% odds boost on all bets.' },
           { label: '💎 Diamond (10+ referrals)', desc: '+15% odds boost on all bets.' },
-          { label: '🎖️ Diplomat (20+ referrals)', desc: '+20% odds boost on all bets.' },
-          { label: '🥈🎖️ Silver Diplomat (30+)', desc: '+25% odds boost on all bets.' },
-          { label: '🥇🎖️ Gold Diplomat (40+)', desc: '+30% odds boost on all bets.' },
-          { label: '💎🎖️ Diamond Diplomat (50+)', desc: '+35% odds boost — the maximum tier!' },
+          { label: '👑 Diplomat (20+ referrals)', desc: '+20% odds boost on all bets.' },
+          { label: '⚡👑 Silver Diplomat (30+)', desc: '+25% odds boost on all bets.' },
+          { label: '✨👑 Gold Diplomat (40+)', desc: '+30% odds boost on all bets.' },
+          { label: '💎👑 Diamond Diplomat (50+)', desc: '+35% odds boost — the maximum tier!' },
           { label: 'VIP Card', desc: 'View your virtual VIP card on the Home page. Tap to flip and reveal your tag.' },
         ]} />
 
