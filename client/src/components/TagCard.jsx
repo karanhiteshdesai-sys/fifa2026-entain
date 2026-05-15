@@ -63,16 +63,18 @@ function TagCard() {
         >
           {/* Front of Card */}
           <div
-            className="absolute inset-0 rounded-2xl p-6 flex flex-col justify-between border border-entain-blue/30 overflow-hidden"
+            className="absolute inset-0 rounded-2xl p-6 flex flex-col justify-between overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
               backgroundImage: 'url(/Enatinnewlogo.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              border: `2px solid ${colors.bg}`,
+              boxShadow: `0 0 20px ${colors.glow}`,
             }}
           >
-            {/* Dark overlay for readability */}
-            <div className="absolute inset-0 bg-black/50 rounded-2xl" />
+            {/* Tinted overlay matching tag color */}
+            <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(135deg, ${colors.bg}22 0%, rgba(0,0,0,0.6) 50%, ${colors.bg}22 100%)` }} />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-1">
                 <img src="/entain-logo.svg" alt="Entain" className="w-6 h-6" />
@@ -87,7 +89,7 @@ function TagCard() {
             </div>
 
             {/* Chip decoration */}
-            <div className="absolute bottom-6 right-6 w-10 h-7 rounded-md bg-gradient-to-br from-yellow-400/60 to-yellow-600/60 border border-yellow-500/30" />
+            <div className="absolute bottom-6 right-6 w-10 h-7 rounded-md border" style={{ background: `linear-gradient(135deg, ${colors.bg}99, ${colors.bg}44)`, borderColor: `${colors.bg}66` }} />
           </div>
 
           {/* Back of Card */}
