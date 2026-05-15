@@ -76,6 +76,44 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
     // Users who have placed bets (all time)
     const bettingUsersRes = await pool.query('SELECT COUNT(DISTINCT user_id) as count FROM bets');
 
+    // Bets per day (last 7 days)
+    const betsPerDayRes = await pool.query(`
+      SELECT DATE(created_at) as date, COUNT(*) as count
+      FROM bets
+      WHERE created_at > NOW() - INTERVAL '7 days'
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
+
+    // Bet outcome distribution
+    const betOutcomeRes = await pool.query(`
+      SELECT status, COUNT(*) as count FROM bets GROUP BY status
+    `);
+
+    // Bet prediction distribution (home/draw/away)
+    const betPredictionRes = await pool.query(`
+      SELECT prediction, COUNT(*) as count FROM bets GROUP BY prediction ORDER BY count DESC
+    `);
+
+    // Top bettors (by number of bets)
+    const topBettorsRes = await pool.query(`
+      SELECT u.name, COUNT(b.id) as bet_count, SUM(b.stake) as total_staked,
+        SUM(CASE WHEN b.status = 'won' THEN 1 ELSE 0 END) as wins
+      FROM bets b JOIN users u ON b.user_id = u.id
+      GROUP BY u.id, u.name
+      ORDER BY bet_count DESC
+      LIMIT 10
+    `);
+
+    // Registrations per day (last 7 days)
+    const registrationsPerDayRes = await pool.query(`
+      SELECT DATE(created_at) as date, COUNT(*) as count
+      FROM users
+      WHERE created_at > NOW() - INTERVAL '7 days' AND role != 'admin'
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
+
     // Recent bets (last 10)
     const recentBetsRes = await pool.query(`
       SELECT b.id, b.stake, b.prediction, b.created_at, u.name as user_name, m.home_team, m.away_team
@@ -100,6 +138,13 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
         betsToday: Number(todayBetsRes.rows[0].count),
         activeBettorsToday: Number(todayLoginsRes.rows[0].count),
         totalBettingUsers: Number(bettingUsersRes.rows[0].count)
+      },
+      charts: {
+        betsPerDay: betsPerDayRes.rows.map(r => ({ date: r.date, count: Number(r.count) })),
+        betOutcomes: betOutcomeRes.rows.map(r => ({ name: r.status, value: Number(r.count) })),
+        betPredictions: betPredictionRes.rows.map(r => ({ name: r.prediction, value: Number(r.count) })),
+        topBettors: topBettorsRes.rows.map(r => ({ name: r.name, bets: Number(r.bet_count), staked: Number(r.total_staked), wins: Number(r.wins) })),
+        registrationsPerDay: registrationsPerDayRes.rows.map(r => ({ date: r.date, count: Number(r.count) }))
       },
       recentBets: recentBetsRes.rows
     });

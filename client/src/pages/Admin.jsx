@@ -950,7 +950,7 @@ function ActivityPanel() {
 
   useEffect(() => {
     fetchActivity();
-    const interval = setInterval(fetchActivity, 10000); // Refresh every 10s
+    const interval = setInterval(fetchActivity, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -973,7 +973,7 @@ function ActivityPanel() {
     return <div className="text-gray-400 text-center py-12">Failed to load activity data.</div>;
   }
 
-  const { online, stats, recentBets } = activity;
+  const { online, stats, charts, recentBets } = activity;
 
   const pageLabels = {
     home: '🏠 Home',
@@ -991,61 +991,166 @@ function ActivityPanel() {
     unknown: '❓ Unknown'
   };
 
+  const COLORS = ['#00e5a0', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'];
+
+  const predictionColors = { home: '#00e5a0', draw: '#f59e0b', away: '#3b82f6' };
+
   return (
     <div className="space-y-4">
       {/* Live Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
-          <p className="text-3xl font-bold text-entain-green">{online.count}</p>
-          <p className="text-gray-400 text-xs mt-1">Online Now</p>
-        </div>
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
-          <p className="text-3xl font-bold text-entain-accent">{stats.approvedUsers}</p>
-          <p className="text-gray-400 text-xs mt-1">Registered Users</p>
-        </div>
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
-          <p className="text-3xl font-bold text-entain-gold">{stats.totalBets}</p>
-          <p className="text-gray-400 text-xs mt-1">Total Bets</p>
-        </div>
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
-          <p className="text-3xl font-bold text-blue-400">{stats.totalBettingUsers}</p>
-          <p className="text-gray-400 text-xs mt-1">Users Who Bet</p>
-        </div>
+        <StatCard value={online.count} label="Online Now" color="text-entain-green" icon="🟢" />
+        <StatCard value={stats.approvedUsers} label="Registered Users" color="text-entain-accent" icon="👥" />
+        <StatCard value={stats.totalBets} label="Total Bets" color="text-entain-gold" icon="🎫" />
+        <StatCard value={stats.totalBettingUsers} label="Users Who Bet" color="text-blue-400" icon="🎯" />
       </div>
 
       {/* Today's Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
-          <p className="text-gray-400 text-xs">Bets Today (24h)</p>
-          <p className="text-white text-2xl font-bold mt-1">{stats.betsToday}</p>
+      <div className="grid grid-cols-3 gap-3">
+        <StatCard value={stats.betsToday} label="Bets Today (24h)" color="text-white" small />
+        <StatCard value={stats.activeBettorsToday} label="Active Bettors Today" color="text-white" small />
+        <StatCard value={stats.pendingBets} label="Pending Bets" color="text-yellow-400" small />
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Bets Per Day - Bar Chart */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">📈 Bets Per Day (Last 7 Days)</h3>
+          {charts.betsPerDay.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-8">No data yet</p>
+          ) : (
+            <div className="space-y-2">
+              {charts.betsPerDay.map((day, i) => {
+                const maxCount = Math.max(...charts.betsPerDay.map(d => d.count));
+                const pct = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
+                return (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-gray-400 text-xs w-16 shrink-0">
+                      {new Date(day.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    </span>
+                    <div className="flex-1 bg-entain-dark rounded-full h-5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-entain-accent to-entain-green transition-all duration-500"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-white font-bold text-sm w-8 text-right">{day.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
-          <p className="text-gray-400 text-xs">Active Bettors Today</p>
-          <p className="text-white text-2xl font-bold mt-1">{stats.activeBettorsToday}</p>
+
+        {/* Bet Predictions - Donut */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">🎯 Bet Predictions Breakdown</h3>
+          {charts.betPredictions.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-8">No data yet</p>
+          ) : (
+            <div>
+              <div className="flex justify-center mb-4">
+                <DonutChart data={charts.betPredictions} colors={predictionColors} />
+              </div>
+              <div className="flex justify-center gap-4">
+                {charts.betPredictions.map((item, i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: predictionColors[item.name] || COLORS[i % COLORS.length] }} />
+                    <span className="text-gray-300 text-xs capitalize">{item.name}</span>
+                    <span className="text-white text-xs font-bold">({item.value})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
-          <p className="text-gray-400 text-xs">Pending Bets</p>
-          <p className="text-yellow-400 text-2xl font-bold mt-1">{stats.pendingBets}</p>
+      </div>
+
+      {/* Bet Outcomes & Top Bettors */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Bet Outcomes */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">📊 Bet Outcomes</h3>
+          {charts.betOutcomes.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-8">No data yet</p>
+          ) : (
+            <div className="space-y-3">
+              {charts.betOutcomes.map((outcome, i) => {
+                const total = charts.betOutcomes.reduce((sum, o) => sum + o.value, 0);
+                const pct = total > 0 ? Math.round((outcome.value / total) * 100) : 0;
+                const colorMap = { won: '#00e5a0', lost: '#ef4444', pending: '#f59e0b', voided: '#6b7280' };
+                return (
+                  <div key={i}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-300 capitalize">{outcome.name}</span>
+                      <span className="text-white font-bold">{outcome.value} ({pct}%)</span>
+                    </div>
+                    <div className="w-full bg-entain-dark rounded-full h-3 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${pct}%`, backgroundColor: colorMap[outcome.name] || COLORS[i] }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Top Bettors */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">🏅 Top Bettors</h3>
+          {charts.topBettors.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-8">No data yet</p>
+          ) : (
+            <div className="space-y-2">
+              {charts.topBettors.map((bettor, i) => (
+                <div key={i} className="flex items-center justify-between text-sm bg-entain-dark/50 rounded-lg px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-entain-gold font-bold w-5">#{i + 1}</span>
+                    <span className="text-white">{bettor.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs">
+                    <span className="text-gray-400">{bettor.bets} bets</span>
+                    <span className="text-entain-accent">{bettor.staked} EP staked</span>
+                    <span className="text-entain-green">{bettor.wins}W</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Online Users & Page Breakdown */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Page Breakdown */}
+        {/* Page Breakdown - Visual */}
         <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
           <h3 className="text-white font-semibold mb-3">📍 Where Users Are</h3>
           {Object.keys(online.pageBreakdown).length === 0 ? (
-            <p className="text-gray-500 text-sm">No active users right now.</p>
+            <p className="text-gray-500 text-sm text-center py-4">No active users right now.</p>
           ) : (
             <div className="space-y-2">
               {Object.entries(online.pageBreakdown)
                 .sort((a, b) => b[1] - a[1])
-                .map(([page, count]) => (
-                  <div key={page} className="flex items-center justify-between">
-                    <span className="text-gray-300 text-sm">{pageLabels[page] || page}</span>
-                    <span className="text-white font-bold text-sm">{count}</span>
-                  </div>
-                ))}
+                .map(([page, count], i) => {
+                  const total = online.count;
+                  const pct = total > 0 ? (count / total) * 100 : 0;
+                  return (
+                    <div key={page} className="flex items-center gap-3">
+                      <span className="text-gray-300 text-sm w-28 shrink-0">{pageLabels[page] || page}</span>
+                      <div className="flex-1 bg-entain-dark rounded-full h-4 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                        />
+                      </div>
+                      <span className="text-white font-bold text-sm w-6 text-right">{count}</span>
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
@@ -1058,10 +1163,11 @@ function ActivityPanel() {
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {online.users.map(u => (
-                <div key={u.id} className="flex items-center justify-between text-sm">
-                  <div>
+                <div key={u.id} className="flex items-center justify-between text-sm bg-entain-dark/30 rounded-lg px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-entain-green animate-pulse" />
                     <span className="text-white">{u.name}</span>
-                    {u.role === 'admin' && <span className="text-yellow-400 ml-1 text-[10px]">ADMIN</span>}
+                    {u.role === 'admin' && <span className="text-yellow-400 text-[10px]">ADMIN</span>}
                   </div>
                   <span className="text-gray-500 text-xs">{pageLabels[u.currentPage] || u.currentPage}</span>
                 </div>
@@ -1083,7 +1189,7 @@ function ActivityPanel() {
                 <div>
                   <span className="text-entain-accent font-medium">{bet.user_name}</span>
                   <span className="text-gray-400 ml-2">
-                    bet {bet.stake} EP on <span className="text-white">{bet.prediction}</span> in {bet.home_team} vs {bet.away_team}
+                    bet <span className="text-entain-gold font-bold">{bet.stake} EP</span> on <span className="text-white font-medium capitalize">{bet.prediction}</span> in {bet.home_team} vs {bet.away_team}
                   </span>
                 </div>
                 <span className="text-gray-500 text-xs whitespace-nowrap ml-2">
@@ -1095,8 +1201,63 @@ function ActivityPanel() {
         )}
       </div>
 
-      <p className="text-gray-600 text-xs text-center">Auto-refreshes every 10 seconds</p>
+      <p className="text-gray-600 text-xs text-center">Auto-refreshes every 10 seconds • Data resets on server restart</p>
     </div>
+  );
+}
+
+function StatCard({ value, label, color, icon, small }) {
+  return (
+    <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
+      {icon && !small && <span className="text-lg">{icon}</span>}
+      <p className={`${small ? 'text-2xl' : 'text-3xl'} font-bold ${color}`}>{value}</p>
+      <p className="text-gray-400 text-xs mt-1">{label}</p>
+    </div>
+  );
+}
+
+function DonutChart({ data, colors }) {
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  if (total === 0) return null;
+
+  const size = 120;
+  const strokeWidth = 20;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+
+  let offset = 0;
+  const segments = data.map((item, i) => {
+    const pct = item.value / total;
+    const dashLength = pct * circumference;
+    const segment = {
+      dashArray: `${dashLength} ${circumference - dashLength}`,
+      dashOffset: -offset,
+      color: colors[item.name] || ['#00e5a0', '#f59e0b', '#3b82f6', '#ef4444'][i % 4]
+    };
+    offset += dashLength;
+    return segment;
+  });
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {segments.map((seg, i) => (
+        <circle
+          key={i}
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth={strokeWidth}
+          strokeDasharray={seg.dashArray}
+          strokeDashoffset={seg.dashOffset}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      ))}
+      <text x="50%" y="50%" textAnchor="middle" dy="0.35em" className="fill-white text-lg font-bold">
+        {total}
+      </text>
+    </svg>
   );
 }
 
