@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import TagCard from '../components/TagCard';
 
 function Home() {
   const [user, setUser] = useState(null);
@@ -63,6 +64,15 @@ function Home() {
         <div className="w-full md:w-auto">
           <ReferralCard />
         </div>
+      </div>
+
+      {/* Tag Card Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-white font-semibold text-lg">🏷️ Your VIP Tag</h2>
+          <Link to="/my-tag" className="text-entain-accent text-sm hover:underline">View details →</Link>
+        </div>
+        <TagCard />
       </div>
 
       {/* Balance & Stats */}

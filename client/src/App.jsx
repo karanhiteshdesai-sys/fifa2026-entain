@@ -11,6 +11,7 @@ import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Info from './pages/Info';
 import Team from './pages/Team';
+import MyTag from './pages/MyTag';
 import Navbar from './components/Navbar';
 import ChatBot from './components/ChatBot';
 import FloatingChat from './components/FloatingChat';
@@ -109,6 +110,7 @@ function App() {
           <Route path="/my-bets" element={<MyBets />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/my-tag" element={<MyTag />} />
           <Route path="/info" element={<Info />} />
           <Route path="/team" element={<Team />} />
           {user.role === 'admin' && <Route path="/admin" element={<Admin />} />}

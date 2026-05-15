@@ -88,6 +88,13 @@ function Navbar({ user, onLogout }) {
                     <p className="text-entain-gold text-xs font-bold mt-1">{user.points?.toLocaleString()} EP</p>
                   </div>
                   <Link
+                    to="/my-tag"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2.5 text-gray-300 hover:bg-entain-blue/20 hover:text-white text-sm transition"
+                  >
+                    🏷️ My Tag
+                  </Link>
+                  <Link
                     to="/change-password"
                     onClick={() => setProfileOpen(false)}
                     className="block px-4 py-2.5 text-gray-300 hover:bg-entain-blue/20 hover:text-white text-sm transition"

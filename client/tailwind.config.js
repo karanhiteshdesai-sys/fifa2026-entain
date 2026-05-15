@@ -17,11 +17,16 @@ export default {
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
+        'card-flip': 'cardFlip 0.7s ease-in-out',
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translate(-50%, 20px)' },
           '100%': { opacity: '1', transform: 'translate(-50%, 0)' },
+        },
+        cardFlip: {
+          '0%': { transform: 'rotateY(0deg)' },
+          '100%': { transform: 'rotateY(180deg)' },
         },
       },
     }

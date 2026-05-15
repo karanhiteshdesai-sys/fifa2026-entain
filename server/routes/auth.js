@@ -1,8 +1,9 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db } = require('../db/database');
+const { db, pool } = require('../db/database');
 const { JWT_SECRET, authenticate } = require('../middleware/auth');
+const { getUserTag } = require('../utils/tags');
 
 const router = express.Router();
 
@@ -101,6 +102,22 @@ router.put('/change-password', authenticate, async (req, res) => {
     await db.updateUserPassword(req.user.id, bcrypt.hashSync(newPassword, 10));
     res.json({ message: 'Password changed successfully.' });
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+});
+
+// GET /api/auth/my-tag - Get user's tag info based on referral count
+router.get('/my-tag', authenticate, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT COUNT(*) as count FROM users WHERE referred_by = $1 AND status = 'approved'",
+      [req.user.id]
+    );
+    const referralCount = Number(rows[0].count);
+    const tagInfo = getUserTag(referralCount);
+    res.json(tagInfo);
+  } catch (err) {
+    console.error('Tag error:', err);
+    res.status(500).json({ error: 'Server error.' });
+  }
 });
 
 module.exports = router;
