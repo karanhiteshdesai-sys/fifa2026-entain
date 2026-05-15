@@ -970,10 +970,13 @@ function ActivityPanel() {
   }
 
   if (!activity) {
-    return <div className="text-gray-400 text-center py-12">Failed to load activity data.</div>;
+    return <div className="text-gray-400 text-center py-12">Failed to load activity data. Make sure the server is updated and redeployed.</div>;
   }
 
-  const { online, stats, charts, recentBets } = activity;
+  const online = activity.online || { count: 0, users: [], pageBreakdown: {} };
+  const stats = activity.stats || { totalUsers: 0, approvedUsers: 0, totalBets: 0, pendingBets: 0, betsToday: 0, activeBettorsToday: 0, totalBettingUsers: 0 };
+  const charts = activity.charts || { betsPerDay: [], betOutcomes: [], betPredictions: [], topBettors: [], registrationsPerDay: [] };
+  const recentBets = activity.recentBets || [];
 
   const pageLabels = {
     home: '🏠 Home',
