@@ -48,16 +48,71 @@ function Info() {
 
         <Section title="🏷️ VIP Tag System" items={[
           { label: 'What are Tags?', desc: 'Tags are VIP tiers earned by referring colleagues. Higher tags give better odds on every bet.' },
-          { label: 'Employee (default)', desc: 'Everyone starts here. Base odds, no boost.' },
-          { label: '⚡ Silver (3+ referrals)', desc: '+5% odds boost on all bets.' },
-          { label: '✨ Gold (5+ referrals)', desc: '+10% odds boost on all bets.' },
-          { label: '💎 Diamond (10+ referrals)', desc: '+15% odds boost on all bets.' },
-          { label: '👑 Diplomat (20+ referrals)', desc: '+20% odds boost on all bets.' },
-          { label: '⚡👑 Silver Diplomat (30+)', desc: '+25% odds boost on all bets.' },
-          { label: '✨👑 Gold Diplomat (40+)', desc: '+30% odds boost on all bets.' },
-          { label: '💎👑 Diamond Diplomat (50+)', desc: '+35% odds boost — the maximum tier!' },
           { label: 'VIP Card', desc: 'View your virtual VIP card on the Home page. Tap to flip and reveal your tag.' },
         ]} />
+
+        {/* Tag Thresholds Table */}
+        <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+          <div className="px-5 py-3 border-b border-entain-blue/10">
+            <h3 className="text-white font-semibold">📈 Tag Thresholds & Odds Boost</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-entain-blue/20">
+                  <th className="text-left text-gray-400 px-5 py-3">Tag</th>
+                  <th className="text-center text-gray-400 px-4 py-3">Referrals Needed</th>
+                  <th className="text-center text-gray-400 px-4 py-3">Odds Boost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">👤 Employee</td>
+                  <td className="px-4 py-2.5 text-center text-gray-400">0 (default)</td>
+                  <td className="px-4 py-2.5 text-center text-gray-500">—</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">⚡ Silver</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">3+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+5%</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">✨ Gold</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">5+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+10%</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">💎 Diamond</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">10+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+15%</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">👑 Diplomat</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">20+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+20%</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">⚡👑 Silver Diplomat</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">30+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+25%</td>
+                </tr>
+                <tr className="border-b border-entain-blue/10">
+                  <td className="px-5 py-2.5 text-white">✨👑 Gold Diplomat</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">40+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+30%</td>
+                </tr>
+                <tr>
+                  <td className="px-5 py-2.5 text-white">💎👑 Diamond Diplomat</td>
+                  <td className="px-4 py-2.5 text-center text-gray-300">50+</td>
+                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+35%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="px-5 py-3 border-t border-entain-blue/10">
+            <p className="text-gray-500 text-xs">💡 Odds boost is applied automatically when you place a bet. The higher your tag, the better your payout!</p>
+          </div>
+        </div>
 
         <Section title="🤖 AI Assistant" items={[
           { label: 'Ask anything', desc: 'Click the bot icon (bottom-right) to ask about matches, teams, groups, dates, or how to use the app.' },
