@@ -13,6 +13,10 @@ function Admin() {
   const [userStatusFilter, setUserStatusFilter] = useState('all');
   const [betSearch, setBetSearch] = useState('');
   const [betStatusFilter, setBetStatusFilter] = useState('all');
+  const [dmUser, setDmUser] = useState(null); // user object for DM modal
+  const [dmText, setDmText] = useState('');
+  const [dmConversation, setDmConversation] = useState([]);
+  const [dmSending, setDmSending] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -109,6 +113,34 @@ function Admin() {
       link.remove();
     } catch (err) {
       setMessage('Failed to download Excel.');
+    }
+  };
+
+  const openDM = async (user) => {
+    setDmUser(user);
+    setDmText('');
+    try {
+      const { data } = await api.get(`/dm/conversation/${user.id}`);
+      setDmConversation(data);
+    } catch (err) {
+      setDmConversation([]);
+    }
+  };
+
+  const sendDM = async () => {
+    if (!dmText.trim() || !dmUser || dmSending) return;
+    setDmSending(true);
+    try {
+      await api.post('/dm/send', { to_user_id: dmUser.id, message: dmText.trim() });
+      setDmText('');
+      setMessage(`Message sent to ${dmUser.name}.`);
+      // Refresh conversation
+      const { data } = await api.get(`/dm/conversation/${dmUser.id}`);
+      setDmConversation(data);
+    } catch (err) {
+      setMessage(err.response?.data?.error || 'Failed to send message.');
+    } finally {
+      setDmSending(false);
     }
   };
 
@@ -452,6 +484,12 @@ function Admin() {
                     <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
                     <td className="px-6 py-3 text-right">
                       <button
+                        onClick={() => openDM(user)}
+                        className="text-blue-400 text-sm hover:underline mr-3"
+                      >
+                        ✉️ Message
+                      </button>
+                      <button
                         onClick={() => {
                           const amount = window.prompt(`Add EP to ${user.name}.\nEnter amount:`);
                           if (amount && Number(amount) > 0) {
@@ -641,6 +679,77 @@ function Admin() {
       {/* Broadcast Tab */}
       {tab === 'broadcast' && (
         <BroadcastPanel setMessage={setMessage} userCount={users.length} />
+      )}
+
+      {/* DM Modal */}
+      {dmUser && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] px-4">
+          <div className="bg-entain-navy rounded-xl w-full max-w-lg border border-entain-blue/30 shadow-2xl flex flex-col max-h-[80vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-entain-blue/20">
+              <div>
+                <h3 className="text-white font-semibold">✉️ Message {dmUser.name}</h3>
+                <p className="text-gray-400 text-xs">{dmUser.email}</p>
+              </div>
+              <button
+                onClick={() => setDmUser(null)}
+                className="text-gray-400 hover:text-white text-xl transition"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Conversation */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]">
+              {dmConversation.length === 0 && (
+                <p className="text-gray-500 text-center text-sm py-8">No messages yet. Start the conversation!</p>
+              )}
+              {dmConversation.map((msg) => {
+                const isAdmin = msg.from_role === 'admin';
+                return (
+                  <div key={msg.id} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[75%]`}>
+                      <div className={`px-3 py-2 rounded-lg text-sm ${
+                        isAdmin
+                          ? 'bg-entain-accent text-entain-dark rounded-br-none'
+                          : 'bg-entain-dark text-gray-200 border border-entain-blue/20 rounded-bl-none'
+                      }`}>
+                        <p>{msg.message}</p>
+                        <p className={`text-[10px] mt-1 ${isAdmin ? 'text-entain-dark/60' : 'text-gray-500'}`}>
+                          {new Date(msg.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Input */}
+            <div className="px-4 py-3 border-t border-entain-blue/20">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={dmText}
+                  onChange={(e) => setDmText(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') sendDM(); }}
+                  placeholder={`Message ${dmUser.name}...`}
+                  maxLength={1000}
+                  className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500"
+                  disabled={dmSending}
+                />
+                <button
+                  onClick={sendDM}
+                  disabled={dmSending || !dmText.trim()}
+                  className="bg-entain-accent text-entain-dark font-bold px-4 py-2.5 rounded-lg hover:bg-entain-accent/90 transition disabled:opacity-50 text-sm"
+                >
+                  {dmSending ? '...' : 'Send'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

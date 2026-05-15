@@ -38,6 +38,7 @@ async function start() {
   const chatRoutes = require('./routes/chat');
   const groupChatRoutes = require('./routes/groupchat');
   const notificationRoutes = require('./routes/notifications');
+  const dmRoutes = require('./routes/dm');
 
   app.use('/api/auth', authRoutes);
   app.use('/api/matches', matchRoutes);
@@ -49,6 +50,7 @@ async function start() {
   app.use('/api/chat', chatRoutes);
   app.use('/api/groupchat', groupChatRoutes);
   app.use('/api/notifications', notificationRoutes);
+  app.use('/api/dm', dmRoutes);
 
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'FIFA 2026 Predictions API' });

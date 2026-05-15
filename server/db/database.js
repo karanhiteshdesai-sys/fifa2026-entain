@@ -78,6 +78,15 @@ async function initDb() {
       message TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS direct_messages (
+      id SERIAL PRIMARY KEY,
+      from_user_id INTEGER REFERENCES users(id),
+      to_user_id INTEGER REFERENCES users(id),
+      message TEXT NOT NULL,
+      read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   // Add new columns for existing databases (safe to run multiple times)
@@ -319,6 +328,59 @@ const db = {
 
   async updateUserReferralCode(userId, code) {
     await pool.query('UPDATE users SET referral_code = $1 WHERE id = $2', [code, userId]);
+  },
+
+  // ===== DIRECT MESSAGES =====
+  async sendDirectMessage(fromUserId, toUserId, message) {
+    const { rows } = await pool.query(
+      'INSERT INTO direct_messages (from_user_id, to_user_id, message) VALUES ($1, $2, $3) RETURNING *',
+      [fromUserId, toUserId, message]
+    );
+    return rows[0];
+  },
+
+  async getDirectMessages(userId) {
+    const { rows } = await pool.query(`
+      SELECT dm.*, 
+        sender.name as from_name, sender.role as from_role,
+        receiver.name as to_name
+      FROM direct_messages dm
+      JOIN users sender ON dm.from_user_id = sender.id
+      JOIN users receiver ON dm.to_user_id = receiver.id
+      WHERE dm.to_user_id = $1 OR dm.from_user_id = $1
+      ORDER BY dm.created_at DESC
+      LIMIT 100
+    `, [userId]);
+    return rows;
+  },
+
+  async getConversation(userId1, userId2) {
+    const { rows } = await pool.query(`
+      SELECT dm.*, 
+        sender.name as from_name, sender.role as from_role
+      FROM direct_messages dm
+      JOIN users sender ON dm.from_user_id = sender.id
+      WHERE (dm.from_user_id = $1 AND dm.to_user_id = $2)
+         OR (dm.from_user_id = $2 AND dm.to_user_id = $1)
+      ORDER BY dm.created_at ASC
+      LIMIT 100
+    `, [userId1, userId2]);
+    return rows;
+  },
+
+  async markDirectMessagesRead(userId, fromUserId) {
+    await pool.query(
+      'UPDATE direct_messages SET read = true WHERE to_user_id = $1 AND from_user_id = $2 AND read = false',
+      [userId, fromUserId]
+    );
+  },
+
+  async getUnreadDMCount(userId) {
+    const { rows } = await pool.query(
+      'SELECT COUNT(*) as count FROM direct_messages WHERE to_user_id = $1 AND read = false',
+      [userId]
+    );
+    return Number(rows[0].count);
   }
 };
 

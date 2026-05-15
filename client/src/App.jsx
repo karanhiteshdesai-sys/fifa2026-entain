@@ -7,6 +7,7 @@ import Leaderboard from './pages/Leaderboard';
 import MyBets from './pages/MyBets';
 import Standings from './pages/Standings';
 import Chat from './pages/Chat';
+import Messages from './pages/Messages';
 import Admin from './pages/Admin';
 import ChangePassword from './pages/ChangePassword';
 import Info from './pages/Info';
@@ -136,6 +137,7 @@ function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/my-bets" element={<MyBets />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/my-tag" element={<MyTag />} />
           <Route path="/info" element={<Info />} />

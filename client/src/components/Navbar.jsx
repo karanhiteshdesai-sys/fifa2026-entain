@@ -95,6 +95,13 @@ function Navbar({ user, onLogout }) {
                     🏷️ My Tag
                   </Link>
                   <Link
+                    to="/messages"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2.5 text-gray-300 hover:bg-entain-blue/20 hover:text-white text-sm transition"
+                  >
+                    ✉️ Messages
+                  </Link>
+                  <Link
                     to="/change-password"
                     onClick={() => setProfileOpen(false)}
                     className="block px-4 py-2.5 text-gray-300 hover:bg-entain-blue/20 hover:text-white text-sm transition"
