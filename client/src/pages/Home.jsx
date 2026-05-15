@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import TagCard from '../components/TagCard';
+import { getFlag } from '../utils/flags';
 
 function Home() {
   const [user, setUser] = useState(null);
@@ -115,7 +116,12 @@ function Home() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs bg-entain-blue/50 text-gray-300 px-2 py-0.5 rounded">Group {match.group_name}</span>
                   </div>
-                  <p className="text-white font-medium">{match.home_team} vs {match.away_team}</p>
+                  <p className="text-white font-medium inline-flex items-center gap-1 flex-wrap">
+                    {getFlag(match.home_team) && <img src={getFlag(match.home_team)} alt="" className="w-5 h-4 object-cover rounded-sm" />}
+                    {match.home_team} vs
+                    {getFlag(match.away_team) && <img src={getFlag(match.away_team)} alt="" className="w-5 h-4 object-cover rounded-sm" />}
+                    {match.away_team}
+                  </p>
                   <p className="text-gray-500 text-xs mt-1">
                     {new Date(match.match_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </p>
@@ -237,7 +243,10 @@ function LiveScoresWidget({ matches }) {
         <div className="space-y-2">
           {displayMatches.map(m => (
             <div key={m.id} className="bg-entain-dark rounded-lg p-3 flex items-center">
-              <span className="text-white text-sm flex-1 text-right truncate">{m.home_team}</span>
+              <span className="text-white text-sm flex-1 text-right truncate inline-flex items-center justify-end gap-1">
+                {getFlag(m.home_team) && <img src={getFlag(m.home_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
+                {m.home_team}
+              </span>
               <div className="w-20 text-center flex-shrink-0">
                 {m.status === 'finished' ? (
                   <span className="text-white font-bold text-lg">{m.home_score} - {m.away_score}</span>
@@ -247,7 +256,10 @@ function LiveScoresWidget({ matches }) {
                   <span className="text-gray-500 text-xs">{new Date(m.match_date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                 )}
               </div>
-              <span className="text-white text-sm flex-1 truncate">{m.away_team}</span>
+              <span className="text-white text-sm flex-1 truncate inline-flex items-center gap-1">
+                {getFlag(m.away_team) && <img src={getFlag(m.away_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
+                {m.away_team}
+              </span>
               {m.status === 'live' && <span className="text-red-400 text-xs ml-2 animate-pulse">●</span>}
               {m.status === 'finished' && <span className="text-gray-500 text-xs ml-2">FT</span>}
             </div>
