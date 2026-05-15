@@ -142,6 +142,32 @@ router.post('/broadcast', authenticate, requireAdmin, async (req, res) => {
   } catch (err) { console.error('Broadcast error:', err); res.status(500).json({ error: 'Broadcast failed: ' + err.message }); }
 });
 
+router.post('/bets/:id/void', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const betId = Number(req.params.id);
+    const { rows } = await pool.query('SELECT * FROM bets WHERE id = $1', [betId]);
+    if (!rows[0]) return res.status(404).json({ error: 'Bet not found.' });
+    const bet = rows[0];
+    if (bet.status !== 'pending') return res.status(400).json({ error: 'Can only void pending bets.' });
+
+    await pool.query("UPDATE bets SET status = 'voided', payout = 0 WHERE id = $1", [betId]);
+    await db.addPoints(bet.user_id, bet.stake); // Refund
+    await db.createNotification(bet.user_id, 'Bet Voided', `Your bet (${bet.stake} EP) has been voided by admin. Points refunded.`);
+    res.json({ message: 'Bet voided and refunded.' });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to void bet.' }); }
+});
+
+router.delete('/bets/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const betId = Number(req.params.id);
+    const { rows } = await pool.query('SELECT * FROM bets WHERE id = $1', [betId]);
+    if (!rows[0]) return res.status(404).json({ error: 'Bet not found.' });
+
+    await pool.query('DELETE FROM bets WHERE id = $1', [betId]);
+    res.json({ message: 'Bet deleted.' });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to delete bet.' }); }
+});
+
 router.post('/generate-knockout', authenticate, requireAdmin, async (req, res) => {
   try {
     const { generateKnockoutRound } = require('../services/knockout');

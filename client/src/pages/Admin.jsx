@@ -546,6 +546,7 @@ function Admin() {
                   <th className="text-right text-gray-400 px-4 py-3">Odds</th>
                   <th className="text-center text-gray-400 px-4 py-3">Status</th>
                   <th className="text-right text-gray-400 px-4 py-3">Payout</th>
+                  <th className="text-right text-gray-400 px-4 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -566,6 +567,7 @@ function Admin() {
                       <span className={`px-2 py-0.5 rounded text-xs ${
                         bet.status === 'won' ? 'bg-green-500/20 text-green-400' :
                         bet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
+                        bet.status === 'voided' ? 'bg-gray-500/20 text-gray-400' :
                         'bg-yellow-500/20 text-yellow-400'
                       }`}>
                         {bet.status === 'pending' ? 'Bet Placed' : bet.status}
@@ -578,6 +580,36 @@ function Admin() {
                         <span className="text-gray-500">{Math.round(bet.stake * bet.odds)} EP</span>
                       ) : (
                         <span className="text-gray-500">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {bet.status === 'pending' && (
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Void bet by ${bet.user_name}? Their ${bet.stake} EP will be refunded.`)) {
+                                api.post(`/admin/bets/${bet.id}/void`)
+                                  .then(() => { setMessage(`Bet voided. ${bet.stake} EP refunded to ${bet.user_name}.`); fetchData(); })
+                                  .catch(() => setMessage('Failed to void bet.'));
+                              }
+                            }}
+                            className="text-yellow-400 text-xs hover:underline"
+                          >
+                            Void
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Delete bet by ${bet.user_name}? Their ${bet.stake} EP will NOT be refunded.`)) {
+                                api.delete(`/admin/bets/${bet.id}`)
+                                  .then(() => { setMessage(`Bet deleted.`); fetchData(); })
+                                  .catch(() => setMessage('Failed to delete bet.'));
+                              }
+                            }}
+                            className="text-red-400 text-xs hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>
