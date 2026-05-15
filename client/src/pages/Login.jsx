@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
 
 function Login({ onLogin }) {
@@ -8,6 +8,16 @@ function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Auto-fill referral code from URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      setForm(prev => ({ ...prev, referralCode: ref }));
+      setIsRegister(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

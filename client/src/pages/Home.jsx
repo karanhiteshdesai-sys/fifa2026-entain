@@ -319,7 +319,8 @@ function ReferralCard() {
   const referralCode = `FIFA-${prefix}${idPart}`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(referralCode);
+    const link = `${window.location.origin}/?ref=${referralCode}`;
+    navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
