@@ -66,17 +66,13 @@ function TagCard() {
             className="absolute inset-0 rounded-2xl p-6 flex flex-col justify-between border border-entain-blue/30 overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              background: 'linear-gradient(135deg, #351a52 0%, #1a1a2e 50%, #6b21a8 100%)',
+              backgroundImage: 'url(/Enatinnewlogo.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
-            {/* Decorative pattern */}
-            <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="80" cy="20" r="40" fill="white" />
-                <circle cx="60" cy="40" r="20" fill="white" />
-              </svg>
-            </div>
-
+            {/* Dark overlay for readability */}
+            <div className="absolute inset-0 bg-black/50 rounded-2xl" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-1">
                 <img src="/entain-logo.svg" alt="Entain" className="w-6 h-6" />
