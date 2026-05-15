@@ -34,7 +34,7 @@ function Leaderboard() {
     <div>
       <h2 className="text-2xl font-bold text-white mb-6">🏆 Leaderboard</h2>
 
-      <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+      <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-entain-blue/20">

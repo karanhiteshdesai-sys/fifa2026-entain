@@ -93,7 +93,7 @@ function Standings() {
       </div>
 
       {/* Standings Table */}
-      <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden mb-6">
+      <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto mb-6">
         <div className="px-5 py-3 border-b border-entain-blue/20">
           <h3 className="text-white font-semibold">Group {selectedGroup}</h3>
         </div>

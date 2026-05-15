@@ -421,7 +421,7 @@ function Admin() {
           </div>
 
           {/* All Users */}
-          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
             <div className="px-6 py-3 border-b border-entain-blue/20">
               <h3 className="text-white font-semibold">All Registered Users ({filteredUsers.length})</h3>
             </div>
@@ -431,6 +431,7 @@ function Admin() {
                   <th className="text-left text-gray-400 text-sm px-6 py-3">Name</th>
                   <th className="text-left text-gray-400 text-sm px-6 py-3">Email</th>
                   <th className="text-center text-gray-400 text-sm px-4 py-3">Status</th>
+                  <th className="text-center text-gray-400 text-sm px-4 py-3">Referrals</th>
                   <th className="text-right text-gray-400 text-sm px-6 py-3">Points</th>
                   <th className="text-right text-gray-400 text-sm px-6 py-3">Actions</th>
                 </tr>
@@ -447,6 +448,7 @@ function Admin() {
                         'bg-red-500/20 text-red-400'
                       }`}>{user.status || 'approved'}</span>
                     </td>
+                    <td className="px-4 py-3 text-center text-white font-medium">{user.referral_count || 0}</td>
                     <td className="px-6 py-3 text-right text-entain-gold font-bold">{user.points} EP</td>
                     <td className="px-6 py-3 text-right">
                       <button
@@ -548,7 +550,7 @@ function Admin() {
             </select>
           </div>
 
-          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+          <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-entain-blue/20 text-xs">
@@ -778,7 +780,7 @@ function PendingApprovals({ onAction, setMessage }) {
   }
 
   return (
-    <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+    <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
       <div className="px-6 py-3 border-b border-entain-blue/20 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h3 className="text-white font-semibold">⏳ Pending Approvals</h3>

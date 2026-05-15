@@ -34,7 +34,18 @@ router.put('/matches/:id/result', authenticate, requireAdmin, async (req, res) =
 });
 
 router.get('/users', authenticate, requireAdmin, async (req, res) => {
-  try { res.json(await db.getAllUsersIncludingStatus()); } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+  try {
+    const users = await db.getAllUsersIncludingStatus();
+    // Add referral count for each user
+    const withReferrals = await Promise.all(users.map(async (u) => {
+      const { rows } = await pool.query(
+        "SELECT COUNT(*) as count FROM users WHERE referred_by = $1 AND status = 'approved'",
+        [u.id]
+      );
+      return { ...u, referral_count: Number(rows[0].count) };
+    }));
+    res.json(withReferrals);
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
 
 router.get('/pending-users', authenticate, requireAdmin, async (req, res) => {

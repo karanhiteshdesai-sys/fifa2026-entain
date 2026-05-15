@@ -114,7 +114,7 @@ function FloatingChat() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 left-5 w-80 sm:w-96 h-[500px] bg-entain-navy rounded-xl shadow-2xl border border-entain-blue/30 flex flex-col z-50 overflow-hidden">
+        <div className="fixed bottom-24 left-2 right-2 sm:right-auto sm:w-96 h-[70vh] sm:h-[500px] bg-entain-navy rounded-xl shadow-2xl border border-entain-blue/30 flex flex-col z-50 overflow-hidden">
           {/* Header */}
           <div className="bg-entain-dark px-4 py-3 border-b border-entain-blue/20 flex items-center gap-2">
             <span className="text-lg">💬</span>
