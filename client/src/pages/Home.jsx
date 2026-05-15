@@ -73,7 +73,7 @@ function Home() {
           <TagCard />
         </div>
         <div>
-          <h2 className="text-white font-semibold text-lg mb-4">📣 Refer & Earn</h2>
+          <h2 className="text-white font-semibold text-lg mb-4">📣 Refer & Keep Getting Best Odds</h2>
           <ReferralCard />
         </div>
       </div>
