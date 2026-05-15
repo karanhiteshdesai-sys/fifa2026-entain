@@ -25,7 +25,7 @@ function Navbar({ user, onLogout }) {
   }, []);
 
   return (
-    <nav className="bg-entain-navy border-b border-entain-blue/30">
+    <nav className="bg-entain-navy border-b border-entain-blue/30 sticky top-[28px] z-[39]">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
