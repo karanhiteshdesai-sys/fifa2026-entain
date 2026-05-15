@@ -116,6 +116,10 @@ router.post('/', authenticate, async (req, res) => {
 
       const payout = Math.round(stake * odds);
       const teamName = prediction === 'home' ? match.home_team : prediction === 'away' ? match.away_team : 'Draw';
+
+      // Send notification same as manual bet
+      await db.createNotification(req.user.id, 'Bet Placed!', `${stake} EP on ${teamName} (${match.home_team} vs ${match.away_team}) at odds ${odds}. Potential payout: ${payout} EP.`);
+
       return res.json({ reply: `Done! Bet placed: ${stake} EP on ${teamName} (${match.home_team} vs ${match.away_team}) at odds ${odds}. Potential payout: ${payout} EP. Good luck!` });
     } catch (err) {
       return res.json({ reply: "Something went wrong placing the bet. Try again or place it manually from the Matches page." });
