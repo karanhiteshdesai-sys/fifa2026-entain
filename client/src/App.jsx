@@ -126,20 +126,24 @@ function App() {
             <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
+            <span className="text-sm font-bold text-black mx-6">🏷️ Upgrade your Tag card to get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
+            <span className="text-sm font-bold text-black mx-6">🏷️ Upgrade your Tag card to get the best odds</span>
           </div>
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
+            <span className="text-sm font-bold text-black mx-6">🏷️ Upgrade your Tag card to get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
+            <span className="text-sm font-bold text-black mx-6">🏷️ Upgrade your Tag card to get the best odds</span>
           </div>
         </div>
       </div>
