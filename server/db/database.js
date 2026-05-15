@@ -84,6 +84,7 @@ async function initDb() {
   try {
     await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
     await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code TEXT');
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS country TEXT DEFAULT ''");
   } catch (e) { /* columns may already exist */ }
 
   console.log('✅ Database tables initialized');
@@ -108,8 +109,8 @@ const db = {
     const referralCode = `FIFA-${prefix}${randomPart}`;
 
     const { rows } = await pool.query(
-      'INSERT INTO users (name, email, password, department, role, status, points, referred_by, referral_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-      [user.name, user.email, user.password, user.department || '', user.role, user.status || 'pending', user.points || 20, user.referred_by || null, referralCode]
+      'INSERT INTO users (name, email, password, department, country, role, status, points, referred_by, referral_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      [user.name, user.email, user.password, user.department || '', user.country || '', user.role, user.status || 'pending', user.points || 20, user.referred_by || null, referralCode]
     );
     return rows[0];
   },

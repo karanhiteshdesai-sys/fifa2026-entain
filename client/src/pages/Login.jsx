@@ -4,7 +4,7 @@ import api from '../services/api';
 function Login({ onLogin }) {
   const [loginType, setLoginType] = useState(null);
   const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', department: '', country: '', referralCode: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,12 +37,13 @@ function Login({ onLogin }) {
           email: form.email,
           password: form.password,
           department: form.department,
+          country: form.country,
           referral_code: form.referralCode
         });
         // Switch to sign in view with success message
         setIsRegister(false);
         setSuccess(data.message);
-        setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' });
+        setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', country: '', referralCode: '' });
       } else {
         const { data } = await api.post('/auth/login', { email: form.email, password: form.password });
         localStorage.setItem('token', data.token);
@@ -201,6 +202,47 @@ function Login({ onLogin }) {
 
           {isRegister && (
             <div className="mb-6">
+              <label htmlFor="country" className="block text-gray-300 text-sm mb-1">Country (Office Location)</label>
+              <select
+                id="country"
+                value={form.country || ''}
+                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-entain-accent transition"
+                required
+              >
+                <option value="" disabled>Select your office country</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="India">India</option>
+                <option value="Gibraltar">Gibraltar</option>
+                <option value="Australia">Australia</option>
+                <option value="Bulgaria">Bulgaria</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Austria">Austria</option>
+                <option value="Germany">Germany</option>
+                <option value="Ireland">Ireland</option>
+                <option value="Italy">Italy</option>
+                <option value="Spain">Spain</option>
+                <option value="Poland">Poland</option>
+                <option value="Czech Republic">Czech Republic</option>
+                <option value="Latvia">Latvia</option>
+                <option value="Estonia">Estonia</option>
+                <option value="Lithuania">Lithuania</option>
+                <option value="Sweden">Sweden</option>
+                <option value="Finland">Finland</option>
+                <option value="Denmark">Denmark</option>
+                <option value="Netherlands">Netherlands</option>
+                <option value="Brazil">Brazil</option>
+                <option value="USA">USA</option>
+                <option value="Israel">Israel</option>
+                <option value="Philippines">Philippines</option>
+                <option value="New Zealand">New Zealand</option>
+              </select>
+            </div>
+          )}
+
+          {isRegister && (
+            <div className="mb-6">
               <label htmlFor="referralCode" className="block text-gray-300 text-sm mb-1">Referral Code <span className="text-gray-500">(optional)</span></label>
               <input
                 id="referralCode"
@@ -250,7 +292,7 @@ function Login({ onLogin }) {
 
           <button
             type="button"
-            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', referralCode: '' }); }}
+            onClick={() => { setLoginType(null); setError(''); setSuccess(''); setForm({ name: '', email: '', password: '', confirmPassword: '', department: '', country: '', referralCode: '' }); }}
             className="w-full text-gray-500 hover:text-gray-300 text-sm mt-4 transition"
           >
             ← Back to role selection

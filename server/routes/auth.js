@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, department, referral_code } = req.body;
+    const { name, email, password, department, country, referral_code } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email, and password are required.' });
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
-    await db.createUser({ name, email: normalizedEmail, password: hashedPassword, department: department || '', role: 'user', status: 'pending', points: 20, referred_by: referrerId });
+    await db.createUser({ name, email: normalizedEmail, password: hashedPassword, department: department || '', country: country || '', role: 'user', status: 'pending', points: 20, referred_by: referrerId });
 
     res.status(201).json({ message: 'Registration submitted! Please wait for admin approval before you can log in.' });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
