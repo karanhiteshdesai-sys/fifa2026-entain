@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -22,6 +22,7 @@ import api from './services/api';
 
 function App() {
   const [user, setUser] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -29,6 +30,20 @@ function App() {
       setUser(JSON.parse(stored));
     }
   }, []);
+
+  // Activity heartbeat — ping server every 30s with current page
+  useEffect(() => {
+    if (!user) return;
+
+    const sendHeartbeat = () => {
+      const page = location.pathname.replace('/', '') || 'home';
+      api.post('/activity/heartbeat', { page }).catch(() => {});
+    };
+
+    sendHeartbeat();
+    const interval = setInterval(sendHeartbeat, 30000);
+    return () => clearInterval(interval);
+  }, [user?.id, location.pathname]);
 
   // Tag promotion state
   const [tagPromotion, setTagPromotion] = useState(null);

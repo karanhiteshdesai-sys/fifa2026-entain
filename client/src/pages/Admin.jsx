@@ -224,6 +224,14 @@ function Admin() {
           📢 Broadcast
         </button>
         <button
+          onClick={() => setTab('activity')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            tab === 'activity' ? 'bg-entain-accent text-entain-dark' : 'bg-entain-navy text-gray-300'
+          }`}
+        >
+          📊 Activity
+        </button>
+        <button
           onClick={downloadExcel}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-entain-gold/20 text-entain-gold hover:bg-entain-gold/30 transition"
         >
@@ -681,6 +689,11 @@ function Admin() {
         <BroadcastPanel setMessage={setMessage} userCount={users.length} />
       )}
 
+      {/* Activity Tab */}
+      {tab === 'activity' && (
+        <ActivityPanel />
+      )}
+
       {/* DM Modal */}
       {dmUser && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] px-4">
@@ -927,6 +940,162 @@ function PendingApprovals({ onAction, setMessage }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ActivityPanel() {
+  const [activity, setActivity] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchActivity();
+    const interval = setInterval(fetchActivity, 10000); // Refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchActivity = async () => {
+    try {
+      const { data } = await api.get('/activity/stats');
+      setActivity(data);
+    } catch (err) {
+      console.error('Failed to fetch activity:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-gray-400 text-center py-12">Loading activity data...</div>;
+  }
+
+  if (!activity) {
+    return <div className="text-gray-400 text-center py-12">Failed to load activity data.</div>;
+  }
+
+  const { online, stats, recentBets } = activity;
+
+  const pageLabels = {
+    home: '🏠 Home',
+    matches: '⚽ Matches',
+    standings: '📊 Standings',
+    leaderboard: '🏆 Leaderboard',
+    'my-bets': '🎫 My Bets',
+    chat: '💬 Chat',
+    messages: '✉️ Messages',
+    admin: '⚙️ Admin',
+    info: 'ℹ️ Info',
+    'change-password': '🔑 Settings',
+    'my-tag': '🏷️ My Tag',
+    team: '👥 Team',
+    unknown: '❓ Unknown'
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Live Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-green">{online.count}</p>
+          <p className="text-gray-400 text-xs mt-1">Online Now</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-accent">{stats.approvedUsers}</p>
+          <p className="text-gray-400 text-xs mt-1">Registered Users</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-gold">{stats.totalBets}</p>
+          <p className="text-gray-400 text-xs mt-1">Total Bets</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-blue-400">{stats.totalBettingUsers}</p>
+          <p className="text-gray-400 text-xs mt-1">Users Who Bet</p>
+        </div>
+      </div>
+
+      {/* Today's Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
+          <p className="text-gray-400 text-xs">Bets Today (24h)</p>
+          <p className="text-white text-2xl font-bold mt-1">{stats.betsToday}</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
+          <p className="text-gray-400 text-xs">Active Bettors Today</p>
+          <p className="text-white text-2xl font-bold mt-1">{stats.activeBettorsToday}</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
+          <p className="text-gray-400 text-xs">Pending Bets</p>
+          <p className="text-yellow-400 text-2xl font-bold mt-1">{stats.pendingBets}</p>
+        </div>
+      </div>
+
+      {/* Online Users & Page Breakdown */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Page Breakdown */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">📍 Where Users Are</h3>
+          {Object.keys(online.pageBreakdown).length === 0 ? (
+            <p className="text-gray-500 text-sm">No active users right now.</p>
+          ) : (
+            <div className="space-y-2">
+              {Object.entries(online.pageBreakdown)
+                .sort((a, b) => b[1] - a[1])
+                .map(([page, count]) => (
+                  <div key={page} className="flex items-center justify-between">
+                    <span className="text-gray-300 text-sm">{pageLabels[page] || page}</span>
+                    <span className="text-white font-bold text-sm">{count}</span>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+
+        {/* Online Users List */}
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+          <h3 className="text-white font-semibold mb-3">🟢 Online Users ({online.count})</h3>
+          {online.users.length === 0 ? (
+            <p className="text-gray-500 text-sm">No users online.</p>
+          ) : (
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {online.users.map(u => (
+                <div key={u.id} className="flex items-center justify-between text-sm">
+                  <div>
+                    <span className="text-white">{u.name}</span>
+                    {u.role === 'admin' && <span className="text-yellow-400 ml-1 text-[10px]">ADMIN</span>}
+                  </div>
+                  <span className="text-gray-500 text-xs">{pageLabels[u.currentPage] || u.currentPage}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recent Bets Feed */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+        <h3 className="text-white font-semibold mb-3">🎫 Recent Bets (Live Feed)</h3>
+        {recentBets.length === 0 ? (
+          <p className="text-gray-500 text-sm">No bets placed yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {recentBets.map(bet => (
+              <div key={bet.id} className="flex items-center justify-between text-sm border-b border-entain-blue/10 pb-2">
+                <div>
+                  <span className="text-entain-accent font-medium">{bet.user_name}</span>
+                  <span className="text-gray-400 ml-2">
+                    bet {bet.stake} EP on <span className="text-white">{bet.prediction}</span> in {bet.home_team} vs {bet.away_team}
+                  </span>
+                </div>
+                <span className="text-gray-500 text-xs whitespace-nowrap ml-2">
+                  {new Date(bet.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="text-gray-600 text-xs text-center">Auto-refreshes every 10 seconds</p>
     </div>
   );
 }
