@@ -4,6 +4,7 @@ import api from '../services/api';
 import TagCard from '../components/TagCard';
 
 const ALL_TIERS = [
+  { name: 'Employee', emoji: '👤', minReferrals: 0, boost: 0, color: '#6b7280' },
   { name: 'Silver', emoji: '🥈', minReferrals: 3, boost: 5, color: '#C0C0C0' },
   { name: 'Gold', emoji: '🥇', minReferrals: 5, boost: 10, color: '#FFD700' },
   { name: 'Diamond', emoji: '💎', minReferrals: 10, boost: 15, color: '#B9F2FF' },

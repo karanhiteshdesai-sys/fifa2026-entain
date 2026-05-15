@@ -29,7 +29,10 @@ function App() {
     }
   }, []);
 
-  // Auto-refresh user points every 30 seconds
+  // Tag promotion state
+  const [tagPromotion, setTagPromotion] = useState(null);
+
+  // Auto-refresh user points every 60 seconds
   useEffect(() => {
     if (!user) return;
 
@@ -46,15 +49,39 @@ function App() {
           return updated;
         });
       } catch (err) {
-        // Token expired or invalid
         if (err.response?.status === 401) {
           handleLogout();
         }
       }
     };
 
-    refreshUser(); // Refresh immediately on load
-    const interval = setInterval(refreshUser, 60000); // Then every 60s
+    refreshUser();
+    const interval = setInterval(refreshUser, 60000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
+
+  // Check for tag promotions
+  useEffect(() => {
+    if (!user) return;
+
+    const checkTagPromotion = async () => {
+      try {
+        const { data } = await api.get('/auth/my-tag');
+        const lastTag = localStorage.getItem('lastKnownTag');
+        if (data.tag && data.tag !== lastTag) {
+          if (lastTag !== null) {
+            // Tag changed — show promotion popup
+            setTagPromotion(data);
+          }
+          localStorage.setItem('lastKnownTag', data.tag || '');
+        } else if (!data.tag && lastTag === null) {
+          localStorage.setItem('lastKnownTag', '');
+        }
+      } catch {}
+    };
+
+    checkTagPromotion();
+    const interval = setInterval(checkTagPromotion, 60000);
     return () => clearInterval(interval);
   }, [user?.id]);
 
@@ -121,6 +148,33 @@ function App() {
       <FloatingChat />
       <UpdateBanner />
       <BroadcastAlert />
+
+      {/* Tag Promotion Popup */}
+      {tagPromotion && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9998] px-4">
+          <div className="bg-entain-navy rounded-xl p-8 w-full max-w-sm border border-entain-accent/50 shadow-2xl text-center">
+            <div className="text-5xl mb-3">🎉</div>
+            <h3 className="text-white text-2xl font-bold mb-2">Congratulations!</h3>
+            <p className="text-gray-300 text-sm mb-4">You've been promoted to</p>
+            <div className="bg-entain-dark rounded-xl p-4 mb-4 border border-entain-blue/20">
+              <span className="text-4xl">{tagPromotion.emoji}</span>
+              <p className="text-white text-xl font-bold mt-2">{tagPromotion.tag} Tag</p>
+              <p className="text-entain-green font-semibold mt-1">+{tagPromotion.boost}% Odds Boost</p>
+            </div>
+            <p className="text-gray-400 text-sm mb-5">
+              {tagPromotion.nextTag
+                ? `Keep referring! ${tagPromotion.referralsNeeded} more to unlock ${tagPromotion.nextTag}.`
+                : 'You reached the highest tier! Maximum odds boost unlocked.'}
+            </p>
+            <button
+              onClick={() => setTagPromotion(null)}
+              className="w-full bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition"
+            >
+              Awesome!
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Blocked User Modal */}
       {user?.status === 'blocked' && (

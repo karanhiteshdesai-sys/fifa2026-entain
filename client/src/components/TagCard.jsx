@@ -39,7 +39,7 @@ function TagCard() {
   }
 
   const hasTag = tagData?.tag !== null;
-  const colors = hasTag ? TAG_COLORS[tagData.tag] : null;
+  const colors = TAG_COLORS[tagData?.tag] || { bg: '#6b7280', text: '#ffffff', glow: 'rgba(107,114,128,0.3)' };
   const isDiplomatTier = tagData?.tag?.includes('Diplomat');
 
   return (
@@ -100,66 +100,44 @@ function TagCard() {
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
-              background: hasTag
-                ? isDiplomatTier
-                  ? `linear-gradient(135deg, #1a1a2e 0%, ${colors.bg}33 50%, #1a1a2e 100%)`
-                  : `linear-gradient(135deg, ${colors.bg}22 0%, #1a1a2e 50%, ${colors.bg}33 100%)`
-                : 'linear-gradient(135deg, #1a1a2e 0%, #351a52 100%)',
-              borderColor: hasTag ? `${colors.bg}55` : 'rgba(107,33,168,0.3)',
-              boxShadow: hasTag ? `0 0 30px ${colors.glow}` : 'none',
+              background: isDiplomatTier
+                ? `linear-gradient(135deg, #1a1a2e 0%, ${colors.bg}33 50%, #1a1a2e 100%)`
+                : `linear-gradient(135deg, ${colors.bg}22 0%, #1a1a2e 50%, ${colors.bg}33 100%)`,
+              borderColor: `${colors.bg}55`,
+              boxShadow: `0 0 30px ${colors.glow}`,
             }}
           >
-            {hasTag ? (
-              <>
-                {/* Tag Header */}
-                <div className="text-center">
-                  <span className="text-4xl">{tagData.emoji}</span>
-                  <h3
-                    className="text-xl font-bold mt-2 tracking-wide"
-                    style={{ color: colors.bg }}
-                  >
-                    {tagData.tag} Tag
-                  </h3>
-                </div>
+            {/* Tag Header */}
+            <div className="text-center">
+              <span className="text-4xl">{tagData.emoji}</span>
+              <h3
+                className="text-xl font-bold mt-2 tracking-wide"
+                style={{ color: colors.bg }}
+              >
+                {tagData.tag} Tag
+              </h3>
+            </div>
 
-                {/* Stats */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-sm">Odds Boost</span>
-                    <span className="text-entain-green font-bold text-sm">+{tagData.boost}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-sm">Referrals</span>
-                    <span className="text-white font-bold text-sm">{tagData.referralCount}</span>
-                  </div>
-                  {tagData.nextTag && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Next: {tagData.nextTag}</span>
-                      <span className="text-entain-accent text-xs">{tagData.referralsNeeded} more</span>
-                    </div>
-                  )}
-                  {!tagData.nextTag && (
-                    <p className="text-center text-entain-gold text-xs font-medium mt-1">🏆 Max Tier Reached!</p>
-                  )}
+            {/* Stats */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Odds Boost</span>
+                <span className="text-entain-green font-bold text-sm">{tagData.boost > 0 ? `+${tagData.boost}%` : 'Base odds'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Referrals</span>
+                <span className="text-white font-bold text-sm">{tagData.referralCount}</span>
+              </div>
+              {tagData.nextTag && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-sm">Next: {tagData.nextTag}</span>
+                  <span className="text-entain-accent text-xs">{tagData.referralsNeeded} more</span>
                 </div>
-              </>
-            ) : (
-              <>
-                {/* No Tag State */}
-                <div className="text-center flex-1 flex flex-col items-center justify-center">
-                  <span className="text-4xl mb-3">🏷️</span>
-                  <h3 className="text-white text-lg font-bold">No Tag Yet</h3>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Refer <span className="text-entain-accent font-bold">{tagData.referralsNeeded}</span> people to unlock
-                  </p>
-                  <p className="text-gray-300 text-sm font-medium mt-1">🥈 Silver Tag (+5% boost)</p>
-                </div>
-
-                <div className="text-center">
-                  <p className="text-gray-500 text-xs">Current referrals: {tagData.referralCount}</p>
-                </div>
-              </>
-            )}
+              )}
+              {!tagData.nextTag && (
+                <p className="text-center text-entain-gold text-xs font-medium mt-1">🏆 Max Tier Reached!</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

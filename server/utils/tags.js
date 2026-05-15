@@ -29,7 +29,7 @@ function getUserTag(referralCount) {
   // Find the next tier above current
   let nextTier = null;
   if (!currentTier) {
-    // User has no tag yet, next is Silver (3 referrals)
+    // User has Employee tag (default), next is Silver (3 referrals)
     nextTier = TAG_TIERS[TAG_TIERS.length - 1]; // Silver
   } else {
     const currentIndex = TAG_TIERS.indexOf(currentTier);
@@ -39,10 +39,10 @@ function getUserTag(referralCount) {
   }
 
   return {
-    tag: currentTier ? currentTier.name : null,
-    emoji: currentTier ? currentTier.emoji : null,
+    tag: currentTier ? currentTier.name : 'Employee',
+    emoji: currentTier ? currentTier.emoji : '👤',
     boost: currentTier ? currentTier.boost : 0,
-    color: currentTier ? currentTier.color : null,
+    color: currentTier ? currentTier.color : '#6b7280',
     referralCount: count,
     nextTag: nextTier ? nextTier.name : null,
     referralsNeeded: nextTier ? nextTier.minReferrals - count : null,
