@@ -242,7 +242,7 @@ const db = {
   // ===== LEADERBOARD =====
   async getLeaderboard() {
     const { rows } = await pool.query(`
-      SELECT u.id, u.name, u.department, u.points,
+      SELECT u.id, u.name, u.department, u.country, u.points,
         COUNT(b.id) as total_bets,
         SUM(CASE WHEN b.status = 'won' THEN 1 ELSE 0 END) as bets_won,
         SUM(CASE WHEN b.status = 'lost' THEN 1 ELSE 0 END) as bets_lost,

@@ -40,6 +40,7 @@ function Leaderboard() {
             <tr className="border-b border-entain-blue/20">
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Rank</th>
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Player</th>
+              <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Country</th>
               <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Tag</th>
               <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Points</th>
               <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Bets</th>
@@ -56,6 +57,9 @@ function Leaderboard() {
                 <td className="px-6 py-4">
                   <span className="text-white font-medium">{player.name}</span>
                   {player.department && <p className="text-gray-500 text-xs">{player.department}</p>}
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <span className="text-gray-300 text-sm">{player.country || '—'}</span>
                 </td>
                 <td className="px-4 py-4 text-center">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${
