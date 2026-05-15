@@ -117,10 +117,11 @@ function Home() {
                     <span className="text-xs bg-entain-blue/50 text-gray-300 px-2 py-0.5 rounded">Group {match.group_name}</span>
                   </div>
                   <p className="text-white font-medium inline-flex items-center gap-1 flex-wrap">
+                    {match.home_team}
                     {getFlag(match.home_team) && <img src={getFlag(match.home_team)} alt="" className="w-5 h-4 object-cover rounded-sm" />}
-                    {match.home_team} vs
-                    {getFlag(match.away_team) && <img src={getFlag(match.away_team)} alt="" className="w-5 h-4 object-cover rounded-sm" />}
+                    <span className="text-gray-400">vs</span>
                     {match.away_team}
+                    {getFlag(match.away_team) && <img src={getFlag(match.away_team)} alt="" className="w-5 h-4 object-cover rounded-sm" />}
                   </p>
                   <p className="text-gray-500 text-xs mt-1">
                     {new Date(match.match_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
@@ -244,8 +245,8 @@ function LiveScoresWidget({ matches }) {
           {displayMatches.map(m => (
             <div key={m.id} className="bg-entain-dark rounded-lg p-3 flex items-center">
               <span className="text-white text-sm flex-1 text-right truncate inline-flex items-center justify-end gap-1">
-                {getFlag(m.home_team) && <img src={getFlag(m.home_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
                 {m.home_team}
+                {getFlag(m.home_team) && <img src={getFlag(m.home_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
               </span>
               <div className="w-20 text-center flex-shrink-0">
                 {m.status === 'finished' ? (
@@ -257,8 +258,8 @@ function LiveScoresWidget({ matches }) {
                 )}
               </div>
               <span className="text-white text-sm flex-1 truncate inline-flex items-center gap-1">
-                {getFlag(m.away_team) && <img src={getFlag(m.away_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
                 {m.away_team}
+                {getFlag(m.away_team) && <img src={getFlag(m.away_team)} alt="" className="w-4 h-3 object-cover rounded-sm" />}
               </span>
               {m.status === 'live' && <span className="text-red-400 text-xs ml-2 animate-pulse">●</span>}
               {m.status === 'finished' && <span className="text-gray-500 text-xs ml-2">FT</span>}

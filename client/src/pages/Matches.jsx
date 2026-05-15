@@ -249,8 +249,8 @@ function Matches() {
 
                 <div className="flex items-center gap-2 md:gap-3">
                   <span className="text-white font-semibold text-sm md:text-base flex-1 md:flex-none md:w-40 text-right whitespace-nowrap overflow-hidden text-ellipsis inline-flex items-center justify-end gap-1.5">
-                    {getFlag(match.home_team) && <img src={getFlag(match.home_team)} alt="" className="w-5 h-4 object-cover rounded-sm inline-block" />}
                     {match.home_team}
+                    {getFlag(match.home_team) && <img src={getFlag(match.home_team)} alt="" className="w-5 h-4 object-cover rounded-sm inline-block" />}
                   </span>
                   <div className="text-center w-10 flex-shrink-0">
                     {match.status === 'finished' ? (
@@ -260,8 +260,8 @@ function Matches() {
                     )}
                   </div>
                   <span className="text-white font-semibold text-sm md:text-base flex-1 md:flex-none md:w-40 whitespace-nowrap overflow-hidden text-ellipsis inline-flex items-center gap-1.5">
-                    {getFlag(match.away_team) && <img src={getFlag(match.away_team)} alt="" className="w-5 h-4 object-cover rounded-sm inline-block" />}
                     {match.away_team}
+                    {getFlag(match.away_team) && <img src={getFlag(match.away_team)} alt="" className="w-5 h-4 object-cover rounded-sm inline-block" />}
                   </span>
                 </div>
 
