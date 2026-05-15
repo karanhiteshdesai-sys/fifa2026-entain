@@ -35,8 +35,12 @@ function App() {
     const refreshUser = async () => {
       try {
         const { data } = await api.get('/auth/me');
+        if (data.status === 'blocked') {
+          setUser(prev => ({ ...prev, status: 'blocked' }));
+          return;
+        }
         setUser(prev => {
-          const updated = { ...prev, points: data.points };
+          const updated = { ...prev, points: data.points, status: data.status };
           localStorage.setItem('user', JSON.stringify(updated));
           return updated;
         });
@@ -115,6 +119,23 @@ function App() {
       <FloatingChat />
       <UpdateBanner />
       <BroadcastAlert />
+
+      {/* Blocked User Modal */}
+      {user?.status === 'blocked' && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[99999] px-4">
+          <div className="bg-entain-navy rounded-xl p-8 w-full max-w-sm border border-red-500/50 shadow-2xl text-center">
+            <div className="text-5xl mb-4">🚫</div>
+            <h3 className="text-white text-xl font-bold mb-3">Account Blocked</h3>
+            <p className="text-gray-300 text-sm mb-6">Your account has been blocked from placing bets. Please contact <span className="text-entain-accent font-semibold">Karan Desai</span> for assistance.</p>
+            <button
+              onClick={handleLogout}
+              className="w-full bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition border border-entain-blue/30"
+            >
+              Log Out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

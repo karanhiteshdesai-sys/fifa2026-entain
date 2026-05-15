@@ -83,6 +83,20 @@ router.post('/users/:id/credit-referral', authenticate, requireAdmin, async (req
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 
+router.post('/users/:id/block', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await db.updateUserStatus(Number(req.params.id), 'blocked');
+    res.json({ message: 'User blocked.' });
+  } catch (err) { res.status(500).json({ error: 'Failed to block user.' }); }
+});
+
+router.post('/users/:id/unblock', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await db.updateUserStatus(Number(req.params.id), 'approved');
+    res.json({ message: 'User unblocked.' });
+  } catch (err) { res.status(500).json({ error: 'Failed to unblock user.' }); }
+});
+
 router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, res) => {
   try {
     await db.updateUserPoints(Number(req.params.id), req.body.points || 20);

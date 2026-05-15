@@ -493,6 +493,19 @@ function Admin() {
                       >
                         Delete
                       </button>
+                      <button
+                        onClick={() => {
+                          const action = user.status === 'blocked' ? 'unblock' : 'block';
+                          if (window.confirm(`${action === 'block' ? 'Block' : 'Unblock'} ${user.name}?`)) {
+                            api.post(`/admin/users/${user.id}/${action}`)
+                              .then(() => { setMessage(`${user.name} ${action}ed.`); fetchData(); })
+                              .catch(() => setMessage(`Failed to ${action} user.`));
+                          }
+                        }}
+                        className={`${user.status === 'blocked' ? 'text-green-400' : 'text-orange-400'} text-sm hover:underline ml-3`}
+                      >
+                        {user.status === 'blocked' ? 'Unblock' : 'Block'}
+                      </button>
                     </td>
                   </tr>
                 ))}

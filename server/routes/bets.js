@@ -72,6 +72,7 @@ router.post('/', authenticate, async (req, res) => {
     if (Date.now() >= kickoff - 60000) return res.status(400).json({ error: 'Betting is closed. Bets must be placed at least 1 minute before kickoff.' });
 
     const user = await db.findUserById(req.user.id);
+    if (user.status === 'blocked') return res.status(403).json({ error: 'Your account is blocked. Please contact Karan Desai.' });
     if (user.points < stake) return res.status(400).json({ error: 'Insufficient Entain Points.' });
 
     let odds;
