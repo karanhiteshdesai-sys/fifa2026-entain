@@ -61,18 +61,21 @@ function Home() {
               : 'FIFA 2026 is underway! Place your bets now.'}
           </p>
         </div>
-        <div className="w-full md:w-auto">
-          <ReferralCard />
-        </div>
       </div>
 
-      {/* Tag Card Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-white font-semibold text-lg">🏷️ Your VIP Tag</h2>
-          <Link to="/my-tag" className="text-entain-accent text-sm hover:underline">View details →</Link>
+      {/* Tag Card & Referral - Side by Side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white font-semibold text-lg">🏷️ Your VIP Tag</h2>
+            <Link to="/my-tag" className="text-entain-accent text-sm hover:underline">View details →</Link>
+          </div>
+          <TagCard />
         </div>
-        <TagCard />
+        <div>
+          <h2 className="text-white font-semibold text-lg mb-4">📣 Refer & Earn</h2>
+          <ReferralCard />
+        </div>
       </div>
 
       {/* Balance & Stats */}
