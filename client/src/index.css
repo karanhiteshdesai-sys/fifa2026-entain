@@ -44,3 +44,51 @@ body {
 .animate-odds-blink {
   animation: odds-blink 0.6s ease-in-out 5;
 }
+
+/* AI Bot Animations */
+@keyframes bot-head {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+@keyframes bot-antenna {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(5deg); }
+  70% { transform: rotate(-5deg); }
+}
+
+@keyframes bot-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes bot-blink {
+  0%, 90%, 100% { r: 5; }
+  95% { r: 1; }
+}
+
+@keyframes bot-wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-15deg); }
+}
+
+.animate-bot-head {
+  animation: bot-head 3s ease-in-out infinite;
+}
+
+.animate-bot-antenna {
+  animation: bot-antenna 2s ease-in-out infinite;
+}
+
+.animate-bot-glow {
+  animation: bot-glow 2s ease-in-out infinite;
+}
+
+.animate-bot-blink {
+  animation: bot-blink 4s ease-in-out infinite;
+}
+
+.animate-bot-wave {
+  animation: bot-wave 2.5s ease-in-out infinite;
+}

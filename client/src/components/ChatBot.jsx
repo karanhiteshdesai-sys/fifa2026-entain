@@ -127,7 +127,33 @@ function ChatBot() {
         aria-label="Open AI assistant"
         title="AI Assistant"
       >
-        {isOpen ? <span className="text-white text-2xl">✕</span> : <img src="/ai-bot-icon.png" alt="AI Assistant" className="w-18 h-18 brightness-0 invert" style={{width: '4.5rem', height: '4.5rem'}} />}
+        {isOpen ? (
+          <span className="text-white text-2xl">✕</span>
+        ) : (
+          <svg viewBox="0 0 100 100" className="w-[4.5rem] h-[4.5rem]" aria-hidden="true">
+            {/* Antenna */}
+            <g className="animate-bot-antenna" style={{ transformOrigin: '50px 30px' }}>
+              <line x1="50" y1="25" x2="50" y2="15" stroke="#00e5a0" strokeWidth="3" strokeLinecap="round" />
+              <circle cx="50" cy="12" r="4" fill="#00e5a0" className="animate-bot-glow" />
+            </g>
+            {/* Head */}
+            <g className="animate-bot-head" style={{ transformOrigin: '50px 45px' }}>
+              <rect x="25" y="25" width="50" height="40" rx="10" fill="#1a2744" stroke="#00e5a0" strokeWidth="2" />
+              {/* Eyes */}
+              <circle cx="38" cy="42" r="5" fill="#00e5a0" className="animate-bot-blink" />
+              <circle cx="62" cy="42" r="5" fill="#00e5a0" className="animate-bot-blink" />
+              {/* Mouth */}
+              <rect x="40" y="52" width="20" height="4" rx="2" fill="#00e5a0" opacity="0.7" />
+            </g>
+            {/* Body */}
+            <rect x="30" y="68" width="40" height="25" rx="8" fill="#1a2744" stroke="#00e5a0" strokeWidth="2" />
+            {/* Arms */}
+            <rect x="18" y="72" width="10" height="4" rx="2" fill="#00e5a0" opacity="0.6" className="animate-bot-wave" style={{ transformOrigin: '28px 74px' }} />
+            <rect x="72" y="72" width="10" height="4" rx="2" fill="#00e5a0" opacity="0.6" />
+            {/* Chest light */}
+            <circle cx="50" cy="80" r="4" fill="#00e5a0" className="animate-bot-glow" />
+          </svg>
+        )}
       </button>
 
       {/* Tooltip label */}
