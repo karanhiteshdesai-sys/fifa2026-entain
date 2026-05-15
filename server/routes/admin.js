@@ -110,7 +110,9 @@ router.post('/users/:id/unblock', authenticate, requireAdmin, async (req, res) =
 
 router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, res) => {
   try {
-    await db.updateUserPoints(Number(req.params.id), req.body.points || 20);
+    const points = req.body.points || 20;
+    await db.updateUserPoints(Number(req.params.id), points);
+    await db.createNotification(Number(req.params.id), '🔄 Points Reset', `Admin has reset your points to ${points} EP. Please refresh the page to see your updated balance.`);
     res.json({ message: 'Points reset successfully.' });
   } catch (err) { res.status(500).json({ error: 'Server error.' }); }
 });
@@ -121,7 +123,7 @@ router.post('/users/:id/add-points', authenticate, requireAdmin, async (req, res
     if (!amount || amount <= 0) return res.status(400).json({ error: 'Amount must be positive.' });
     await db.addPoints(Number(req.params.id), Number(amount));
     const user = await db.findUserById(Number(req.params.id));
-    await db.createNotification(Number(req.params.id), 'Points Added! 🎁', `Admin added ${amount} EP to your account. New balance: ${user.points} EP.`);
+    await db.createNotification(Number(req.params.id), '🎁 Points Added!', `Admin added ${amount} EP to your account. New balance: ${user.points} EP. Please refresh the page to see your updated balance.`);
     res.json({ message: `${amount} EP added successfully.` });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });

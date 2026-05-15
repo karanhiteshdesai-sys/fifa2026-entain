@@ -57,7 +57,7 @@ function App() {
     };
 
     refreshUser();
-    const interval = setInterval(refreshUser, 60000);
+    const interval = setInterval(refreshUser, 15000);
     return () => clearInterval(interval);
   }, [user?.id]);
 
