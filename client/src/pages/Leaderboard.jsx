@@ -40,6 +40,7 @@ function Leaderboard() {
             <tr className="border-b border-entain-blue/20">
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Rank</th>
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Player</th>
+              <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Tag</th>
               <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Points</th>
               <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Bets</th>
               <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Won</th>
@@ -54,6 +55,9 @@ function Leaderboard() {
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-white font-medium">{player.name}</span>
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <span className="text-sm" title={player.tag}>{player.tagEmoji || '👤'}</span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="text-entain-gold font-bold">{player.points?.toLocaleString()} EP</span>

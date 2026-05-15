@@ -16,10 +16,6 @@ function Info() {
 
         <Section title="🎯 Bet Types" items={[
           { label: 'Match Winner', desc: 'Predict Home, Draw, or Away. Odds are dynamic — they shift as more bets come in.' },
-          { label: 'Correct Score', desc: 'Predict the exact final score (e.g., 2-1). Higher risk, higher reward (odds 5.5x to 25x).' },
-          { label: 'Total Goals', desc: 'Over/Under 1.5, 2.5, or 3.5 total goals in the match.' },
-          { label: 'Both Teams to Score', desc: 'Will both teams score at least one goal? Yes or No.' },
-          { label: 'First to Score', desc: 'Which team scores first? Or will it be 0-0 (No Goal)?' },
         ]} />
 
         <Section title="📊 Dynamic Odds" items={[
@@ -50,18 +46,46 @@ function Info() {
           { label: 'Stats tracked', desc: 'Total bets, win rate, total winnings — all visible on the leaderboard.' },
         ]} />
 
+        <Section title="🏷️ VIP Tag System" items={[
+          { label: 'What are Tags?', desc: 'Tags are VIP tiers earned by referring colleagues. Higher tags give better odds on every bet.' },
+          { label: 'Employee (default)', desc: 'Everyone starts here. Base odds, no boost.' },
+          { label: '🥈 Silver (3+ referrals)', desc: '+5% odds boost on all bets.' },
+          { label: '🥇 Gold (5+ referrals)', desc: '+10% odds boost on all bets.' },
+          { label: '💎 Diamond (10+ referrals)', desc: '+15% odds boost on all bets.' },
+          { label: '🎖️ Diplomat (20+ referrals)', desc: '+20% odds boost on all bets.' },
+          { label: '🥈🎖️ Silver Diplomat (30+)', desc: '+25% odds boost on all bets.' },
+          { label: '🥇🎖️ Gold Diplomat (40+)', desc: '+30% odds boost on all bets.' },
+          { label: '💎🎖️ Diamond Diplomat (50+)', desc: '+35% odds boost — the maximum tier!' },
+          { label: 'VIP Card', desc: 'View your virtual VIP card on the Home page. Tap to flip and reveal your tag.' },
+        ]} />
+
+        <Section title="🤖 AI Assistant" items={[
+          { label: 'Ask anything', desc: 'Click the bot icon (bottom-right) to ask about matches, teams, groups, dates, or how to use the app.' },
+          { label: 'Place bets by voice or text', desc: 'Say "bet 5 on England to win" and the AI will place it for you with a confirmation step.' },
+          { label: 'Voice input', desc: 'Click the 🎤 mic button to speak your question. The bot also reads answers aloud.' },
+          { label: 'Webapp help', desc: 'Ask how to change password, place a bet, check leaderboard — it knows the app inside out.' },
+        ]} />
+
+        <Section title="📢 Broadcasts & Notifications" items={[
+          { label: 'Admin broadcasts', desc: 'Important messages from admin appear as a popup on your screen instantly.' },
+          { label: 'Bet notifications', desc: 'Get notified when your bet wins or loses, when points are added, or when you get a referral bonus.' },
+          { label: 'Auto-updates', desc: 'When a new version is deployed, you get a popup to refresh — no manual hard refresh needed.' },
+        ]} />
+
         <Section title="💬 Group Chat" items={[
           { label: 'Real-time chat', desc: 'Talk with all employees. Discuss matches, share tips, banter.' },
+          { label: 'Typing indicator', desc: 'See who is typing in real-time when the chat is open.' },
+          { label: 'Unread badge', desc: 'A red badge shows how many new messages you have when the chat is closed.' },
           { label: 'Notifications', desc: 'Everyone gets notified when a new message is posted.' },
         ]} />
 
         <Section title="📱 Other Features" items={[
           { label: 'Search', desc: 'Search matches by team name, date, time, or venue on the Matches page.' },
           { label: 'Group filters', desc: 'Filter matches by group (A through L) or view all.' },
-          { label: 'Transactions', desc: 'View all EP credits and debits in My Bets → Transactions tab.' },
+          { label: 'Knockout bracket', desc: 'After group stage, knockout matches are auto-generated based on standings.' },
+          { label: 'Live polling', desc: 'Once the tournament starts, real match results are fetched automatically and bets are settled.' },
           { label: 'Notifications', desc: 'Bell icon (top-right) shows bet results, referral bonuses, admin messages.' },
           { label: 'Mobile friendly', desc: 'Works on phone browsers. Add to home screen for app-like experience.' },
-          { label: 'Auto timezone', desc: 'Match times automatically display in your local timezone.' },
         ]} />
 
       </div>
