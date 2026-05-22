@@ -5,7 +5,7 @@ const { db } = require('../db/database');
 
 const router = express.Router();
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
 const SYSTEM_PROMPT = `You are the FIFA 2026 Predictions assistant for Entain employees. You are friendly and conversational.
 
@@ -219,18 +219,18 @@ function callGroq(userMessage, userContext, matchContext) {
     messages.push({ role: 'user', content: userMessage });
 
     const payload = JSON.stringify({
-      model: 'llama-3.1-8b-instant',
+      model: 'gpt-4o-mini',
       messages,
       temperature: 0.1,
       max_tokens: 200
     });
 
     const options = {
-      hostname: 'api.groq.com',
-      path: '/openai/v1/chat/completions',
+      hostname: 'api.openai.com',
+      path: '/v1/chat/completions',
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload)
       }
