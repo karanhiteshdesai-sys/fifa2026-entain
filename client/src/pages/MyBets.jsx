@@ -33,9 +33,9 @@ function MyBets() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
-        return <span className="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs">Bet Placed</span>;
+        return <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded text-xs">Bet Placed</span>;
       case 'conditional':
-        return <span className="bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-xs">⏳ Awaiting Approval</span>;
+        return <span className="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs">⏳ Conditional Bet</span>;
       case 'won':
         return <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded text-xs">Won ✓</span>;
       case 'lost':

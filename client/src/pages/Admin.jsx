@@ -591,7 +591,7 @@ function Admin() {
               className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-entain-accent"
             >
               <option value="all">All Status</option>
-              <option value="conditional">Awaiting Approval</option>
+              <option value="conditional">Conditional Bet</option>
               <option value="pending">Pending</option>
               <option value="won">Won</option>
               <option value="lost">Lost</option>
@@ -636,11 +636,12 @@ function Admin() {
                         bet.status === 'won' ? 'bg-green-500/20 text-green-400' :
                         bet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
                         bet.status === 'voided' ? 'bg-gray-500/20 text-gray-400' :
-                        bet.status === 'conditional' ? 'bg-orange-500/20 text-orange-400' :
+                        bet.status === 'conditional' ? 'bg-yellow-500/20 text-yellow-400' :
                         bet.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                        'bg-yellow-500/20 text-yellow-400'
+                        bet.status === 'pending' ? 'bg-green-500/20 text-green-400' :
+                        'bg-gray-500/20 text-gray-400'
                       }`}>
-                        {bet.status === 'pending' ? 'Bet Placed' : bet.status === 'conditional' ? '⏳ Awaiting' : bet.status}
+                        {bet.status === 'pending' ? 'Bet Placed' : bet.status === 'conditional' ? '⏳ Conditional' : bet.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
