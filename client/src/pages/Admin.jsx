@@ -13,6 +13,7 @@ function Admin() {
   const [userStatusFilter, setUserStatusFilter] = useState('all');
   const [betSearch, setBetSearch] = useState('');
   const [betStatusFilter, setBetStatusFilter] = useState('all');
+  const [selectedAdminBet, setSelectedAdminBet] = useState(null);
   const [dmUser, setDmUser] = useState(null); // user object for DM modal
   const [dmText, setDmText] = useState('');
   const [dmConversation, setDmConversation] = useState([]);
@@ -616,7 +617,7 @@ function Admin() {
                 {filteredBets.map(bet => (
                   <tr key={bet.id} className="border-b border-entain-blue/10 text-sm">
                     <td className="px-4 py-3">
-                      <span className="text-entain-accent font-mono text-xs bg-entain-accent/10 px-1.5 py-0.5 rounded">{bet.bet_number || '—'}</span>
+                      <button onClick={() => setSelectedAdminBet(bet)} className="text-entain-accent font-mono text-xs bg-entain-accent/10 px-1.5 py-0.5 rounded hover:bg-entain-accent/20 transition cursor-pointer">{bet.bet_number || '—'}</button>
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-white">{bet.user_name}</p>
@@ -689,6 +690,77 @@ function Admin() {
               <div className="text-center text-gray-400 py-8">{allBets.length === 0 ? 'No bets placed yet.' : 'No bets match your search.'}</div>
             )}
           </div>
+
+          {/* Bet Detail Modal */}
+          {selectedAdminBet && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4" onClick={() => setSelectedAdminBet(null)}>
+              <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-entain-blue/30" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white text-lg font-bold">Bet Details</h3>
+                  <span className="text-entain-accent font-mono text-sm bg-entain-accent/10 px-2 py-1 rounded">{selectedAdminBet.bet_number}</span>
+                </div>
+                <div className="bg-entain-dark rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Employee</span>
+                    <span className="text-white font-medium">{selectedAdminBet.user_name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Email</span>
+                    <span className="text-gray-300 text-xs">{selectedAdminBet.user_email}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Match</span>
+                    <span className="text-white font-medium">{selectedAdminBet.home_team} vs {selectedAdminBet.away_team}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Group</span>
+                    <span className="text-gray-300">{selectedAdminBet.group_name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Prediction</span>
+                    <span className="text-entain-accent font-medium capitalize">{selectedAdminBet.prediction}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Stake</span>
+                    <span className="text-white font-medium">{selectedAdminBet.stake} EP</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Odds</span>
+                    <span className="text-white font-medium">{selectedAdminBet.odds}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Potential Payout</span>
+                    <span className="text-entain-gold font-medium">{Math.round(selectedAdminBet.stake * selectedAdminBet.odds)} EP</span>
+                  </div>
+                  <hr className="border-entain-blue/20" />
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Status</span>
+                    <span className={`px-2 py-0.5 rounded text-xs ${
+                      selectedAdminBet.status === 'won' ? 'bg-green-500/20 text-green-400' :
+                      selectedAdminBet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    }`}>{selectedAdminBet.status === 'pending' ? 'Bet Placed' : selectedAdminBet.status}</span>
+                  </div>
+                  {selectedAdminBet.status === 'won' && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Payout</span>
+                      <span className="text-entain-green font-bold">+{selectedAdminBet.payout} EP</span>
+                    </div>
+                  )}
+                  <hr className="border-entain-blue/20" />
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Placed</span>
+                    <span className="text-gray-300 text-xs">{new Date(selectedAdminBet.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Match Date</span>
+                    <span className="text-gray-300 text-xs">{new Date(selectedAdminBet.match_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedAdminBet(null)} className="w-full mt-4 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition">Close</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
