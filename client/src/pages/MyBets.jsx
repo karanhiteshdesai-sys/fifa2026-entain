@@ -6,6 +6,7 @@ function MyBets() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('bets');
+  const [selectedBet, setSelectedBet] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -158,7 +159,7 @@ function MyBets() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-entain-accent text-xs font-mono bg-entain-accent/10 px-2 py-0.5 rounded">{bet.bet_number || '—'}</span>
+                    <button onClick={() => setSelectedBet(bet)} className="text-entain-accent text-xs font-mono bg-entain-accent/10 px-2 py-0.5 rounded hover:bg-entain-accent/20 transition cursor-pointer">{bet.bet_number || '—'}</button>
                   </div>
                   <p className="text-white font-medium">
                     {bet.home_team} vs {bet.away_team}
@@ -223,6 +224,76 @@ function MyBets() {
               </span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Bet Detail Modal */}
+      {selectedBet && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4" onClick={() => setSelectedBet(null)}>
+          <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-entain-blue/30" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white text-lg font-bold">Bet Details</h3>
+              <span className="text-entain-accent font-mono text-sm bg-entain-accent/10 px-2 py-1 rounded">{selectedBet.bet_number}</span>
+            </div>
+
+            <div className="bg-entain-dark rounded-lg p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Match</span>
+                <span className="text-white font-medium">{selectedBet.home_team} vs {selectedBet.away_team}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Prediction</span>
+                <span className="text-entain-accent font-medium capitalize">{selectedBet.prediction}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Stake</span>
+                <span className="text-white font-medium">{selectedBet.stake} EP</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Odds</span>
+                <span className="text-white font-medium">{selectedBet.odds}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Potential Payout</span>
+                <span className="text-entain-gold font-medium">{Math.round(selectedBet.stake * selectedBet.odds)} EP</span>
+              </div>
+              <hr className="border-entain-blue/20" />
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Status</span>
+                <span>{getStatusBadge(selectedBet.status)}</span>
+              </div>
+              {selectedBet.status === 'won' && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Payout</span>
+                  <span className="text-entain-green font-bold">+{selectedBet.payout} EP</span>
+                </div>
+              )}
+              <hr className="border-entain-blue/20" />
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Placed</span>
+                <span className="text-gray-300 text-xs">{new Date(selectedBet.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+              </div>
+              {selectedBet.match_date && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Kickoff</span>
+                  <span className="text-gray-300 text-xs">{new Date(selectedBet.match_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+              )}
+              {selectedBet.match_status === 'finished' && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Final Score</span>
+                  <span className="text-white font-bold">{selectedBet.home_score} - {selectedBet.away_score}</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setSelectedBet(null)}
+              className="w-full mt-4 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>
