@@ -14,22 +14,29 @@ const TAG_COLORS = {
 function TagCard() {
   const [flipped, setFlipped] = useState(false);
   const [tagData, setTagData] = useState(null);
+  const [leaderboardRank, setLeaderboardRank] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
-    const fetchTag = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get('/auth/my-tag');
-        setTagData(data);
+        const [tagRes, lbRes] = await Promise.all([
+          api.get('/auth/my-tag'),
+          api.get('/leaderboard')
+        ]);
+        setTagData(tagRes.data);
+        // Find user's rank in leaderboard
+        const rank = lbRes.data.findIndex(p => p.id === user.id);
+        setLeaderboardRank(rank >= 0 ? rank + 1 : null);
       } catch (err) {
         console.error('Failed to fetch tag:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchTag();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -119,6 +126,10 @@ function TagCard() {
 
             {/* Stats */}
             <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Leaderboard Rank</span>
+                <span className="text-entain-gold font-bold text-sm">{leaderboardRank ? `#${leaderboardRank}` : 'Unranked'}</span>
+              </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm">Odds Boost</span>
                 <span className="text-entain-green font-bold text-sm">{tagData.boost > 0 ? `+${tagData.boost}%` : 'Base odds'}</span>
