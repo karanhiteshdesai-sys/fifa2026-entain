@@ -40,6 +40,7 @@ async function start() {
   const notificationRoutes = require('./routes/notifications');
   const dmRoutes = require('./routes/dm');
   const activityRoutes = require('./routes/activity');
+  const oddsRoutes = require('./routes/odds');
 
   app.use('/api/auth', authRoutes);
   app.use('/api/matches', matchRoutes);
@@ -53,6 +54,10 @@ async function start() {
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/dm', dmRoutes);
   app.use('/api/activity', activityRoutes);
+  app.use('/api/odds', oddsRoutes);
+
+  // Start live odds auto-sync
+  oddsRoutes.startAutoSync();
 
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'FIFA 2026 Predictions API' });
