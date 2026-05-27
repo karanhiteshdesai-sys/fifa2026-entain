@@ -51,17 +51,17 @@ function Info() {
           { label: 'Fair play', desc: 'All participants start equally. The leaderboard reflects prediction skill and strategy over the tournament duration.' },
         ]} />
 
-        <Section title="7. VIP Tag System & Referral Programme" items={[
-          { label: 'What are VIP Tags?', desc: 'Tags are earned by referring colleagues to the platform. Higher tags grant a percentage boost on your odds when placing predictions.' },
+        <Section title="7. Entain Tag System & Referral Programme" items={[
+          { label: 'What are Entain Tags?', desc: 'Tags are earned by referring colleagues to the platform. Higher tags grant a percentage boost on your odds when placing predictions.' },
           { label: 'How referrals work', desc: 'Share your unique referral code (found on the Home page). When a colleague registers using your code and is approved, your referral count increases.' },
-          { label: 'No EP bonus for referrals', desc: 'Referrals do not award EP. The sole benefit is an improved VIP Tag which provides better odds on all future predictions.' },
+          { label: 'No EP bonus for referrals', desc: 'Referrals do not award EP. The sole benefit is an improved Entain Tag which provides better odds on all future predictions.' },
           { label: 'Odds boost is personal', desc: 'Your boosted odds apply only to your own predictions. Other participants see standard market odds.' },
         ]} />
 
         {/* Tag Thresholds Table */}
         <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
           <div className="px-5 py-3 border-b border-entain-blue/10">
-            <h3 className="text-white font-semibold">VIP Tag Tiers</h3>
+            <h3 className="text-white font-semibold">Entain Tag Tiers</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

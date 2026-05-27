@@ -68,7 +68,7 @@ function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-lg">🏷️ Your VIP Tag</h2>
+            <h2 className="text-white font-semibold text-lg">🏷️ Your Entain Tag</h2>
             <Link to="/my-tag" className="text-entain-accent text-sm hover:underline">View details →</Link>
           </div>
           <TagCard />
@@ -340,7 +340,7 @@ function ReferralCard() {
 
   return (
     <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
-      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. More referrals = higher VIP Tag = <span className="text-entain-gold font-bold">better odds</span> on every bet!</p>
+      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. More referrals = higher Entain Tag = <span className="text-entain-gold font-bold">better odds</span> on every bet!</p>
       <div className="flex items-center gap-2">
         <input
           type="text"

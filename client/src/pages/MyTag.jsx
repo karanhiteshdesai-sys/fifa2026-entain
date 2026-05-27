@@ -40,7 +40,7 @@ function MyTag() {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <Link to="/" className="text-gray-400 hover:text-white transition">← Back</Link>
-        <h1 className="text-2xl font-bold text-white">🏷️ My VIP Tag</h1>
+        <h1 className="text-2xl font-bold text-white">🏷️ My Entain Tag</h1>
       </div>
 
       {/* Tag Card */}

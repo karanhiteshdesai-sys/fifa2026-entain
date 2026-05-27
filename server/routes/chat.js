@@ -35,7 +35,7 @@ Key facts about this platform:
 WEBAPP GUIDE — USE THIS TO ANSWER ALL QUESTIONS ABOUT THE APP:
 
 NAVIGATION:
-- Home page: Shows your VIP Tag card, referral code, balance, upcoming matches, and leaderboard preview.
+- Home page: Shows your Entain Tag card, referral code, balance, upcoming matches, and leaderboard preview.
 - Matches page: All 72 group stage matches. Click Home/Draw/Away to place a bet. Use search bar to find teams.
 - Standings page: Group tables showing points, wins, draws, losses, goal difference for all 12 groups.
 - Leaderboard page: Rankings by EP balance. Shows tag, department, bets placed, win rate.
@@ -62,7 +62,7 @@ REFERRAL SYSTEM:
 - Share with colleagues. When they register using your link and get approved, your referral count goes up.
 - More referrals = higher Tag = better odds on every bet. No EP bonus — the reward is better odds!
 
-VIP TAG SYSTEM:
+ENTAIN TAG SYSTEM:
 - Employee (0 referrals): Base odds, no boost.
 - Silver (3+ referrals): +5% odds boost.
 - Gold (5+ referrals): +10% odds boost.
@@ -71,7 +71,7 @@ VIP TAG SYSTEM:
 - Silver Diplomat (30+): +25% odds boost.
 - Gold Diplomat (40+): +30% odds boost.
 - Diamond Diplomat (50+): +35% odds boost.
-- View your tag by tapping the VIP card on the Home page (it flips to show your tag).
+- View your tag by tapping the Entain Tag card on the Home page (it flips to show your tag).
 
 GROUP CHAT:
 - Click the chat icon (bottom-left corner) to open group chat.
