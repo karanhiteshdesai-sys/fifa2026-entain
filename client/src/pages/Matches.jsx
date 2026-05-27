@@ -56,10 +56,17 @@ function Matches() {
   const [confirmBet, setConfirmBet] = useState(null); // holds bet details for confirmation
   const [responsibleGamblingAlert, setResponsibleGamblingAlert] = useState(null);
   const [userTag, setUserTag] = useState(null); // { tag, boost, emoji }
+  const [showRatingPopup, setShowRatingPopup] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(true); // default true to prevent flash
+  const [ratingValue, setRatingValue] = useState(0);
+  const [ratingComment, setRatingComment] = useState('');
+  const [ratingHover, setRatingHover] = useState(0);
 
   useEffect(() => {
     // Fetch user's tag info for odds boost display
     api.get('/auth/my-tag').then(res => setUserTag(res.data)).catch(() => {});
+    // Check if user has already reviewed
+    api.get('/reviews/mine').then(res => setHasReviewed(res.data.hasReviewed)).catch(() => {});
   }, []);
 
   const handlePlaceBet = () => {
@@ -160,6 +167,11 @@ function Matches() {
       const stored = JSON.parse(localStorage.getItem('user'));
       localStorage.setItem('user', JSON.stringify({ ...stored, points: userData.points }));
       fetchMatches();
+
+      // Show rating popup if user hasn't reviewed yet
+      if (!hasReviewed) {
+        setTimeout(() => setShowRatingPopup(true), 1500);
+      }
     } catch (err) {
       setMessage(err.response?.data?.error || 'Failed to place bet.');
       setConfirmBet(null);
@@ -479,6 +491,67 @@ function Matches() {
                 className="flex-1 bg-yellow-500 text-entain-dark font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition"
               >
                 Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rating Popup */}
+      {showRatingPopup && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9998] px-4">
+          <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-entain-blue/30 text-center">
+            <div className="text-4xl mb-2">⭐</div>
+            <h3 className="text-white text-xl font-bold mb-2">Enjoying the App?</h3>
+            <p className="text-gray-400 text-sm mb-4">Rate your experience with FIFA 2026 Predictions</p>
+
+            {/* Stars */}
+            <div className="flex justify-center gap-2 mb-4">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  onClick={() => setRatingValue(star)}
+                  onMouseEnter={() => setRatingHover(star)}
+                  onMouseLeave={() => setRatingHover(0)}
+                  className="text-3xl transition-transform hover:scale-110"
+                >
+                  {star <= (ratingHover || ratingValue) ? '⭐' : '☆'}
+                </button>
+              ))}
+            </div>
+
+            {/* Comment */}
+            <textarea
+              value={ratingComment}
+              onChange={(e) => setRatingComment(e.target.value)}
+              placeholder="Any feedback? (optional)"
+              maxLength={200}
+              className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500 resize-none h-20 mb-4"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowRatingPopup(false)}
+                className="flex-1 bg-entain-dark text-gray-300 py-2.5 rounded-lg hover:text-white transition"
+              >
+                Maybe Later
+              </button>
+              <button
+                onClick={async () => {
+                  if (ratingValue === 0) return;
+                  try {
+                    await api.post('/reviews', { rating: ratingValue, comment: ratingComment });
+                    setHasReviewed(true);
+                    setShowRatingPopup(false);
+                    setNotification({ message: 'Thanks for your feedback! ⭐', type: 'success' });
+                  } catch (err) {
+                    setShowRatingPopup(false);
+                  }
+                }}
+                disabled={ratingValue === 0}
+                className="flex-1 bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition disabled:opacity-50"
+              >
+                Submit
               </button>
             </div>
           </div>

@@ -41,6 +41,7 @@ async function start() {
   const dmRoutes = require('./routes/dm');
   const activityRoutes = require('./routes/activity');
   const oddsRoutes = require('./routes/odds');
+  const reviewRoutes = require('./routes/reviews');
 
   app.use('/api/auth', authRoutes);
   app.use('/api/matches', matchRoutes);
@@ -55,6 +56,7 @@ async function start() {
   app.use('/api/dm', dmRoutes);
   app.use('/api/activity', activityRoutes);
   app.use('/api/odds', oddsRoutes);
+  app.use('/api/reviews', reviewRoutes);
 
   // Start live odds auto-sync
   oddsRoutes.startAutoSync();

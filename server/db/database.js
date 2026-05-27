@@ -88,6 +88,14 @@ async function initDb() {
       read BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS reviews (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) UNIQUE,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      comment TEXT DEFAULT '',
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 
   // Add new columns for existing databases (safe to run multiple times)
