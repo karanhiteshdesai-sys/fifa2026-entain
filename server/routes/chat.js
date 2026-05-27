@@ -59,8 +59,8 @@ HOW TO CHANGE PASSWORD:
 REFERRAL SYSTEM:
 - Your referral code is on the Home page (e.g. FIFA-KARC7Y).
 - Click "Copy" to copy a shareable link.
-- Share with colleagues. When they register using your link and get approved, you earn 25 EP.
-- More referrals = higher Tag = better odds on every bet.
+- Share with colleagues. When they register using your link and get approved, your referral count goes up.
+- More referrals = higher Tag = better odds on every bet. No EP bonus — the reward is better odds!
 
 VIP TAG SYSTEM:
 - Employee (0 referrals): Base odds, no boost.
@@ -81,7 +81,7 @@ GROUP CHAT:
 
 NOTIFICATIONS:
 - Click the bell icon (top-right) to see all notifications.
-- You get notified for: bet results, referral bonuses, admin broadcasts, points added.
+- You get notified for: bet results, referral updates, admin broadcasts, points added.
 
 OTHER:
 - AI Bot (bottom-right): Ask me anything about FIFA 2026 or the app. You can also speak using the mic button.

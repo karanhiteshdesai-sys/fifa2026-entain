@@ -31,14 +31,14 @@ function Info() {
 
         <Section title="💰 Entain Points (EP)" items={[
           { label: 'Starting balance', desc: 'Every new user gets 20 EP upon account approval.' },
-          { label: 'Earning EP', desc: 'Win bets, refer employees (+25 EP per referral), or receive admin bonuses.' },
+          { label: 'Earning EP', desc: 'Win bets or receive admin bonuses.' },
           { label: 'Spending EP', desc: 'Place bets. Your stake is deducted immediately. If you win, you get stake × odds back.' },
         ]} />
 
         <Section title="🎁 Referral Program" items={[
           { label: 'Your referral code', desc: 'Find it on the Home page (top-right). It looks like FIFA-KAR5F2J.' },
           { label: 'How it works', desc: 'Share your code with a colleague. They enter it during registration.' },
-          { label: 'Bonus', desc: 'You earn 25 EP when the referred employee is approved by admin.' },
+          { label: 'Reward', desc: 'More referrals = higher VIP Tag = better odds boost on every bet you place.' },
         ]} />
 
         <Section title="🏆 Leaderboard" items={[
@@ -123,7 +123,7 @@ function Info() {
 
         <Section title="📢 Broadcasts & Notifications" items={[
           { label: 'Admin broadcasts', desc: 'Important messages from admin appear as a popup on your screen instantly.' },
-          { label: 'Bet notifications', desc: 'Get notified when your bet wins or loses, when points are added, or when you get a referral bonus.' },
+          { label: 'Bet notifications', desc: 'Get notified when your bet wins or loses, when points are added, or when you get a new referral.' },
           { label: 'Auto-updates', desc: 'When a new version is deployed, you get a popup to refresh — no manual hard refresh needed.' },
         ]} />
 
@@ -139,7 +139,7 @@ function Info() {
           { label: 'Group filters', desc: 'Filter matches by group (A through L) or view all.' },
           { label: 'Knockout bracket', desc: 'After group stage, knockout matches are auto-generated based on standings.' },
           { label: 'Live polling', desc: 'Once the tournament starts, real match results are fetched automatically and bets are settled.' },
-          { label: 'Notifications', desc: 'Bell icon (top-right) shows bet results, referral bonuses, admin messages.' },
+          { label: 'Notifications', desc: 'Bell icon (top-right) shows bet results, referral updates, admin messages.' },
           { label: 'Mobile friendly', desc: 'Works on phone browsers. Add to home screen for app-like experience.' },
         ]} />
 

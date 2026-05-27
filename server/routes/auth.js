@@ -85,7 +85,7 @@ router.get('/referrals', authenticate, async (req, res) => {
       referrals = await db.getReferralsByUser(req.user.id);
     } catch (e) { /* referred_by column may not exist */ }
 
-    res.json({ referralCode, referrals, totalBonus: referrals.length * 25 });
+    res.json({ referralCode, referrals, referralCount: referrals.length });
   } catch (err) { console.error('Referral error:', err); res.status(500).json({ error: 'Server error.' }); }
 });
 

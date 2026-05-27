@@ -123,24 +123,24 @@ function App() {
         <div className="flex animate-marquee">
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Tag card to get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Tag card to get the best odds</span>
           </div>
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Tag card to get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn 25 EP</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
             <span className="text-sm font-bold text-black mx-6">⚽ FIFA 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
             <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Tag card to get the best odds</span>

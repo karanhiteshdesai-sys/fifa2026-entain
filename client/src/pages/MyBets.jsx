@@ -74,13 +74,13 @@ function MyBets() {
     }
   });
 
-  // Referral bonuses and admin credits from notifications
+  // Referral notifications (no longer gives EP, just tracking)
   notifications.forEach(n => {
-    if (n.title && n.title.includes('Referral Bonus')) {
+    if (n.title && n.title.includes('New Referral')) {
       transactions.push({
         id: `ref-${n.id}`,
-        type: 'credit',
-        amount: 25,
+        type: 'info',
+        amount: 0,
         description: n.message,
         date: n.created_at
       });

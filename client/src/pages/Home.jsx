@@ -340,7 +340,7 @@ function ReferralCard() {
 
   return (
     <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
-      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. You earn <span className="text-entain-gold font-bold">25 EP</span> for each approved referral!</p>
+      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. More referrals = higher VIP Tag = <span className="text-entain-gold font-bold">better odds</span> on every bet!</p>
       <div className="flex items-center gap-2">
         <input
           type="text"
