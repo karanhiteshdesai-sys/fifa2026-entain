@@ -23,7 +23,7 @@ CRITICAL RULES:
 - Be precise with dates, group letters, and team names.
 
 Key facts about this platform:
-- Employees start with 20 Entain Points (EP) - virtual currency, no real money
+- Employees start with 100 Entain Points (EP) - virtual currency, no real money
 - They can bet on match outcomes: home win, draw, or away win
 - Winnings = stake × odds
 - 48 teams in 12 groups (A through L), 72 group stage matches

@@ -108,7 +108,7 @@ router.post('/users/:id/unblock', authenticate, requireAdmin, async (req, res) =
 
 router.post('/users/:id/reset-points', authenticate, requireAdmin, async (req, res) => {
   try {
-    const points = req.body.points || 20;
+    const points = req.body.points || 100;
     await db.updateUserPoints(Number(req.params.id), points);
     await db.createNotification(Number(req.params.id), '🔄 Points Reset', `Admin has reset your points to ${points} EP. Please refresh the page to see your updated balance.`);
     res.json({ message: 'Points reset successfully.' });
@@ -206,8 +206,8 @@ router.post('/unsettle-all', authenticate, requireAdmin, async (req, res) => {
   try {
     const matchRes = await pool.query("UPDATE matches SET status = 'upcoming', home_score = NULL, away_score = NULL WHERE status = 'finished'");
     const betRes = await pool.query("UPDATE bets SET status = 'pending', payout = 0 WHERE status IN ('won', 'lost')");
-    const userRes = await pool.query("UPDATE users SET points = 20 WHERE role != 'admin'");
-    res.json({ message: `Reset complete: ${matchRes.rowCount} match(es), ${betRes.rowCount} bet(s), ${userRes.rowCount} user(s) points reset to 20 EP.` });
+    const userRes = await pool.query("UPDATE users SET points = 100 WHERE role != 'admin'");
+    res.json({ message: `Reset complete: ${matchRes.rowCount} match(es), ${betRes.rowCount} bet(s), ${userRes.rowCount} user(s) points reset to 100 EP.` });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to unsettle.' }); }
 });
 

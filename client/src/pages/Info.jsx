@@ -7,7 +7,7 @@ function Info() {
       <div className="bg-entain-navy rounded-xl p-6 border border-entain-blue/20 mb-6">
         <h3 className="text-white font-semibold text-lg mb-2">Welcome to FIFA 2026 Entain Predictions!</h3>
         <p className="text-gray-400 text-sm leading-relaxed">
-          This is a fun, internal prediction game for Entain employees. You start with <span className="text-entain-gold font-bold">20 EP</span> (Entain Points) and use them to bet on FIFA 2026 World Cup matches. No real money involved — just bragging rights and leaderboard glory!
+          This is a fun, internal prediction game for Entain employees. You start with <span className="text-entain-gold font-bold">100 EP</span> (Entain Points) and use them to bet on FIFA 2026 World Cup matches. No real money involved — just bragging rights and leaderboard glory!
         </p>
       </div>
 
@@ -30,7 +30,7 @@ function Info() {
         ]} />
 
         <Section title="💰 Entain Points (EP)" items={[
-          { label: 'Starting balance', desc: 'Every new user gets 20 EP upon account approval.' },
+          { label: 'Starting balance', desc: 'Every new user gets 100 EP upon account approval.' },
           { label: 'Earning EP', desc: 'Win bets or receive admin bonuses.' },
           { label: 'Spending EP', desc: 'Place bets. Your stake is deducted immediately. If you win, you get stake × odds back.' },
         ]} />

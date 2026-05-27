@@ -146,8 +146,8 @@ function Admin() {
 
   const resetPoints = async (userId) => {
     try {
-      await api.post(`/admin/users/${userId}/reset-points`, { points: 20 });
-      setMessage('Points reset to 20.');
+      await api.post(`/admin/users/${userId}/reset-points`, { points: 100 });
+      setMessage('Points reset to 100.');
       fetchData();
     } catch (err) {
       setMessage('Failed to reset points.');
