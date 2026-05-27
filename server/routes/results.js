@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticate, requireAdmin } = require('../middleware/auth');
-const { simulateMatch, simulateAll, simulateNext, startPolling, stopPolling } = require('../services/liveResults');
+const { simulateMatch, simulateAll, simulateNext, startPolling, stopPolling, checkGroupStageComplete } = require('../services/liveResults');
 const router = express.Router();
 
 router.post('/simulate/:id', authenticate, requireAdmin, async (req, res) => {
@@ -27,5 +27,12 @@ router.post('/simulate-all', authenticate, requireAdmin, async (req, res) => {
 
 router.post('/polling/start', authenticate, requireAdmin, (req, res) => { startPolling(); res.json({ message: 'Polling started.' }); });
 router.post('/polling/stop', authenticate, requireAdmin, (req, res) => { stopPolling(); res.json({ message: 'Polling stopped.' }); });
+
+router.post('/group-stage-bonus', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await checkGroupStageComplete();
+    res.json({ message: 'Group stage bonus check triggered.' });
+  } catch (err) { res.status(500).json({ error: 'Server error.' }); }
+});
 
 module.exports = router;

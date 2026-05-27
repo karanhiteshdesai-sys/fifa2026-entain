@@ -1,5 +1,5 @@
 const https = require('https');
-const { db } = require('../db/database');
+const { db, pool } = require('../db/database');
 
 const API_KEY = process.env.FOOTBALL_API_KEY || '';
 let pollingInterval = null;
@@ -47,8 +47,56 @@ function settleMatch(matchId, homeScore, awayScore) {
         await db.createNotification(bet.user_id, 'Bet Lost', `Your bet lost. Match ended ${homeScore}-${awayScore}.`);
       }
     }
+
+    // Check if all group stage matches are now finished — award 50 EP bonus to everyone
+    await checkGroupStageComplete();
+
     return { matchId, result, homeScore, awayScore, betsSettled: bets.length };
   })();
+}
+
+async function checkGroupStageComplete() {
+  try {
+    // Count group stage matches that are still upcoming
+    const { rows } = await pool.query(
+      "SELECT COUNT(*) as count FROM matches WHERE stage = 'group' AND status != 'finished'"
+    );
+    const remaining = Number(rows[0].count);
+
+    if (remaining > 0) return; // Group stage not yet complete
+
+    // Check if bonus was already awarded (use broadcasts as a flag)
+    const { rows: bonusCheck } = await pool.query(
+      "SELECT id FROM broadcasts WHERE title = 'Group Stage Complete - 50 EP Bonus'"
+    );
+    if (bonusCheck.length > 0) return; // Already awarded
+
+    // All group stage matches are finished! Award 50 EP to every registered user
+    console.log('🎉 Group stage complete! Awarding 50 EP to all users...');
+
+    const { rows: allUsers } = await pool.query(
+      "SELECT id, name FROM users WHERE status = 'approved'"
+    );
+
+    for (const user of allUsers) {
+      await db.addPoints(user.id, 50);
+      await db.createNotification(
+        user.id,
+        'Group Stage Bonus! 🎉',
+        'The group stage is complete! You\'ve been credited 50 EP for the knockout rounds. Good luck!'
+      );
+    }
+
+    // Record that bonus was awarded (prevents double-crediting)
+    await db.createBroadcast(
+      'Group Stage Complete - 50 EP Bonus',
+      `All ${allUsers.length} users have been credited 50 EP for the knockout stage!`
+    );
+
+    console.log(`✅ 50 EP credited to ${allUsers.length} users`);
+  } catch (err) {
+    console.error('Group stage bonus check error:', err.message);
+  }
 }
 
 async function simulateMatch(matchId) {
@@ -180,4 +228,4 @@ function fetchFromAPI(path) {
 
 function stopPolling() { if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; console.log('📡 Live polling stopped'); } }
 
-module.exports = { settleMatch, simulateMatch, simulateAll, simulateNext, startPolling, stopPolling };
+module.exports = { settleMatch, simulateMatch, simulateAll, simulateNext, startPolling, stopPolling, checkGroupStageComplete };
