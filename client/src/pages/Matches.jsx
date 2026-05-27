@@ -145,7 +145,7 @@ function Matches() {
         prediction: confirmBet.finalPrediction,
         stake
       });
-      setNotification({ message: `Bet placed! ${confirmBet.match} — ${confirmBet.prediction} — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`, type: 'success' });
+      setNotification({ message: `Bet placed! Ref: ${data.bet_number} — ${confirmBet.match} — ${confirmBet.prediction} — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`, type: 'success' });
       setMessage('');
       setBetModal(null);
       setConfirmBet(null);

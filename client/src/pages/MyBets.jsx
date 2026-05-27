@@ -157,6 +157,9 @@ function MyBets() {
             <div key={bet.id} className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
               <div className="flex items-center justify-between">
                 <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-entain-accent text-xs font-mono bg-entain-accent/10 px-2 py-0.5 rounded">{bet.bet_number || '—'}</span>
+                  </div>
                   <p className="text-white font-medium">
                     {bet.home_team} vs {bet.away_team}
                   </p>

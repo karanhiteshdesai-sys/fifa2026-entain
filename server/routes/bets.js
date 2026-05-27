@@ -136,7 +136,7 @@ router.post('/', authenticate, async (req, res) => {
       await adjustOdds(match_id);
     }
 
-    res.status(201).json({ id: bet.id, match_id, bet_type, prediction, stake, odds, potential_payout: Math.round(stake * odds), status: 'pending' });
+    res.status(201).json({ id: bet.id, bet_number: bet.bet_number, match_id, bet_type, prediction, stake, odds, potential_payout: Math.round(stake * odds), status: 'pending' });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 

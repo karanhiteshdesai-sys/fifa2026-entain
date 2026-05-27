@@ -43,6 +43,7 @@ async function initDb() {
 
     CREATE TABLE IF NOT EXISTS bets (
       id SERIAL PRIMARY KEY,
+      bet_number TEXT UNIQUE,
       user_id INTEGER REFERENCES users(id),
       match_id INTEGER REFERENCES matches(id),
       bet_type TEXT NOT NULL,
@@ -94,6 +95,7 @@ async function initDb() {
     await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
     await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code TEXT');
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS country TEXT DEFAULT ''");
+    await pool.query('ALTER TABLE bets ADD COLUMN IF NOT EXISTS bet_number TEXT');
   } catch (e) { /* columns may already exist */ }
 
   console.log('✅ Database tables initialized');
@@ -195,9 +197,14 @@ const db = {
 
   // ===== BETS =====
   async createBet(bet) {
+    // Generate unique bet number: EFIFA + 4 digit sequential number
+    const { rows: countRows } = await pool.query('SELECT COUNT(*) as count FROM bets');
+    const nextNum = Number(countRows[0].count) + 1;
+    const betNumber = `EFIFA${String(nextNum).padStart(4, '0')}`;
+
     const { rows } = await pool.query(
-      'INSERT INTO bets (user_id, match_id, bet_type, prediction, stake, odds, status, payout) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [bet.user_id, bet.match_id, bet.bet_type, bet.prediction, bet.stake, bet.odds, bet.status || 'pending', bet.payout || 0]
+      'INSERT INTO bets (bet_number, user_id, match_id, bet_type, prediction, stake, odds, status, payout) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [betNumber, bet.user_id, bet.match_id, bet.bet_type, bet.prediction, bet.stake, bet.odds, bet.status || 'pending', bet.payout || 0]
     );
     return rows[0];
   },

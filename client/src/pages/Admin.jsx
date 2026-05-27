@@ -166,7 +166,7 @@ function Admin() {
 
   const filteredBets = allBets.filter(b => {
     const q = betSearch.toLowerCase();
-    const matchesSearch = !q || b.user_name.toLowerCase().includes(q) || b.user_email.toLowerCase().includes(q) || b.home_team.toLowerCase().includes(q) || b.away_team.toLowerCase().includes(q);
+    const matchesSearch = !q || (b.bet_number && b.bet_number.toLowerCase().includes(q)) || b.user_name.toLowerCase().includes(q) || b.user_email.toLowerCase().includes(q) || b.home_team.toLowerCase().includes(q) || b.away_team.toLowerCase().includes(q);
     const matchesStatus = betStatusFilter === 'all' || b.status === betStatusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -575,7 +575,7 @@ function Admin() {
             <div className="relative flex-1">
               <input
                 type="text"
-                placeholder="Search by employee, team..."
+                placeholder="Search by bet number, employee, team..."
                 value={betSearch}
                 onChange={(e) => setBetSearch(e.target.value)}
                 className="w-full bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 pl-9 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500"
@@ -600,6 +600,7 @@ function Admin() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-entain-blue/20 text-xs">
+                  <th className="text-left text-gray-400 px-4 py-3">Bet #</th>
                   <th className="text-left text-gray-400 px-4 py-3">Employee</th>
                   <th className="text-left text-gray-400 px-4 py-3">Match</th>
                   <th className="text-center text-gray-400 px-4 py-3">Pick</th>
@@ -613,6 +614,9 @@ function Admin() {
               <tbody>
                 {filteredBets.map(bet => (
                   <tr key={bet.id} className="border-b border-entain-blue/10 text-sm">
+                    <td className="px-4 py-3">
+                      <span className="text-entain-accent font-mono text-xs bg-entain-accent/10 px-1.5 py-0.5 rounded">{bet.bet_number || '—'}</span>
+                    </td>
                     <td className="px-4 py-3">
                       <p className="text-white">{bet.user_name}</p>
                       <p className="text-gray-500 text-xs">{bet.user_email}</p>
