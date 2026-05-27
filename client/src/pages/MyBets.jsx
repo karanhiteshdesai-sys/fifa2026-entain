@@ -169,7 +169,7 @@ function MyBets() {
                     {' • '}Odds: {bet.odds}
                   </p>
                   <p className="text-gray-500 text-xs mt-1">
-                    {new Date(bet.created_at).toLocaleDateString('en-GB', {
+                    Placed: {new Date(bet.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}
                   </p>

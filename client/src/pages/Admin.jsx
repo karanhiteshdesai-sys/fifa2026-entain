@@ -608,6 +608,7 @@ function Admin() {
                   <th className="text-right text-gray-400 px-4 py-3">Odds</th>
                   <th className="text-center text-gray-400 px-4 py-3">Status</th>
                   <th className="text-right text-gray-400 px-4 py-3">Payout</th>
+                  <th className="text-left text-gray-400 px-4 py-3">Placed</th>
                   <th className="text-right text-gray-400 px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -646,6 +647,9 @@ function Admin() {
                       ) : (
                         <span className="text-gray-500">—</span>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-left text-gray-400 text-xs whitespace-nowrap">
+                      {new Date(bet.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </td>
                     <td className="px-4 py-3 text-right">
                       {bet.status === 'pending' && (
