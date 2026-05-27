@@ -33,7 +33,7 @@ function Leaderboard() {
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-2">🏆 Leaderboard</h2>
-      <p className="text-gray-400 text-sm mb-6">Ranked by composite score: EP Balance (50%) + Win Rate (30%) + Engagement (20%). Minimum 1 bet to qualify.</p>
+      <p className="text-gray-400 text-sm mb-6">Ranked by composite score: EP Balance (60%) + Win Rate (40%). Minimum 1 bet to qualify.</p>
 
       <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
         <table className="w-full">
@@ -101,21 +101,16 @@ function Leaderboard() {
       {/* Scoring Breakdown */}
       <div className="mt-6 bg-entain-navy rounded-xl border border-entain-blue/20 p-5">
         <h3 className="text-white font-semibold mb-3">📊 How the Score is Calculated</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-entain-dark rounded-lg p-3 text-center">
-            <p className="text-entain-gold text-2xl font-bold">50%</p>
+            <p className="text-entain-gold text-2xl font-bold">60%</p>
             <p className="text-gray-400 text-xs mt-1">EP Balance</p>
             <p className="text-gray-500 text-[10px]">Your current points</p>
           </div>
           <div className="bg-entain-dark rounded-lg p-3 text-center">
-            <p className="text-entain-green text-2xl font-bold">30%</p>
+            <p className="text-entain-green text-2xl font-bold">40%</p>
             <p className="text-gray-400 text-xs mt-1">Win Rate</p>
             <p className="text-gray-500 text-[10px]">Prediction accuracy</p>
-          </div>
-          <div className="bg-entain-dark rounded-lg p-3 text-center">
-            <p className="text-entain-accent text-2xl font-bold">20%</p>
-            <p className="text-gray-400 text-xs mt-1">Engagement</p>
-            <p className="text-gray-500 text-[10px]">Total bets placed</p>
           </div>
         </div>
         <p className="text-gray-500 text-xs mt-3 text-center">Minimum 1 bet required to appear on the leaderboard.</p>

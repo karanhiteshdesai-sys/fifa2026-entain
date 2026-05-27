@@ -261,8 +261,8 @@ const db = {
       const points = Number(r.points);
       const winRate = totalBets > 0 ? (betsWon / totalBets) * 100 : 0;
 
-      // Composite score: 50% EP balance + 30% win rate + 20% engagement (total bets)
-      const score = Math.round((points * 0.5) + (winRate * 0.3 * 100) + (totalBets * 0.2 * 10));
+      // Composite score: 60% EP balance + 40% win rate
+      const score = Math.round((points * 0.6) + (winRate * 0.4 * 100));
 
       return {
         ...r,
