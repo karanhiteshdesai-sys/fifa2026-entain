@@ -251,10 +251,29 @@ const db = {
       LEFT JOIN bets b ON u.id = b.user_id
       WHERE u.email != 'admin@entaingroup.com' AND u.status != 'pending' AND u.status != 'rejected'
       GROUP BY u.id
+      HAVING COUNT(b.id) >= 1
       ORDER BY u.points DESC
       LIMIT 50
     `);
-    return rows.map(r => ({ ...r, total_bets: Number(r.total_bets), bets_won: Number(r.bets_won), bets_lost: Number(r.bets_lost), total_winnings: Number(r.total_winnings) }));
+    return rows.map(r => {
+      const totalBets = Number(r.total_bets);
+      const betsWon = Number(r.bets_won);
+      const points = Number(r.points);
+      const winRate = totalBets > 0 ? (betsWon / totalBets) * 100 : 0;
+
+      // Composite score: 50% EP balance + 30% win rate + 20% engagement (total bets)
+      const score = Math.round((points * 0.5) + (winRate * 0.3 * 100) + (totalBets * 0.2 * 10));
+
+      return {
+        ...r,
+        total_bets: totalBets,
+        bets_won: betsWon,
+        bets_lost: Number(r.bets_lost),
+        total_winnings: Number(r.total_winnings),
+        win_rate: Math.round(winRate),
+        score
+      };
+    }).sort((a, b) => b.score - a.score);
   },
 
   // ===== CHAT =====

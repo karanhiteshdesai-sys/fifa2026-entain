@@ -32,7 +32,8 @@ function Leaderboard() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-6">🏆 Leaderboard</h2>
+      <h2 className="text-2xl font-bold text-white mb-2">🏆 Leaderboard</h2>
+      <p className="text-gray-400 text-sm mb-6">Ranked by composite score: EP Balance (50%) + Win Rate (30%) + Engagement (20%). Minimum 1 bet to qualify.</p>
 
       <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden overflow-x-auto">
         <table className="w-full">
@@ -40,12 +41,12 @@ function Leaderboard() {
             <tr className="border-b border-entain-blue/20">
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Rank</th>
               <th className="text-left text-gray-400 text-sm font-medium px-6 py-3">Player</th>
-              <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Country</th>
               <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Tag</th>
-              <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Points</th>
-              <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Bets</th>
-              <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Won</th>
-              <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">Win Rate</th>
+              <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Score</th>
+              <th className="text-right text-gray-400 text-sm font-medium px-6 py-3">EP</th>
+              <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Win Rate</th>
+              <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Bets</th>
+              <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Won</th>
             </tr>
           </thead>
           <tbody>
@@ -59,9 +60,6 @@ function Leaderboard() {
                   {player.department && <p className="text-gray-500 text-xs">{player.department}</p>}
                 </td>
                 <td className="px-4 py-4 text-center">
-                  <span className="text-gray-300 text-sm">{player.country || '—'}</span>
-                </td>
-                <td className="px-4 py-4 text-center">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                     player.tag === 'Diamond Diplomat' ? 'bg-cyan-400/20 text-cyan-300' :
                     player.tag === 'Gold Diplomat' ? 'bg-yellow-400/20 text-yellow-300' :
@@ -73,19 +71,20 @@ function Leaderboard() {
                     'bg-gray-500/20 text-gray-400'
                   }`} title={player.tag}>{player.tag}</span>
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <span className="text-entain-gold font-bold">{player.points?.toLocaleString()} EP</span>
+                <td className="px-4 py-4 text-right">
+                  <span className="text-entain-accent font-bold text-lg">{player.score?.toLocaleString()}</span>
                 </td>
-                <td className="px-6 py-4 text-right text-gray-300">
+                <td className="px-6 py-4 text-right">
+                  <span className="text-entain-gold font-medium">{player.points?.toLocaleString()}</span>
+                </td>
+                <td className="px-4 py-4 text-right">
+                  <span className="text-entain-green font-medium">{player.win_rate || 0}%</span>
+                </td>
+                <td className="px-4 py-4 text-right text-gray-300">
                   {player.total_bets || 0}
                 </td>
-                <td className="px-6 py-4 text-right text-entain-green">
+                <td className="px-4 py-4 text-right text-gray-300">
                   {player.bets_won || 0}
-                </td>
-                <td className="px-6 py-4 text-right text-gray-300">
-                  {player.total_bets > 0
-                    ? `${Math.round((player.bets_won / player.total_bets) * 100)}%`
-                    : '—'}
                 </td>
               </tr>
             ))}
@@ -94,9 +93,32 @@ function Leaderboard() {
 
         {leaderboard.length === 0 && (
           <div className="text-center text-gray-400 py-12">
-            No players yet. Place some bets to appear on the leaderboard!
+            No players yet. Place at least 1 bet to appear on the leaderboard!
           </div>
         )}
+      </div>
+
+      {/* Scoring Breakdown */}
+      <div className="mt-6 bg-entain-navy rounded-xl border border-entain-blue/20 p-5">
+        <h3 className="text-white font-semibold mb-3">📊 How the Score is Calculated</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-entain-dark rounded-lg p-3 text-center">
+            <p className="text-entain-gold text-2xl font-bold">50%</p>
+            <p className="text-gray-400 text-xs mt-1">EP Balance</p>
+            <p className="text-gray-500 text-[10px]">Your current points</p>
+          </div>
+          <div className="bg-entain-dark rounded-lg p-3 text-center">
+            <p className="text-entain-green text-2xl font-bold">30%</p>
+            <p className="text-gray-400 text-xs mt-1">Win Rate</p>
+            <p className="text-gray-500 text-[10px]">Prediction accuracy</p>
+          </div>
+          <div className="bg-entain-dark rounded-lg p-3 text-center">
+            <p className="text-entain-accent text-2xl font-bold">20%</p>
+            <p className="text-gray-400 text-xs mt-1">Engagement</p>
+            <p className="text-gray-500 text-[10px]">Total bets placed</p>
+          </div>
+        </div>
+        <p className="text-gray-500 text-xs mt-3 text-center">Minimum 1 bet required to appear on the leaderboard.</p>
       </div>
     </div>
   );

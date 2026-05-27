@@ -45,10 +45,12 @@ function Info() {
         ]} />
 
         <Section title="6. Leaderboard & Rankings" items={[
-          { label: 'How rankings work', desc: 'The leaderboard ranks all participants by their current EP balance (highest to lowest).' },
-          { label: 'Climbing the leaderboard', desc: 'Win predictions to increase your EP balance. Successful predictions return stake × odds to your account.' },
-          { label: 'Visible stats', desc: 'The leaderboard displays: name, department, total bets placed, win rate, and total EP balance.' },
-          { label: 'Fair play', desc: 'All participants start equally. The leaderboard reflects prediction skill and strategy over the tournament duration.' },
+          { label: 'Composite score', desc: 'Rankings are determined by a composite score combining three factors: EP Balance (50%), Win Rate (30%), and Engagement/Total Bets (20%).' },
+          { label: 'Minimum requirement', desc: 'You must place at least 1 prediction to appear on the leaderboard.' },
+          { label: 'EP Balance (50%)', desc: 'Your current Entain Points balance — reflects overall success and smart bankroll management.' },
+          { label: 'Win Rate (30%)', desc: 'Your prediction accuracy (wins ÷ total bets). Rewards quality over quantity.' },
+          { label: 'Engagement (20%)', desc: 'Total number of predictions placed. Rewards active participation throughout the tournament.' },
+          { label: 'Why not just EP?', desc: 'A pure EP ranking would favour lucky single bets. The composite score rewards consistent accuracy and active engagement alongside EP growth.' },
         ]} />
 
         <Section title="7. Entain Tag System & Referral Programme" items={[
