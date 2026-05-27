@@ -129,14 +129,32 @@ router.post('/', authenticate, async (req, res) => {
       odds = applyOddsBoost(odds, tagInfo.boost);
     }
 
-    const bet = await db.createBet({ user_id: req.user.id, match_id, bet_type, prediction, stake, odds, status: 'pending', payout: 0 });
+    // Check if this is a responsible gambling bet (80%+ of balance)
+    const isConditional = stake >= user.points * 0.8;
+    const betStatus = isConditional ? 'conditional' : 'pending';
+
+    const bet = await db.createBet({ user_id: req.user.id, match_id, bet_type, prediction, stake, odds, status: betStatus, payout: 0 });
 
     // Adjust odds dynamically after bet is placed (match_result only)
-    if (bet_type === 'match_result') {
+    if (bet_type === 'match_result' && !isConditional) {
       await adjustOdds(match_id);
     }
 
-    res.status(201).json({ id: bet.id, bet_number: bet.bet_number, match_id, bet_type, prediction, stake, odds, potential_payout: Math.round(stake * odds), status: 'pending' });
+    // If conditional, notify admins for approval
+    if (isConditional) {
+      const { rows: admins } = await pool.query("SELECT id FROM users WHERE role = 'admin'");
+      const predLabel = prediction === 'home' ? match.home_team : prediction === 'away' ? match.away_team : 'Draw';
+      for (const admin of admins) {
+        await db.createNotification(
+          admin.id,
+          '⚠️ Conditional Bet — Approval Required',
+          `${user.name} placed a high-stake bet (${stake}/${user.points} EP, ${Math.round(stake/user.points*100)}% of balance). Bet: ${predLabel} in ${match.home_team} vs ${match.away_team} at odds ${odds}. Ref: ${bet.bet_number}. Please approve or reject in Admin > All Bets.`
+        );
+      }
+      await db.createNotification(req.user.id, '⏳ Bet Pending Approval', `Your bet ${bet.bet_number} (${stake} EP) requires admin approval as it exceeds 80% of your balance. You'll be notified once reviewed.`);
+    }
+
+    res.status(201).json({ id: bet.id, bet_number: bet.bet_number, match_id, bet_type, prediction, stake, odds, potential_payout: Math.round(stake * odds), status: betStatus });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 

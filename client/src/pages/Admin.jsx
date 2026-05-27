@@ -591,6 +591,7 @@ function Admin() {
               className="bg-entain-navy border border-entain-blue/30 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-entain-accent"
             >
               <option value="all">All Status</option>
+              <option value="conditional">Awaiting Approval</option>
               <option value="pending">Pending</option>
               <option value="won">Won</option>
               <option value="lost">Lost</option>
@@ -635,9 +636,11 @@ function Admin() {
                         bet.status === 'won' ? 'bg-green-500/20 text-green-400' :
                         bet.status === 'lost' ? 'bg-red-500/20 text-red-400' :
                         bet.status === 'voided' ? 'bg-gray-500/20 text-gray-400' :
+                        bet.status === 'conditional' ? 'bg-orange-500/20 text-orange-400' :
+                        bet.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
                         'bg-yellow-500/20 text-yellow-400'
                       }`}>
-                        {bet.status === 'pending' ? 'Bet Placed' : bet.status}
+                        {bet.status === 'pending' ? 'Bet Placed' : bet.status === 'conditional' ? '⏳ Awaiting' : bet.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -653,6 +656,30 @@ function Admin() {
                       {new Date(bet.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </td>
                     <td className="px-4 py-3 text-right">
+                      {bet.status === 'conditional' && (
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => {
+                              api.post(`/admin/bets/${bet.id}/approve`)
+                                .then(() => { setMessage(`Bet ${bet.bet_number} approved.`); fetchData(); })
+                                .catch(() => setMessage('Failed to approve bet.'));
+                            }}
+                            className="text-green-400 text-xs hover:underline font-medium"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              api.post(`/admin/bets/${bet.id}/reject`)
+                                .then(() => { setMessage(`Bet ${bet.bet_number} rejected. ${bet.stake} EP refunded.`); fetchData(); })
+                                .catch(() => setMessage('Failed to reject bet.'));
+                            }}
+                            className="text-red-400 text-xs hover:underline font-medium"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
                       {bet.status === 'pending' && (
                         <div className="flex gap-2 justify-end">
                           <button

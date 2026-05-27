@@ -145,7 +145,10 @@ function Matches() {
         prediction: confirmBet.finalPrediction,
         stake
       });
-      setNotification({ message: `Bet placed! Ref: ${data.bet_number} — ${confirmBet.match} — ${confirmBet.prediction} — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`, type: 'success' });
+      setNotification({ message: data.status === 'conditional'
+        ? `Bet submitted for approval! Ref: ${data.bet_number} — Your bet exceeds 80% of your balance and requires admin approval. You'll be notified once reviewed.`
+        : `Bet placed! Ref: ${data.bet_number} — ${confirmBet.match} — ${confirmBet.prediction} — ${stake} EP staked (potential payout: ${data.potential_payout} EP)`,
+        type: data.status === 'conditional' ? 'warning' : 'success' });
       setMessage('');
       setBetModal(null);
       setConfirmBet(null);

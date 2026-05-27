@@ -193,6 +193,35 @@ router.delete('/bets/:id', authenticate, requireAdmin, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to delete bet.' }); }
 });
 
+router.post('/bets/:id/approve', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const betId = Number(req.params.id);
+    const { rows } = await pool.query('SELECT * FROM bets WHERE id = $1', [betId]);
+    if (!rows[0]) return res.status(404).json({ error: 'Bet not found.' });
+    const bet = rows[0];
+    if (bet.status !== 'conditional') return res.status(400).json({ error: 'Can only approve conditional bets.' });
+
+    await pool.query("UPDATE bets SET status = 'pending' WHERE id = $1", [betId]);
+    await db.createNotification(bet.user_id, '✅ Bet Approved!', `Your bet ${bet.bet_number} (${bet.stake} EP) has been approved by admin. Good luck!`);
+    res.json({ message: 'Bet approved.' });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to approve bet.' }); }
+});
+
+router.post('/bets/:id/reject', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const betId = Number(req.params.id);
+    const { rows } = await pool.query('SELECT * FROM bets WHERE id = $1', [betId]);
+    if (!rows[0]) return res.status(404).json({ error: 'Bet not found.' });
+    const bet = rows[0];
+    if (bet.status !== 'conditional') return res.status(400).json({ error: 'Can only reject conditional bets.' });
+
+    await pool.query("UPDATE bets SET status = 'rejected' WHERE id = $1", [betId]);
+    await db.addPoints(bet.user_id, bet.stake); // Refund
+    await db.createNotification(bet.user_id, '❌ Bet Rejected', `Your bet ${bet.bet_number} (${bet.stake} EP) has been rejected by admin. Your ${bet.stake} EP has been refunded.`);
+    res.json({ message: 'Bet rejected and refunded.' });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to reject bet.' }); }
+});
+
 router.post('/generate-knockout', authenticate, requireAdmin, async (req, res) => {
   try {
     const { generateKnockoutRound } = require('../services/knockout');
