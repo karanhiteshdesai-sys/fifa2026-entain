@@ -50,6 +50,7 @@ function Info() {
           { label: 'EP Balance (60%)', desc: 'Your current Entain Points balance — reflects overall success and smart bankroll management.' },
           { label: 'Win Rate (40%)', desc: 'Your prediction accuracy (wins ÷ total bets). Rewards quality picks over blind volume.' },
           { label: 'Why not just EP?', desc: 'A pure EP ranking would favour lucky single large bets. The composite score rewards consistent accuracy alongside EP growth.' },
+          { label: 'Tiebreaker', desc: 'If two participants have the same score, the one with more total bets placed ranks higher (rewarding engagement).' },
         ]} />
 
         <Section title="7. Entain Tag System & Referral Programme" items={[

@@ -280,7 +280,7 @@ const db = {
         win_rate: Math.round(winRate),
         score
       };
-    }).sort((a, b) => b.score - a.score);
+    }).sort((a, b) => b.score - a.score || b.total_bets - a.total_bets);
   },
 
   // ===== CHAT =====
