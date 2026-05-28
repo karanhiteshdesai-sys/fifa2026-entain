@@ -162,16 +162,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-entain-dark relative">
-      {/* Watermark overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden select-none" aria-hidden="true">
-        <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-x-24 gap-y-20 -rotate-[30deg] scale-150 opacity-100">
-          {Array.from({ length: 30 }).map((_, i) => (
-            <span key={i} className="text-white text-2xl font-bold whitespace-nowrap tracking-widest">
-              Social Committee
-            </span>
-          ))}
-        </div>
-      </div>
       <div className="bg-yellow-400 overflow-hidden relative sticky top-0 z-40">
         <div className="flex animate-marquee">
           <div className="flex shrink-0 items-center py-1">
