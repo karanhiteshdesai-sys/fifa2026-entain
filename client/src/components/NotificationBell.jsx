@@ -1,15 +1,41 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+
+function getNotificationRoute(title, message) {
+  const t = (title || '').toLowerCase();
+  const m = (message || '').toLowerCase();
+
+  // Messages / DMs
+  if (t.includes('message') || t.includes('reply') || t.includes('💬')) return '/messages';
+
+  // Bets
+  if (t.includes('bet won') || t.includes('bet lost') || t.includes('bet placed') ||
+      t.includes('bet voided') || t.includes('bet approved') || t.includes('bet rejected')) return '/my-bets';
+
+  // Referrals
+  if (t.includes('referral')) return '/my-tag';
+
+  // Leaderboard / bonus
+  if (t.includes('bonus') || t.includes('leaderboard')) return '/leaderboard';
+
+  // Account / points
+  if (t.includes('account approved') || t.includes('points reset') || t.includes('points added')) return '/';
+
+  // Default
+  return null;
+}
 
 function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 10000); // Check every 10s
+    const interval = setInterval(fetchUnreadCount, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -31,9 +57,8 @@ function NotificationBell() {
   // Show browser notification for new unread
   useEffect(() => {
     if (unreadCount > 0 && 'Notification' in window && Notification.permission === 'granted') {
-      // Only show if tab is not focused
       if (document.hidden) {
-        new Notification('FIFA 2026 Predictions', {
+        new Notification('World Cup 2026 Predictions', {
           body: `You have ${unreadCount} new notification${unreadCount > 1 ? 's' : ''}`,
           icon: '/entain-logo.svg'
         });
@@ -59,6 +84,14 @@ function NotificationBell() {
     setIsOpen(!isOpen);
     if (!isOpen) {
       fetchNotifications();
+    }
+  };
+
+  const handleNotificationClick = (notif) => {
+    const route = getNotificationRoute(notif.title, notif.message);
+    setIsOpen(false);
+    if (route) {
+      navigate(route);
     }
   };
 
@@ -109,12 +142,19 @@ function NotificationBell() {
               <p className="text-gray-500 text-sm text-center py-6">No notifications yet</p>
             ) : (
               notifications.map(notif => (
-                <div key={notif.id} className={`px-4 py-3 border-b border-entain-blue/10 ${!notif.read ? 'bg-entain-blue/10' : ''}`}>
+                <div
+                  key={notif.id}
+                  onClick={() => handleNotificationClick(notif)}
+                  className={`px-4 py-3 border-b border-entain-blue/10 cursor-pointer hover:bg-entain-blue/20 transition ${!notif.read ? 'bg-entain-blue/10' : ''}`}
+                >
                   <div className="flex items-start justify-between">
                     <p className="text-white text-sm font-medium">{notif.title}</p>
                     <span className="text-gray-500 text-[10px] ml-2 whitespace-nowrap">{formatTime(notif.created_at)}</span>
                   </div>
                   <p className="text-gray-400 text-xs mt-1">{notif.message}</p>
+                  {getNotificationRoute(notif.title, notif.message) && (
+                    <p className="text-entain-accent text-[10px] mt-1">Tap to view →</p>
+                  )}
                 </div>
               ))
             )}
