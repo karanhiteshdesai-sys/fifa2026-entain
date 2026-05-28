@@ -9,21 +9,24 @@ function Home() {
   const [matches, setMatches] = useState([]);
   const [bets, setBets] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [referralBoard, setReferralBoard] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userRes, matchRes, betsRes, lbRes] = await Promise.all([
+        const [userRes, matchRes, betsRes, lbRes, refRes] = await Promise.all([
           api.get('/auth/me'),
           api.get('/matches'),
           api.get('/bets'),
-          api.get('/leaderboard')
+          api.get('/leaderboard'),
+          api.get('/leaderboard/referrals')
         ]);
         setUser(userRes.data);
         setMatches(matchRes.data);
         setBets(betsRes.data);
         setLeaderboard(lbRes.data);
+        setReferralBoard(refRes.data);
       } catch (err) {
         console.error('Failed to load dashboard:', err);
       } finally {
@@ -44,6 +47,7 @@ function Home() {
   const winRate = totalBets > 0 ? Math.round((betsWon / totalBets) * 100) : 0;
   const totalWinnings = bets.filter(b => b.status === 'won').reduce((sum, b) => sum + b.payout, 0);
   const top3 = leaderboard.slice(0, 3);
+  const topReferrers = referralBoard.slice(0, 3);
 
   // Tournament countdown
   const tournamentStart = new Date('2026-06-11T19:00:00');
@@ -166,6 +170,28 @@ function Home() {
           <div>
             <h2 className="text-white font-semibold text-lg mb-4">Sponsors</h2>
             <AdSlider />
+          </div>
+
+          {/* Top Referrers */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-white font-semibold text-lg">📣 Top Referrers</h2>
+              <Link to="/leaderboard" className="text-entain-accent text-sm hover:underline">Full board →</Link>
+            </div>
+            <div className="bg-entain-navy rounded-xl border border-entain-blue/20 overflow-hidden">
+              {topReferrers.map((player, i) => (
+                <div key={player.id} className="flex items-center justify-between px-4 py-3 border-b border-entain-blue/10 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
+                    <span className="text-white text-sm font-medium">{player.name}</span>
+                  </div>
+                  <span className="text-entain-accent text-sm font-bold">{player.referral_count} referrals</span>
+                </div>
+              ))}
+              {topReferrers.length === 0 && (
+                <p className="text-gray-400 text-sm text-center py-4">No referrals yet</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
