@@ -11,6 +11,18 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Disable printing */
+@media print {
+  body {
+    display: none !important;
+  }
 }
 
 .bg-entain-dark {

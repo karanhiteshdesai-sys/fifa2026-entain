@@ -107,6 +107,58 @@ function App() {
     window.location.href = '/';
   };
 
+  // Screenshot & screen capture prevention
+  const [screenshotWarning, setScreenshotWarning] = useState(false);
+
+  useEffect(() => {
+    const showWarning = () => {
+      setScreenshotWarning(true);
+      setTimeout(() => setScreenshotWarning(false), 3000);
+    };
+
+    // Block keyboard shortcuts for screenshots
+    const handleKeyDown = (e) => {
+      // Print Screen
+      if (e.key === 'PrintScreen') {
+        e.preventDefault();
+        showWarning();
+      }
+      // Ctrl+Shift+S (Windows snipping), Cmd+Shift+3/4 (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4')) {
+        e.preventDefault();
+        showWarning();
+      }
+      // Ctrl+P (print)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        showWarning();
+      }
+    };
+
+    // Block right-click context menu
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      showWarning();
+    };
+
+    // Detect visibility change (some screenshot tools cause blur)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page became hidden — could be screenshot on mobile
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('token');
@@ -209,6 +261,19 @@ function App() {
             >
               Log Out
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Screenshot Warning Toast */}
+      {screenshotWarning && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[99999] animate-slide-in">
+          <div className="bg-red-500/90 backdrop-blur-sm text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <span className="text-xl">📵</span>
+            <div>
+              <p className="font-semibold text-sm">Screenshots are not allowed</p>
+              <p className="text-red-100 text-xs">This is an internal competition. Please respect the privacy of all participants.</p>
+            </div>
           </div>
         </div>
       )}
