@@ -53,11 +53,11 @@ function Info() {
           { label: 'Tiebreaker', desc: 'If two participants have the same score, the one with more total bets placed ranks higher (rewarding engagement).' },
         ]} />
 
-        <Section title="7. Entain Tag System & Referral Programme" items={[
-          { label: 'What are Entain Tags?', desc: 'Tags are earned by referring colleagues to the platform. Higher tags grant a percentage boost on your odds when placing predictions.' },
+        <Section title="7. Entain Tag System & Referral Competition" items={[
+          { label: 'What are Entain Tags?', desc: 'Tags are earned by referring colleagues to the platform. They represent your rank in the Referral Competition leaderboard.' },
           { label: 'How referrals work', desc: 'Share your unique referral code (found on the Home page). When a colleague registers using your code and is approved, your referral count increases.' },
-          { label: 'No EP bonus for referrals', desc: 'Referrals do not award EP. The sole benefit is an improved Entain Tag which provides better odds on all future predictions.' },
-          { label: 'Odds boost is personal', desc: 'Your boosted odds apply only to your own predictions. Other participants see standard market odds.' },
+          { label: 'Referral Leaderboard', desc: 'Compete with others to see who can refer the most people. Check the Referrals tab on the Leaderboard page to see your rank.' },
+          { label: 'Tags are badges', desc: 'Tags unlock as you hit referral milestones (Silver at 3, Gold at 5, Diamond at 10, etc). They do not affect odds — odds are the same for everyone.' },
         ]} />
 
         {/* Tag Thresholds Table */}
@@ -71,49 +71,40 @@ function Info() {
                 <tr className="border-b border-entain-blue/20">
                   <th className="text-left text-gray-400 px-5 py-3">Tag</th>
                   <th className="text-center text-gray-400 px-4 py-3">Referrals Required</th>
-                  <th className="text-center text-gray-400 px-4 py-3">Odds Boost</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">👤 Employee</td>
                   <td className="px-4 py-2.5 text-center text-gray-400">0 (default)</td>
-                  <td className="px-4 py-2.5 text-center text-gray-500">None</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">⚡ Silver</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">3+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+5%</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">✨ Gold</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">5+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+10%</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">💎 Diamond</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">10+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+15%</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">👑 Diplomat</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">20+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+20%</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">⚡👑 Silver Diplomat</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">30+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+25%</td>
                 </tr>
                 <tr className="border-b border-entain-blue/10">
                   <td className="px-5 py-2.5 text-white">✨👑 Gold Diplomat</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">40+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+30%</td>
                 </tr>
                 <tr>
                   <td className="px-5 py-2.5 text-white">💎👑 Diamond Diplomat</td>
                   <td className="px-4 py-2.5 text-center text-gray-300">50+</td>
-                  <td className="px-4 py-2.5 text-center text-entain-green font-bold">+35%</td>
                 </tr>
               </tbody>
             </table>

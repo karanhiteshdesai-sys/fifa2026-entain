@@ -66,7 +66,7 @@ router.post('/users/:id/approve', authenticate, requireAdmin, async (req, res) =
 
     // Notify referrer about new referral (no EP bonus, just tag upgrade tracking)
     if (user.referred_by) {
-      await db.createNotification(user.referred_by, 'New Referral! 🎉', `${user.name} joined using your referral code! Your referral count has increased — keep referring to unlock better odds.`);
+      await db.createNotification(user.referred_by, 'New Referral! 🎉', `${user.name} joined using your referral code! Your referral count has increased — keep referring to climb the Referral Leaderboard.`);
     }
 
     res.json({ message: 'User approved successfully.' });
@@ -85,7 +85,7 @@ router.post('/users/:id/credit-referral', authenticate, requireAdmin, async (req
     const { referrer_id } = req.body;
     if (!referrer_id) return res.status(400).json({ error: 'referrer_id required.' });
     const user = await db.findUserById(Number(req.params.id));
-    await db.createNotification(referrer_id, 'New Referral! 🎉', `${user?.name || 'A new user'} was linked to your referral code! Your odds boost may have improved.`);
+    await db.createNotification(referrer_id, 'New Referral! 🎉', `${user?.name || 'A new user'} was linked to your referral code! Your referral count has increased.`);
     // Update referred_by on the user
     await pool.query('UPDATE users SET referred_by = $1 WHERE id = $2', [referrer_id, Number(req.params.id)]);
     res.json({ message: 'Referral credited.' });

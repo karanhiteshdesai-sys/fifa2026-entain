@@ -74,7 +74,7 @@ function Home() {
           <TagCard />
         </div>
         <div>
-          <h2 className="text-white font-semibold text-lg mb-4">📣 Refer & Keep Getting Best Odds</h2>
+          <h2 className="text-white font-semibold text-lg mb-4">📣 Refer & Climb the Leaderboard</h2>
           <ReferralCard />
         </div>
       </div>
@@ -340,7 +340,7 @@ function ReferralCard() {
 
   return (
     <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-4">
-      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. More referrals = higher Entain Tag = <span className="text-entain-gold font-bold">better odds</span> on every bet!</p>
+      <p className="text-gray-400 text-sm mb-3">Share your code with colleagues. More referrals = higher Entain Tag = <span className="text-entain-gold font-bold">climb the Referral Leaderboard</span>!</p>
       <div className="flex items-center gap-2">
         <input
           type="text"

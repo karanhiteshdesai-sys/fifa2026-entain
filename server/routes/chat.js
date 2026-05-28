@@ -60,18 +60,20 @@ REFERRAL SYSTEM:
 - Your referral code is on the Home page (e.g. FIFA-KARC7Y).
 - Click "Copy" to copy a shareable link.
 - Share with colleagues. When they register using your link and get approved, your referral count goes up.
-- More referrals = higher Tag = better odds on every bet. No EP bonus — the reward is better odds!
+- More referrals = higher Tag = climb the Referral Leaderboard. No EP bonus — the reward is your Tag rank!
 
 ENTAIN TAG SYSTEM:
-- Employee (0 referrals): Base odds, no boost.
-- Silver (3+ referrals): +5% odds boost.
-- Gold (5+ referrals): +10% odds boost.
-- Diamond (10+ referrals): +15% odds boost.
-- Diplomat (20+ referrals): +20% odds boost.
-- Silver Diplomat (30+): +25% odds boost.
-- Gold Diplomat (40+): +30% odds boost.
-- Diamond Diplomat (50+): +35% odds boost.
+- Tags are badges for the Referral Competition. They do NOT affect odds — odds are the same for everyone.
+- Employee (0 referrals): Default tag.
+- Silver (3+ referrals).
+- Gold (5+ referrals).
+- Diamond (10+ referrals).
+- Diplomat (20+ referrals).
+- Silver Diplomat (30+ referrals).
+- Gold Diplomat (40+ referrals).
+- Diamond Diplomat (50+ referrals).
 - View your tag by tapping the Entain Tag card on the Home page (it flips to show your tag).
+- Check the Referral Leaderboard tab to see who has the most referrals.
 
 GROUP CHAT:
 - Click the chat icon (bottom-left corner) to open group chat.
