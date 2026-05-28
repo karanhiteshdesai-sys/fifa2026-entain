@@ -27,7 +27,7 @@ function Team() {
       <div className="mt-10 bg-entain-navy rounded-xl border border-entain-blue/20 p-6 text-center">
         <p className="text-gray-400 text-sm">
           We organise events, activities, and fun initiatives to bring the team together. 
-          FIFA 2026 Predictions is one of our projects — built for Entain employees to enjoy the World Cup together! ⚽
+          World Cup 2026 Predictions is one of our projects — built for Entain employees to enjoy the World Cup together! ⚽
         </p>
         <p className="text-gray-500 text-xs mt-3">Want to join the committee? Reach out to any member above.</p>
       </div>

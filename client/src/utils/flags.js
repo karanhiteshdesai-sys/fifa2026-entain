@@ -1,4 +1,4 @@
-// FIFA 2026 World Cup team name to ISO country code mapping
+// World Cup 2026 team name to ISO country code mapping
 const teamCodes = {
   'Mexico': 'mx',
   'South Africa': 'za',

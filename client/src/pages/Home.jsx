@@ -62,8 +62,8 @@ function Home() {
           <h1 className="text-3xl font-bold text-white">Welcome, {user?.name?.split(' ')[0]}!</h1>
           <p className="text-gray-400 mt-1">
             {daysUntil > 0
-              ? `${daysUntil} days until FIFA 2026 kicks off!`
-              : 'FIFA 2026 is underway! Place your bets now.'}
+              ? `${daysUntil} days until World Cup 2026 kicks off!`
+              : 'World Cup 2026 is underway! Place your bets now.'}
           </p>
         </div>
       </div>

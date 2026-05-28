@@ -147,7 +147,7 @@ async function pollForResults() {
   }
 
   try {
-    // Fetch FIFA 2026 World Cup matches from football-data.org
+    // Fetch World Cup 2026 matches from football-data.org
     const data = await fetchFromAPI('/v4/competitions/WC/matches?status=FINISHED');
     if (!data || !data.matches) return;
 

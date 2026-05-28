@@ -1,6 +1,6 @@
-# FIFA 2026 Predictions — Entain Internal
+# World Cup 2026 Predictions — Entain Internal
 
-A fun internal predictions platform for Entain employees to predict FIFA 2026 match outcomes using virtual "Entain Points".
+A fun internal predictions platform for Entain employees to predict World Cup 2026 match outcomes using virtual "Entain Points".
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ A fun internal predictions platform for Entain employees to predict FIFA 2026 ma
 ```bash
 cd server
 npm install
-npm run seed   # Seeds the database with FIFA 2026 data
+npm run seed   # Seeds the database with World Cup 2026 data
 npm start      # Starts on http://localhost:3001
 ```
 
@@ -37,7 +37,7 @@ npm run dev    # Starts on http://localhost:5173
 
 ## Features
 
-- Predict FIFA 2026 match outcomes with Entain Points
+- Predict World Cup 2026 match outcomes with Entain Points
 - Company-wide leaderboard
 - Match schedule with groups and knockout rounds
 - Prediction history tracking

@@ -2,7 +2,7 @@ const { pool, initDb } = require('./database');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
-  console.log('🌱 Seeding FIFA 2026 database...');
+  console.log('🌱 Seeding World Cup 2026 database...');
 
   await initDb();
 

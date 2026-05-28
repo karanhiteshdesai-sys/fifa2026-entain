@@ -2,5 +2,5 @@
   <rect width="192" height="192" rx="40" fill="#1a1a2e"/>
   <polygon points="96,30 145,58 145,114 96,142 47,114 47,58" fill="#b829e3"/>
   <path d="M 68 52 L 124 52 L 124 64 L 84 64 L 100 96 L 84 128 L 124 128 L 124 140 L 68 140 L 68 128 L 90 96 L 68 64 Z" fill="#1a1a2e"/>
-  <text x="96" y="180" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#00d4aa">FIFA 2026</text>
+  <text x="96" y="180" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#00d4aa">WORLD CUP 2026</text>
 </svg>

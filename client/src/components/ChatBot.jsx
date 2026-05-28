@@ -4,7 +4,7 @@ import api from '../services/api';
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'bot', text: "Hi! I'm your FIFA 2026 assistant. Ask me about matches, teams, odds, or how the platform works!" }
+    { role: 'bot', text: "Hi! I'm your World Cup 2026 assistant. Ask me about matches, teams, odds, or how the platform works!" }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -171,7 +171,7 @@ function ChatBot() {
           <div className="bg-entain-dark px-4 py-3 border-b border-entain-blue/20 flex items-center gap-2">
             <span className="text-lg">🤖</span>
             <div>
-              <p className="text-white text-sm font-semibold">FIFA 2026 Assistant</p>
+              <p className="text-white text-sm font-semibold">World Cup 2026 Assistant</p>
               <p className="text-entain-accent text-xs">Powered by AI</p>
             </div>
           </div>
@@ -223,7 +223,7 @@ function ChatBot() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about FIFA 2026..."
+              placeholder="Ask about World Cup 2026..."
               className="flex-1 bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent transition"
               disabled={loading}
             />

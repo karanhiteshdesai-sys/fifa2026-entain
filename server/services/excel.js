@@ -9,7 +9,7 @@ async function generateExcel() {
   const data = db.getData();
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'FIFA 2026 Predictions - Entain';
+  workbook.creator = 'World Cup 2026 Predictions - Entain';
   workbook.created = new Date();
 
   // ===== SHEET 1: Users =====

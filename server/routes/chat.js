@@ -7,13 +7,13 @@ const router = express.Router();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
-const SYSTEM_PROMPT = `You are the FIFA 2026 Predictions assistant for Entain employees. You are friendly and conversational.
+const SYSTEM_PROMPT = `You are the World Cup 2026 Predictions assistant for Entain employees. You are friendly and conversational.
 
 You help with:
-- FIFA 2026 World Cup match information (teams, groups, schedule, venues)
+- World Cup 2026 match information (teams, groups, schedule, venues)
 - How the predictions platform works (placing bets, Entain Points, leaderboard)
 - Match odds and predictions advice
-- General FIFA 2026 tournament info
+- General World Cup 2026 tournament info
 - How to use the webapp (navigation, features, settings)
 - Casual conversation - greetings, small talk, banter about football
 
@@ -86,7 +86,7 @@ NOTIFICATIONS:
 - You get notified for: bet results, referral updates, admin broadcasts, points added.
 
 OTHER:
-- AI Bot (bottom-right): Ask me anything about FIFA 2026 or the app. You can also speak using the mic button.
+- AI Bot (bottom-right): Ask me anything about World Cup 2026 or the app. You can also speak using the mic button.
 - You can ask me to place a bet for you (e.g. "bet 5 on England to win").
 - Betting closes 1 minute before kickoff.
 - Odds are dynamic — they shift as more people bet on the same outcome.
@@ -131,7 +131,7 @@ router.post('/', authenticate, async (req, res) => {
       groupMap[m.group_name].matches.push(m);
     });
 
-    matchContext = '\nFIFA 2026 DATA (ONLY source of truth — do NOT use training data):\n';
+    matchContext = '\nWORLD CUP 2026 DATA (ONLY source of truth — do NOT use training data):\n';
     for (const [group, data] of Object.entries(groupMap).sort()) {
       matchContext += `\nGrp ${group}: ${[...data.teams].join(', ')}\n`;
       data.matches.forEach(m => {

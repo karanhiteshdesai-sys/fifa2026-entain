@@ -62,11 +62,11 @@ async function start() {
   oddsRoutes.startAutoSync();
 
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', service: 'FIFA 2026 Predictions API' });
+    res.json({ status: 'ok', service: 'World Cup 2026 Predictions API' });
   });
 
   app.listen(PORT, () => {
-    console.log(`🏆 FIFA 2026 Predictions API running on http://localhost:${PORT}`);
+    console.log(`🏆 World Cup 2026 Predictions API running on http://localhost:${PORT}`);
   });
 }
 

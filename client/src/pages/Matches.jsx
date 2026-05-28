@@ -126,7 +126,7 @@ function Matches() {
         <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
       )}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-        <h2 className="text-2xl font-bold text-white">FIFA 2026 Matches</h2>
+        <h2 className="text-2xl font-bold text-white">WORLD CUP 2026 Matches</h2>
         <div className="relative">
           <input
             type="text"
@@ -390,7 +390,7 @@ function Matches() {
           <div className="bg-entain-navy rounded-xl p-6 w-full max-w-sm border border-entain-blue/30 text-center">
             <div className="text-4xl mb-2">⭐</div>
             <h3 className="text-white text-xl font-bold mb-2">Enjoying the App?</h3>
-            <p className="text-gray-400 text-sm mb-4">Rate your experience with FIFA 2026 Predictions</p>
+            <p className="text-gray-400 text-sm mb-4">Rate your experience with World Cup 2026 Predictions</p>
 
             {/* Stars */}
             <div className="flex justify-center gap-2 mb-4">

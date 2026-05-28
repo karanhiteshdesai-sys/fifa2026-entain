@@ -1,7 +1,7 @@
 {
   "name": "fifa-2026-predictions-server",
   "version": "1.0.0",
-  "description": "Backend for FIFA 2026 Entain Predictions Platform",
+  "description": "Backend for World Cup 2026 Entain Predictions Platform",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

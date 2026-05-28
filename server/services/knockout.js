@@ -1,6 +1,6 @@
 const { db, pool } = require('../db/database');
 
-// FIFA 2026 Round of 32 bracket structure (fixed matchups)
+// World Cup 2026 Round of 32 bracket structure (fixed matchups)
 const R32_FIXED_MATCHUPS = [
   { match: 73, home: '2A', away: '2B', date: '2026-06-28T19:00:00', venue: 'Los Angeles Stadium (SoFi)' },
   { match: 74, home: '1E', away: '3rd_ABCDF', date: '2026-06-29T20:30:00', venue: 'Boston Stadium (Gillette)' },
