@@ -1,8 +1,58 @@
 function Info() {
+  const handleExport = () => {
+    // Create a printable version in a new window
+    const content = document.getElementById('info-content');
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>World Cup 2026 Predictions - Rules & Info</title>
+          <style>
+            body { font-family: 'Inter', -apple-system, sans-serif; padding: 40px; color: #1a1a2e; line-height: 1.6; }
+            h1 { font-size: 24px; margin-bottom: 8px; }
+            h2 { font-size: 18px; margin-top: 24px; margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+            h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+            p { font-size: 13px; color: #444; margin-bottom: 12px; }
+            .section { margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 13px; }
+            th { background: #f5f5f5; }
+            .footer { margin-top: 30px; text-align: center; color: #888; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>📋 World Cup 2026 Entain Predictions</h1>
+          <p style="color:#888;">Official Rules & How It Works — Exported ${new Date().toLocaleDateString('en-GB')}</p>
+          ${content.innerHTML.replace(/class="[^"]*"/g, '').replace(/className="[^"]*"/g, '')}
+          <div class="footer">
+            <p>Organised by Vibe Tribe — Social Committee | Virtual currency only. No real money involved.</p>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold text-white mb-2">📋 Official Rules & How It Works</h2>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-2xl font-bold text-white">📋 Official Rules & How It Works</h2>
+        <button
+          onClick={handleExport}
+          className="bg-entain-accent text-entain-dark px-4 py-2 rounded-lg text-sm font-bold hover:bg-entain-accent/90 transition flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export
+        </button>
+      </div>
       <p className="text-gray-400 text-sm mb-6">FIFA 2026 Entain Predictions — Full Terms of Participation</p>
+
+      <div id="info-content">
 
       {/* Overview */}
       <div className="bg-entain-navy rounded-xl p-6 border border-entain-blue/20 mb-6">
@@ -181,6 +231,7 @@ function Info() {
       </div>
 
       {/* Footer */}
+      </div>{/* end info-content */}
       <div className="mt-8 bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
         <p className="text-gray-400 text-sm">Organised by <a href="/team" className="text-entain-accent hover:underline">Vibe Tribe — Social Committee</a></p>
         <p className="text-gray-500 text-xs mt-1">Virtual currency only. No real money involved. Play responsibly. ⚽</p>
