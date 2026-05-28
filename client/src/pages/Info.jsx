@@ -1,6 +1,5 @@
 function Info() {
   const handleExport = () => {
-    // Create a printable version in a new window
     const content = document.getElementById('info-content');
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -31,9 +30,7 @@ function Info() {
       </html>
     `);
     printWindow.document.close();
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
+    setTimeout(() => { printWindow.print(); }, 500);
   };
 
   return (
@@ -50,7 +47,7 @@ function Info() {
           Export
         </button>
       </div>
-      <p className="text-gray-400 text-sm mb-6">FIFA 2026 Entain Predictions — Full Terms of Participation</p>
+      <p className="text-gray-400 text-sm mb-6">World Cup 2026 Entain Predictions — Full Terms of Participation</p>
 
       <div id="info-content">
 
@@ -58,7 +55,7 @@ function Info() {
       <div className="bg-entain-navy rounded-xl p-6 border border-entain-blue/20 mb-6">
         <h3 className="text-white font-semibold text-lg mb-2">1. Overview</h3>
         <p className="text-gray-400 text-sm leading-relaxed">
-          FIFA 2026 Entain Predictions is an internal, fun prediction game exclusively for Entain Group employees. Participants use virtual Entain Points (EP) to predict outcomes of FIFA 2026 World Cup matches. <span className="text-entain-gold font-semibold">No real money is involved at any stage.</span> This is a social engagement activity organised by the Vibe Tribe Social Committee.
+          World Cup 2026 Entain Predictions is an internal, fun prediction game exclusively for Entain Group employees. Participants use virtual Entain Points (EP) to predict outcomes of World Cup 2026 matches. <span className="text-entain-gold font-semibold">No real money is involved at any stage.</span> This is a social engagement activity organised by the Vibe Tribe Social Committee.
         </p>
       </div>
 
@@ -83,8 +80,8 @@ function Info() {
         <Section title="4. What Predictions Are Accepted" items={[
           { label: 'Match Result (1X2)', desc: 'Predict the outcome of a match: Home Win, Draw, or Away Win. Odds are displayed on each match card.' },
           { label: 'Odds format', desc: 'All odds are displayed in decimal format (e.g. 2.50 means a 1 EP stake returns 2.50 EP if correct).' },
-          { label: 'Dynamic odds', desc: 'Odds shift based on prediction volume — if many participants back the same outcome, those odds shorten. This mirrors real market behaviour.' },
-          { label: 'Odds are locked at placement', desc: 'You receive the odds displayed at the moment you confirm your prediction. Subsequent changes do not affect placed bets.' },
+          { label: 'Static odds', desc: 'Odds are fixed for each match and do not change. Everyone sees and receives the same odds regardless of prediction volume.' },
+          { label: 'Odds are locked at placement', desc: 'You receive the odds displayed at the moment you confirm your prediction.' },
         ]} />
 
         <Section title="5. When Can Predictions Be Placed?" items={[
@@ -169,60 +166,44 @@ function Info() {
 
         <Section title="9. Bet Reference Numbers" items={[
           { label: 'Unique bet number', desc: 'Every prediction placed is assigned a unique reference number in the format EFIFA0001, EFIFA0002, etc.' },
-          { label: 'Where to find it', desc: 'Your bet number is shown in the confirmation notification, on the My Bets page (click it for full details), and in the admin panel.' },
+          { label: 'Where to find it', desc: 'Your bet number is shown in the confirmation notification, on the My Bets page, and in the admin panel.' },
           { label: 'Purpose', desc: 'Bet numbers allow you and admins to quickly identify and look up any specific prediction.' },
         ]} />
 
-        <Section title="10. Conditional Bets (Responsible Play)" items={[
-          { label: 'What triggers a conditional bet?', desc: 'If you attempt to stake 80% or more of your current EP balance in a single prediction, the bet is flagged as a Conditional Bet.' },
-          { label: 'What happens?', desc: 'Your EP is deducted and the bet is created with a "Conditional Bet" status (yellow). It requires admin approval before it becomes active.' },
-          { label: 'Admin review', desc: 'An administrator will review and either approve or reject the bet. You will be notified of the outcome.' },
-          { label: 'If approved', desc: 'The bet status changes to "Bet Placed" (green) and proceeds as normal.' },
-          { label: 'If rejected', desc: 'The bet is cancelled and your staked EP is fully refunded to your balance.' },
-          { label: 'Why?', desc: 'This safeguard ensures participants don\'t accidentally exhaust their entire balance on a single prediction, keeping the game fun for the full tournament.' },
-        ]} />
-
-        <Section title="11. Settlement & Results" items={[
+        <Section title="10. Settlement & Results" items={[
           { label: 'How results are settled', desc: 'Match results are sourced from official FIFA data. Once a match is completed, all predictions are automatically settled.' },
           { label: 'Winning predictions', desc: 'If your prediction is correct, your payout (stake × odds) is credited to your EP balance immediately.' },
           { label: 'Losing predictions', desc: 'If your prediction is incorrect, the staked EP is lost. No refunds are issued for losing predictions.' },
           { label: 'Void bets', desc: 'In exceptional circumstances (e.g. match cancellation), an administrator may void predictions and refund stakes.' },
         ]} />
 
-        <Section title="12. Group Stage Completion Bonus" items={[
+        <Section title="11. Group Stage Completion Bonus" items={[
           { label: 'Bonus award', desc: 'When all 72 group stage matches have been completed, every registered participant receives a 50 EP bonus to use in the knockout rounds.' },
           { label: 'Automatic', desc: 'This bonus is awarded automatically by the system — no action required from participants.' },
           { label: 'Purpose', desc: 'This ensures all participants have EP available for the knockout stage, even if their group stage predictions were unsuccessful.' },
         ]} />
 
-        <Section title="13. Fair Play & Conduct" items={[
+        <Section title="12. Fair Play & Conduct" items={[
           { label: 'No manipulation', desc: 'Any attempt to manipulate the platform, create multiple accounts, or exploit system vulnerabilities will result in account suspension.' },
           { label: 'Respectful communication', desc: 'The group chat and messaging features are for friendly discussion. Abusive, discriminatory, or inappropriate content will not be tolerated.' },
           { label: 'Admin discretion', desc: 'Administrators reserve the right to adjust balances, void predictions, or suspend accounts if rules are breached.' },
         ]} />
 
-        <Section title="14. Responsible Play" items={[
-          { label: 'For fun only', desc: 'This platform is designed as a social engagement activity. It uses virtual currency with no real-world monetary value.' },
-          { label: 'Not gambling', desc: 'As no real money is staked, won, or lost, this does not constitute gambling under any jurisdiction.' },
-          { label: 'High-stake protection', desc: 'If you stake 80% or more of your balance, the bet becomes a Conditional Bet requiring admin approval (see Section 10).' },
-          { label: 'Voluntary participation', desc: 'You may stop participating at any time. There is no obligation to place predictions or maintain activity.' },
-        ]} />
-
-        <Section title="15. Platform Features" items={[
+        <Section title="13. Platform Features" items={[
           { label: 'AI Assistant', desc: 'An AI chatbot (bottom-right) can answer questions about matches, teams, odds, and how to use the platform.' },
           { label: 'Group Chat', desc: 'A real-time chat for all participants to discuss matches, share tips, and engage socially.' },
-          { label: 'Notifications', desc: 'You receive notifications for: prediction results, bonuses, admin announcements, and referral updates.' },
+          { label: 'Notifications', desc: 'You receive notifications for: prediction results, bonuses, admin announcements, and referral updates. Tap any notification to go to the relevant page.' },
           { label: 'Mobile friendly', desc: 'The platform works on mobile browsers. Add to your home screen for an app-like experience.' },
           { label: 'Auto-updates', desc: 'When a new version is deployed, you receive a prompt to refresh — no manual action needed.' },
         ]} />
 
-        <Section title="16. Data & Privacy" items={[
+        <Section title="14. Data & Privacy" items={[
           { label: 'Data collected', desc: 'Name, company email, department, and country (office location). No personal financial data is collected.' },
           { label: 'Internal use only', desc: 'All data is used solely for the operation of this platform and will not be shared externally.' },
           { label: 'Account deletion', desc: 'You may request account deletion at any time by contacting an administrator.' },
         ]} />
 
-        <Section title="17. Contact & Support" items={[
+        <Section title="15. Contact & Support" items={[
           { label: 'Platform issues', desc: 'Contact Karan Desai (karan.desai@entaingroup.com) for technical support or account issues.' },
           { label: 'Rule queries', desc: 'For questions about rules, prizes, or participation, reach out to the Vibe Tribe Social Committee.' },
           { label: 'Feedback', desc: 'Suggestions and feedback are welcome via the group chat or direct message to an admin.' },
@@ -230,11 +211,12 @@ function Info() {
 
       </div>
 
-      {/* Footer */}
       </div>{/* end info-content */}
+
+      {/* Footer */}
       <div className="mt-8 bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
         <p className="text-gray-400 text-sm">Organised by <a href="/team" className="text-entain-accent hover:underline">Vibe Tribe — Social Committee</a></p>
-        <p className="text-gray-500 text-xs mt-1">Virtual currency only. No real money involved. Play responsibly. ⚽</p>
+        <p className="text-gray-500 text-xs mt-1">Virtual currency only. No real money involved. Have fun! ⚽</p>
         <p className="text-gray-600 text-xs mt-2">Last updated: May 2026</p>
       </div>
     </div>
