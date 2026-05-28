@@ -87,7 +87,7 @@ function TagCard() {
                 <img src="/entain-logo.svg" alt="Entain" className="w-6 h-6" />
                 <span className="text-entain-accent text-xs font-bold tracking-wider">ENTAIN</span>
               </div>
-              <p className="text-gray-400 text-[10px] tracking-widest uppercase">FIFA 2026 TAG CARD</p>
+              <p className="text-gray-400 text-[10px] tracking-widest uppercase">WORLD CUP 2026 TAG CARD</p>
               <p className="text-gray-500 text-[9px] tracking-wide mt-0.5">Social Committee - Vibe Tribe</p>
             </div>
 
@@ -129,10 +129,6 @@ function TagCard() {
               <div className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm">Leaderboard Rank</span>
                 <span className="text-entain-gold font-bold text-sm">{leaderboardRank ? `#${leaderboardRank}` : 'Unranked'}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-sm">Odds Boost</span>
-                <span className="text-entain-green font-bold text-sm">{tagData.boost > 0 ? `+${tagData.boost}%` : 'Base odds'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm">Referrals</span>

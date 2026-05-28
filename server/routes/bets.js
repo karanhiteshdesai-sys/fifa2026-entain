@@ -1,7 +1,6 @@
 const express = require('express');
 const { db, pool } = require('../db/database');
 const { authenticate } = require('../middleware/auth');
-const { getUserTag, applyOddsBoost } = require('../utils/tags');
 const router = express.Router();
 
 router.post('/', authenticate, async (req, res) => {
@@ -64,16 +63,6 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     await db.deductPoints(req.user.id, stake);
-
-    // Apply tag odds boost based on user's referral count
-    const { rows: refRows } = await pool.query(
-      "SELECT COUNT(*) as count FROM users WHERE referred_by = $1 AND status = 'approved'",
-      [req.user.id]
-    );
-    const tagInfo = getUserTag(Number(refRows[0].count));
-    if (tagInfo.boost > 0) {
-      odds = applyOddsBoost(odds, tagInfo.boost);
-    }
 
     const bet = await db.createBet({ user_id: req.user.id, match_id, bet_type, prediction, stake, odds, status: 'pending', payout: 0 });
 

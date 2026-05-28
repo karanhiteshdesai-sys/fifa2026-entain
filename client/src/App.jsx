@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+﻿import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -123,27 +123,27 @@ function App() {
         <div className="flex animate-marquee">
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn your Entain Tag</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
-            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Entain Tag to get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Refer colleagues to climb the Referral Leaderboard</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn your Entain Tag</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
-            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Entain Tag to get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Refer colleagues to climb the Referral Leaderboard</span>
           </div>
           <div className="flex shrink-0 items-center py-1">
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn your Entain Tag</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
-            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Entain Tag to get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Refer colleagues to climb the Referral Leaderboard</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
-            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6">🎁 Refer an employee and earn your Entain Tag</span>
             <span className="text-sm font-bold text-black mx-6">⚽ WORLD CUP 2026</span>
             <span className="text-sm font-bold text-black mx-6">🎉 Vibe Tribe - Social Committee</span>
-            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Upgrade your Entain Tag to get the best odds</span>
+            <span className="text-sm font-bold text-black mx-6 inline-flex items-center gap-1"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg> Refer colleagues to climb the Referral Leaderboard</span>
           </div>
         </div>
       </div>
@@ -180,12 +180,11 @@ function App() {
             <div className="bg-entain-dark rounded-xl p-4 mb-4 border border-entain-blue/20">
               <span className="text-4xl">{tagPromotion.emoji}</span>
               <p className="text-white text-xl font-bold mt-2">{tagPromotion.tag} Tag</p>
-              <p className="text-entain-green font-semibold mt-1">+{tagPromotion.boost}% Odds Boost</p>
             </div>
             <p className="text-gray-400 text-sm mb-5">
               {tagPromotion.nextTag
                 ? `Keep referring! ${tagPromotion.referralsNeeded} more to unlock ${tagPromotion.nextTag}.`
-                : 'You reached the highest tier! Maximum odds boost unlocked.'}
+                : 'You reached the highest tier! Amazing work.'}
             </p>
             <button
               onClick={() => setTagPromotion(null)}

@@ -30,7 +30,6 @@ function Matches() {
   };
 
   const [confirmBet, setConfirmBet] = useState(null); // holds bet details for confirmation
-  const [userTag, setUserTag] = useState(null); // { tag, boost, emoji }
   const [showRatingPopup, setShowRatingPopup] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(true); // default true to prevent flash
   const [ratingValue, setRatingValue] = useState(0);
@@ -38,8 +37,6 @@ function Matches() {
   const [ratingHover, setRatingHover] = useState(0);
 
   useEffect(() => {
-    // Fetch user's tag info for odds boost display
-    api.get('/auth/my-tag').then(res => setUserTag(res.data)).catch(() => {});
     // Check if user has already reviewed
     api.get('/reviews/mine').then(res => setHasReviewed(res.data.hasReviewed)).catch(() => {});
   }, []);
@@ -57,20 +54,14 @@ function Matches() {
 
     const predLabel = prediction === 'home' ? betModal.home_team : prediction === 'away' ? betModal.away_team : 'Draw';
 
-    // Calculate boosted odds
-    const boost = userTag?.boost || 0;
-    const boostedOdds = boost > 0 ? Math.round(odds * (1 + boost / 100) * 100) / 100 : odds;
-
     const betDetails = {
       match: `${betModal.home_team} vs ${betModal.away_team}`,
       prediction: predLabel,
       finalPrediction: prediction,
       betType: 'match_result',
       stake,
-      originalOdds: odds,
-      odds: boostedOdds,
-      boost,
-      potentialPayout: Math.round(stake * boostedOdds)
+      odds,
+      potentialPayout: Math.round(stake * odds)
     };
 
     setConfirmBet(betDetails);
@@ -363,15 +354,9 @@ function Matches() {
                 <span className="text-white font-medium">{confirmBet.stake} EP</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Original Odds</span>
-                <span className={`font-medium ${confirmBet.boost > 0 ? 'text-gray-500 line-through' : 'text-white'}`}>{confirmBet.originalOdds}</span>
+                <span className="text-gray-400">Odds</span>
+                <span className="text-white font-medium">{confirmBet.odds}</span>
               </div>
-              {confirmBet.boost > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Your Odds <span className="text-green-400 text-xs">({userTag?.emoji} +{confirmBet.boost}%)</span></span>
-                  <span className="text-green-400 font-bold">{confirmBet.odds}</span>
-                </div>
-              )}
               <hr className="border-entain-blue/20" />
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Potential Payout</span>

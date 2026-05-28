@@ -4,14 +4,14 @@ import api from '../services/api';
 import TagCard from '../components/TagCard';
 
 const ALL_TIERS = [
-  { name: 'Employee', emoji: '👤', minReferrals: 0, boost: 0, color: '#6b7280' },
-  { name: 'Silver', emoji: '⚡', minReferrals: 3, boost: 5, color: '#C0C0C0' },
-  { name: 'Gold', emoji: '✨', minReferrals: 5, boost: 10, color: '#FFD700' },
-  { name: 'Diamond', emoji: '💎', minReferrals: 10, boost: 15, color: '#B9F2FF' },
-  { name: 'Diplomat', emoji: '👑', minReferrals: 20, boost: 20, color: '#8B0000' },
-  { name: 'Silver Diplomat', emoji: '⚡👑', minReferrals: 30, boost: 25, color: '#C0C0C0' },
-  { name: 'Gold Diplomat', emoji: '✨👑', minReferrals: 40, boost: 30, color: '#FFD700' },
-  { name: 'Diamond Diplomat', emoji: '💎👑', minReferrals: 50, boost: 35, color: '#B9F2FF' },
+  { name: 'Employee', emoji: '👤', minReferrals: 0, color: '#6b7280' },
+  { name: 'Silver', emoji: '⚡', minReferrals: 3, color: '#C0C0C0' },
+  { name: 'Gold', emoji: '✨', minReferrals: 5, color: '#FFD700' },
+  { name: 'Diamond', emoji: '💎', minReferrals: 10, color: '#B9F2FF' },
+  { name: 'Diplomat', emoji: '👑', minReferrals: 20, color: '#8B0000' },
+  { name: 'Silver Diplomat', emoji: '⚡👑', minReferrals: 30, color: '#C0C0C0' },
+  { name: 'Gold Diplomat', emoji: '✨👑', minReferrals: 40, color: '#FFD700' },
+  { name: 'Diamond Diplomat', emoji: '💎👑', minReferrals: 50, color: '#B9F2FF' },
 ];
 
 function MyTag() {
@@ -52,10 +52,10 @@ function MyTag() {
       <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-6 mb-8">
         <h2 className="text-white font-semibold text-lg mb-4">How Tags Work</h2>
         <div className="space-y-3 text-sm text-gray-300">
-          <p>📣 Refer colleagues to the FIFA 2026 Predictions app using your referral code.</p>
+          <p>📣 Refer colleagues to the World Cup 2026 Predictions app using your referral code.</p>
           <p>✅ Once they register and get approved, it counts as a successful referral.</p>
-          <p>🏷️ Reach referral milestones to unlock Tags that boost your betting odds.</p>
-          <p>📈 The boost is applied automatically when you place any bet.</p>
+          <p>🏷️ Reach referral milestones to unlock Tags and climb the Referral Leaderboard.</p>
+          <p>🏆 Compete with others to see who can refer the most people!</p>
         </div>
       </div>
 
@@ -89,8 +89,11 @@ function MyTag() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-entain-green font-bold text-sm">+{tier.boost}%</p>
-                  <p className="text-gray-500 text-xs">odds boost</p>
+                  {isUnlocked ? (
+                    <span className="text-entain-green text-sm font-medium">✓ Unlocked</span>
+                  ) : (
+                    <span className="text-gray-500 text-sm">🔒 Locked</span>
+                  )}
                 </div>
               </div>
             );
@@ -109,6 +112,9 @@ function MyTag() {
                 <span className="text-gray-400">Next unlock: {tagData.nextTag}</span>
                 <span className="text-entain-accent font-medium">{tagData.referralsNeeded} more needed</span>
               </div>
+            )}
+            {!tagData.nextTag && (
+              <p className="text-center text-entain-gold text-sm font-medium mt-2">🏆 Max Tier Reached! You're a legend.</p>
             )}
           </div>
         )}
