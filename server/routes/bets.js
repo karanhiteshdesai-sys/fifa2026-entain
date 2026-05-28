@@ -4,60 +4,6 @@ const { authenticate } = require('../middleware/auth');
 const { getUserTag, applyOddsBoost } = require('../utils/tags');
 const router = express.Router();
 
-// Recalculate match_result odds based on bet distribution
-async function adjustOdds(matchId) {
-  const match = await db.findMatchById(matchId);
-  if (!match) return;
-
-  // Get total stakes per outcome for this match
-  const { rows } = await pool.query(
-    `SELECT prediction, COALESCE(SUM(stake), 0) as total_stake 
-     FROM bets WHERE match_id = $1 AND bet_type = 'match_result' AND status = 'pending'
-     GROUP BY prediction`,
-    [matchId]
-  );
-
-  const stakes = { home: 0, draw: 0, away: 0 };
-  rows.forEach(r => { if (stakes.hasOwnProperty(r.prediction)) stakes[r.prediction] = Number(r.total_stake); });
-
-  const totalStake = stakes.home + stakes.draw + stakes.away;
-  if (totalStake < 5) return; // Don't adjust until meaningful volume
-
-  // Base odds from the original seeded values (stored as initial reference)
-  const baseHome = match.home_odds;
-  const baseDraw = match.draw_odds;
-  const baseAway = match.away_odds;
-
-  // Calculate implied probabilities from current bets
-  // More bets on an outcome = lower odds (shorter price)
-  const homeShare = stakes.home / totalStake || 0.33;
-  const drawShare = stakes.draw / totalStake || 0.33;
-  const awayShare = stakes.away / totalStake || 0.33;
-
-  // Shift factor: odds decrease as more money goes on that outcome
-  // Formula: new_odds = base_odds * (1 - shift) where shift is proportional to bet share
-  const shiftStrength = 0.3; // How aggressively odds move (0.3 = moderate)
-
-  let newHome = baseHome * (1 - (homeShare - 0.33) * shiftStrength);
-  let newDraw = baseDraw * (1 - (drawShare - 0.33) * shiftStrength);
-  let newAway = baseAway * (1 - (awayShare - 0.33) * shiftStrength);
-
-  // Clamp odds to reasonable range (minimum 1.1, maximum 30.0)
-  newHome = Math.max(1.1, Math.min(30.0, newHome));
-  newDraw = Math.max(1.1, Math.min(30.0, newDraw));
-  newAway = Math.max(1.1, Math.min(30.0, newAway));
-
-  // Round to 1 decimal
-  newHome = Math.round(newHome * 10) / 10;
-  newDraw = Math.round(newDraw * 10) / 10;
-  newAway = Math.round(newAway * 10) / 10;
-
-  await pool.query(
-    'UPDATE matches SET home_odds = $1, draw_odds = $2, away_odds = $3 WHERE id = $4',
-    [newHome, newDraw, newAway, matchId]
-  );
-}
-
 router.post('/', authenticate, async (req, res) => {
   try {
     const { match_id, bet_type, prediction, stake } = req.body;
@@ -130,11 +76,6 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     const bet = await db.createBet({ user_id: req.user.id, match_id, bet_type, prediction, stake, odds, status: 'pending', payout: 0 });
-
-    // Adjust odds dynamically after bet is placed (match_result only)
-    if (bet_type === 'match_result') {
-      await adjustOdds(match_id);
-    }
 
     res.status(201).json({ id: bet.id, bet_number: bet.bet_number, match_id, bet_type, prediction, stake, odds, potential_payout: Math.round(stake * odds), status: 'pending' });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Notification from '../components/Notification';
 import { getFlag } from '../utils/flags';
@@ -13,38 +13,14 @@ function Matches() {
   const [notification, setNotification] = useState(null); // { message, type }
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [changedOdds, setChangedOdds] = useState({}); // { matchId: true }
-  const prevOddsRef = useRef({});
 
   useEffect(() => {
     fetchMatches();
-    // Poll for odds changes every 30 seconds
-    const interval = setInterval(fetchMatches, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchMatches = async () => {
     try {
       const { data } = await api.get('/matches');
-
-      // Detect odds changes
-      const prevOdds = prevOddsRef.current;
-      const newChanged = {};
-      data.forEach(m => {
-        const prev = prevOdds[m.id];
-        if (prev && (prev.home !== m.home_odds || prev.draw !== m.draw_odds || prev.away !== m.away_odds)) {
-          newChanged[m.id] = true;
-        }
-        prevOdds[m.id] = { home: m.home_odds, draw: m.draw_odds, away: m.away_odds };
-      });
-      prevOddsRef.current = prevOdds;
-
-      if (Object.keys(newChanged).length > 0) {
-        setChangedOdds(newChanged);
-        // Remove blink after 3 seconds (5 blinks at ~0.6s each)
-        setTimeout(() => setChangedOdds({}), 3000);
-      }
-
       setMatches(data);
     } catch (err) {
       console.error('Failed to fetch matches:', err);
@@ -101,36 +77,6 @@ function Matches() {
   };
 
   const confirmPlaceBet = async () => {
-    // Check if odds have changed since the bet was prepared
-    if (confirmBet.betType === 'match_result') {
-      try {
-        const { data: freshMatch } = await api.get('/matches');
-        const currentMatch = freshMatch.find(m => m.id === betModal.id);
-        if (currentMatch) {
-          let currentOdds;
-          if (confirmBet.finalPrediction === 'home') currentOdds = currentMatch.home_odds;
-          else if (confirmBet.finalPrediction === 'draw') currentOdds = currentMatch.draw_odds;
-          else if (confirmBet.finalPrediction === 'away') currentOdds = currentMatch.away_odds;
-
-          if (currentOdds && currentOdds !== confirmBet.odds) {
-            const accept = window.confirm(
-              `⚠️ Odds have changed!\n\nOld odds: ${confirmBet.odds}\nNew odds: ${currentOdds}\n\nDo you want to continue with the new odds?`
-            );
-            if (!accept) {
-              setConfirmBet(null);
-              return;
-            }
-            // Update the confirm bet with new odds
-            setConfirmBet(prev => ({
-              ...prev,
-              odds: currentOdds,
-              potentialPayout: Math.round(prev.stake * currentOdds)
-            }));
-          }
-        }
-      } catch (e) { /* proceed with original odds if check fails */ }
-    }
-
     try {
       const { data } = await api.post('/bets', {
         match_id: betModal.id,
@@ -286,7 +232,7 @@ function Matches() {
 
               {/* Right: Bet Buttons */}
               {match.status === 'upcoming' && !bettingClosed && (
-                <div className={`flex gap-2 flex-shrink-0 ${changedOdds[match.id] ? 'animate-odds-blink' : ''}`}>
+                <div className="flex gap-2 flex-shrink-0">
                   <button
                     onClick={() => { setBetModal(match); setPrediction('home'); }}
                     className="bg-entain-blue/50 hover:bg-entain-accent/20 border border-entain-blue/30 rounded-lg flex-1 md:flex-none md:w-[60px] py-2 flex flex-col items-center justify-center transition"
