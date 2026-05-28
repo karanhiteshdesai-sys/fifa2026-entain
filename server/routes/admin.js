@@ -240,4 +240,21 @@ router.post('/unsettle-all', authenticate, requireAdmin, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to unsettle.' }); }
 });
 
+// Full reset: delete all bets, reset all points to 100 EP, clear notifications & messages
+router.post('/full-reset', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const bets = await pool.query('DELETE FROM bets');
+    const users = await pool.query('UPDATE users SET points = 100');
+    const notifs = await pool.query('DELETE FROM notifications');
+
+    let dmsCount = 0, chatCount = 0;
+    try { const dms = await pool.query('DELETE FROM direct_messages'); dmsCount = dms.rowCount; } catch (e) {}
+    try { const chat = await pool.query('DELETE FROM group_messages'); chatCount = chat.rowCount; } catch (e) {}
+
+    res.json({
+      message: `Full reset complete! ${bets.rowCount} bets deleted, ${users.rowCount} users reset to 100 EP, ${notifs.rowCount} notifications cleared, ${dmsCount} DMs cleared, ${chatCount} chat messages cleared.`
+    });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to reset.' }); }
+});
+
 module.exports = router;

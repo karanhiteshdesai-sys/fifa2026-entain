@@ -292,6 +292,22 @@ function Admin() {
               >
                 ↩️ Unsettle All
               </button>
+              <button
+                onClick={async () => {
+                  if (!window.confirm('⚠️ FULL RESET: Delete ALL bets, reset ALL users to 100 EP, clear all messages & notifications. Are you sure?')) return;
+                  if (!window.confirm('This cannot be undone. Type YES to confirm.')) return;
+                  try {
+                    const { data } = await api.post('/admin/full-reset');
+                    setMessage(data.message);
+                    fetchData();
+                  } catch (err) {
+                    setMessage(err.response?.data?.error || 'Failed to reset.');
+                  }
+                }}
+                className="bg-red-500/80 text-white font-medium px-4 py-2 rounded-lg hover:bg-red-500 transition"
+              >
+                🗑️ Full Reset
+              </button>
             </div>
             <p className="text-gray-500 text-xs mt-3">{upcomingMatches.length} matches remaining</p>
           </div>
