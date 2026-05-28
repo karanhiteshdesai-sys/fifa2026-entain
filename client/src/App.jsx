@@ -109,6 +109,7 @@ function App() {
 
   // Screenshot & screen capture prevention
   const [screenshotWarning, setScreenshotWarning] = useState(false);
+  const [contentHidden, setContentHidden] = useState(false);
 
   useEffect(() => {
     const showWarning = () => {
@@ -141,21 +142,38 @@ function App() {
       showWarning();
     };
 
-    // Detect visibility change (some screenshot tools cause blur)
+    // Hide content when app loses focus (screenshot on mobile triggers this)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Page became hidden — could be screenshot on mobile
+        setContentHidden(true);
+      } else {
+        // Small delay before showing content again
+        setTimeout(() => setContentHidden(false), 300);
       }
+    };
+
+    // Also hide on window blur (covers more cases on mobile)
+    const handleBlur = () => {
+      setContentHidden(true);
+      showWarning();
+    };
+
+    const handleFocus = () => {
+      setTimeout(() => setContentHidden(false), 300);
     };
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
@@ -171,6 +189,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-entain-dark">
+      {/* Content hidden overlay — shows when app loses focus (screenshot attempt) */}
+      {contentHidden && (
+        <div className="fixed inset-0 bg-entain-dark z-[999999] flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-5xl mb-4">🔒</div>
+            <p className="text-white text-lg font-bold">Content Protected</p>
+            <p className="text-gray-400 text-sm mt-2">Screenshots are not allowed for security reasons.</p>
+          </div>
+        </div>
+      )}
       <div className="bg-yellow-400 overflow-hidden relative sticky top-0 z-40">
         <div className="flex animate-marquee">
           <div className="flex shrink-0 items-center py-1">
