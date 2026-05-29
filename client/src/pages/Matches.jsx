@@ -413,7 +413,7 @@ function Matches() {
             <textarea
               value={ratingComment}
               onChange={(e) => setRatingComment(e.target.value)}
-              placeholder="Please share your feedback (required)"
+              placeholder="Please share your feedback..."
               maxLength={200}
               className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500 resize-none h-20 mb-1"
             />
