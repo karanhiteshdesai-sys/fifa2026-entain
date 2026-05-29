@@ -14,7 +14,7 @@ import Info from './pages/Info';
 import Team from './pages/Team';
 import MyTag from './pages/MyTag';
 import Navbar from './components/Navbar';
-import ChatBot from './components/ChatBot';
+// import ChatBot from './components/ChatBot';
 import FloatingChat from './components/FloatingChat';
 import UpdateBanner from './components/UpdateBanner';
 import BroadcastAlert from './components/BroadcastAlert';
@@ -208,7 +208,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-      <ChatBot />
+      {/* <ChatBot /> */}
       <FloatingChat />
       <UpdateBanner />
       <BroadcastAlert />
