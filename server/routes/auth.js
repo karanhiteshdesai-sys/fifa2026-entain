@@ -40,7 +40,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, 10);
     await db.createUser({ name, email: normalizedEmail, password: hashedPassword, department: department || '', country: country || '', role: 'user', status: 'pending', points: 100, referred_by: referrerId });
 
-    res.status(201).json({ message: 'Thank you for registering! 🎉 Your account is pending admin approval. Please try logging in shortly — you will be notified once approved.' });
+    res.status(201).json({ message: 'Thank you for registering! 🎉 Your account is pending admin approval. Please try logging in shortly.' });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error.' }); }
 });
 
