@@ -236,6 +236,14 @@ function Admin() {
           📊 Activity
         </button>
         <button
+          onClick={() => setTab('reviews')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            tab === 'reviews' ? 'bg-entain-accent text-entain-dark' : 'bg-entain-navy text-gray-300'
+          }`}
+        >
+          ⭐ Reviews
+        </button>
+        <button
           onClick={downloadExcel}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-entain-gold/20 text-entain-gold hover:bg-entain-gold/30 transition"
         >
@@ -821,6 +829,11 @@ function Admin() {
         <ActivityPanel />
       )}
 
+      {/* Reviews Tab */}
+      {tab === 'reviews' && (
+        <ReviewsPanel />
+      )}
+
       {/* DM Modal */}
       {dmUser && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] px-4">
@@ -1125,6 +1138,116 @@ function PendingApprovals({ onAction, setMessage }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ReviewsPanel() {
+  const [reviewData, setReviewData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchReviews();
+    const interval = setInterval(fetchReviews, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const { data } = await api.get('/reviews/all');
+      setReviewData(data);
+    } catch (err) {
+      console.error('Failed to fetch reviews:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div className="text-gray-400 text-center py-12">Loading reviews...</div>;
+  if (!reviewData) return <div className="text-gray-400 text-center py-12">Failed to load reviews.</div>;
+
+  const { reviews, totalReviews, averageRating } = reviewData;
+  const ratingDistribution = [5, 4, 3, 2, 1].map(star => ({
+    star,
+    count: reviews.filter(r => r.rating === star).length
+  }));
+
+  return (
+    <div className="space-y-4">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-gold">{averageRating}</p>
+          <div className="flex justify-center gap-0.5 my-1">
+            {[1, 2, 3, 4, 5].map(star => (
+              <span key={star} className={`text-lg ${star <= Math.round(averageRating) ? 'text-entain-gold' : 'text-gray-600'}`}>★</span>
+            ))}
+          </div>
+          <p className="text-gray-400 text-xs">Average Rating</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-accent">{totalReviews}</p>
+          <p className="text-gray-400 text-xs mt-2">Total Reviews</p>
+        </div>
+        <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20 text-center">
+          <p className="text-3xl font-bold text-entain-green">
+            {totalReviews > 0 ? Math.round((reviews.filter(r => r.rating >= 4).length / totalReviews) * 100) : 0}%
+          </p>
+          <p className="text-gray-400 text-xs mt-2">Satisfaction (4-5★)</p>
+        </div>
+      </div>
+
+      {/* Rating Distribution */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+        <h3 className="text-white font-semibold mb-3">Rating Distribution</h3>
+        <div className="space-y-2">
+          {ratingDistribution.map(({ star, count }) => {
+            const pct = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+            return (
+              <div key={star} className="flex items-center gap-3">
+                <span className="text-entain-gold text-sm w-12 shrink-0">{star} ★</span>
+                <div className="flex-1 bg-entain-dark rounded-full h-4 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-entain-gold to-yellow-400 transition-all duration-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <span className="text-white font-bold text-sm w-8 text-right">{count}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* All Reviews */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+        <h3 className="text-white font-semibold mb-4">All Reviews ({totalReviews})</h3>
+        {reviews.length === 0 ? (
+          <p className="text-gray-500 text-sm text-center py-8">No reviews yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {reviews.map(review => (
+              <div key={review.id} className="bg-entain-dark/50 rounded-lg px-4 py-3 border border-entain-blue/10">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium text-sm">{review.user_name}</span>
+                    {review.department && <span className="text-gray-500 text-xs">• {review.department}</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-entain-gold text-sm">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                    <span className="text-gray-500 text-xs">
+                      {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </div>
+                {review.comment && <p className="text-gray-300 text-sm mt-1">{review.comment}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="text-gray-600 text-xs text-center">Auto-refreshes every 30 seconds</p>
     </div>
   );
 }
