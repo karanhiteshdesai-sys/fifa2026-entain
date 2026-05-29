@@ -16,6 +16,8 @@ function Matches() {
 
   useEffect(() => {
     fetchMatches();
+    const interval = setInterval(fetchMatches, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchMatches = async () => {
