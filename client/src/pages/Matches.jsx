@@ -413,10 +413,11 @@ function Matches() {
             <textarea
               value={ratingComment}
               onChange={(e) => setRatingComment(e.target.value)}
-              placeholder="Any feedback? (optional)"
+              placeholder="Please share your feedback (required)"
               maxLength={200}
-              className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500 resize-none h-20 mb-4"
+              className="w-full bg-entain-dark border border-entain-blue/30 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-entain-accent placeholder-gray-500 resize-none h-20 mb-1"
             />
+            <p className="text-gray-500 text-xs text-right mb-4">{ratingComment.length}/200</p>
 
             <div className="flex gap-3">
               <button
@@ -427,7 +428,7 @@ function Matches() {
               </button>
               <button
                 onClick={async () => {
-                  if (ratingValue === 0) return;
+                  if (ratingValue === 0 || !ratingComment.trim()) return;
                   try {
                     await api.post('/reviews', { rating: ratingValue, comment: ratingComment });
                     setHasReviewed(true);
@@ -437,7 +438,7 @@ function Matches() {
                     setShowRatingPopup(false);
                   }
                 }}
-                disabled={ratingValue === 0}
+                disabled={ratingValue === 0 || !ratingComment.trim()}
                 className="flex-1 bg-entain-accent text-entain-dark font-bold py-2.5 rounded-lg hover:bg-entain-accent/90 transition disabled:opacity-50"
               >
                 Submit

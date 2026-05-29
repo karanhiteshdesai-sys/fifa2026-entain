@@ -16,6 +16,7 @@ router.post('/', authenticate, async (req, res) => {
   try {
     const { rating, comment } = req.body;
     if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be between 1 and 5.' });
+    if (!comment || !comment.trim()) return res.status(400).json({ error: 'Please provide a comment with your review.' });
 
     // Check if already reviewed
     const { rows: existing } = await pool.query('SELECT id FROM reviews WHERE user_id = $1', [req.user.id]);
