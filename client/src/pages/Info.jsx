@@ -190,7 +190,6 @@ function Info() {
         ]} />
 
         <Section title="13. Platform Features" items={[
-          { label: 'AI Assistant', desc: 'An AI chatbot (bottom-right) can answer questions about matches, teams, odds, and how to use the platform.' },
           { label: 'Group Chat', desc: 'A real-time chat for all participants to discuss matches, share tips, and engage socially.' },
           { label: 'Notifications', desc: 'You receive notifications for: prediction results, bonuses, admin announcements, and referral updates. Tap any notification to go to the relevant page.' },
           { label: 'Mobile friendly', desc: 'The platform works on mobile browsers. Add to your home screen for an app-like experience.' },
