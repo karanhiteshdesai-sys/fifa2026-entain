@@ -59,17 +59,17 @@ router.get('/referral-tree', authenticate, async (req, res) => {
     const isAdmin = user.role === 'admin';
 
     if (isAdmin) {
-      // Admin: get full referral tree for all users
+      // Admin: get full referral tree for all users (include admin to avoid "Unknown")
       const { rows } = await pool.query(`
-        SELECT id, name, department, referred_by, status, created_at
-        FROM users WHERE role != 'admin'
+        SELECT id, name, department, referred_by, status, role, created_at
+        FROM users
         ORDER BY created_at ASC
       `);
 
-      // Build tree: root nodes are users with no referrer
+      // Build tree: recursively find children of a given parent
       const buildTree = (parentId) => {
         return rows
-          .filter(u => u.referred_by === parentId && u.status === 'approved')
+          .filter(u => u.referred_by === parentId && u.status === 'approved' && u.role !== 'admin')
           .map(u => ({
             id: u.id,
             name: u.name,
@@ -79,37 +79,29 @@ router.get('/referral-tree', authenticate, async (req, res) => {
           }));
       };
 
-      // Root nodes: users who referred others but weren't referred themselves, OR top-level referrers
-      const referrers = [...new Set(rows.filter(u => u.referred_by).map(u => u.referred_by))];
-      const rootIds = referrers.filter(id => {
-        const user = rows.find(u => u.id === id);
-        return !user || !user.referred_by;
+      // Find all users who have referred someone (root referrers)
+      const referredUserIds = rows.filter(u => u.referred_by && u.status === 'approved' && u.role !== 'admin').map(u => u.referred_by);
+      const uniqueReferrerIds = [...new Set(referredUserIds)];
+
+      // Root nodes: referrers who were NOT referred by anyone else (top of the chain)
+      const rootIds = uniqueReferrerIds.filter(id => {
+        const u = rows.find(r => r.id === id);
+        return u && !u.referred_by;
       });
 
       const tree = rootIds.map(id => {
         const rootUser = rows.find(u => u.id === id);
         return {
           id,
-          name: rootUser ? rootUser.name : 'Unknown',
-          department: rootUser ? rootUser.department : '',
-          joined: rootUser ? rootUser.created_at : null,
+          name: rootUser.id === req.user.id ? rootUser.name + ' (You)' : rootUser.name,
+          department: rootUser.department,
+          joined: rootUser.created_at,
           children: buildTree(id)
         };
       });
 
-      // Also include users who have referrals but are admin
-      const adminReferrals = buildTree(req.user.id);
-      if (adminReferrals.length > 0) {
-        tree.unshift({
-          id: req.user.id,
-          name: user.name + ' (You)',
-          department: user.department,
-          joined: user.created_at,
-          children: adminReferrals
-        });
-      }
-
-      res.json({ tree, totalReferrals: rows.filter(u => u.referred_by && u.status === 'approved').length });
+      const totalReferrals = rows.filter(u => u.referred_by && u.status === 'approved' && u.role !== 'admin').length;
+      res.json({ tree, totalReferrals });
     } else {
       // Regular user: only their own referral tree
       const { rows } = await pool.query(`
