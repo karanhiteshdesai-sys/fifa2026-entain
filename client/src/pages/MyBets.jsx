@@ -81,17 +81,8 @@ function MyBets() {
     }
   });
 
-  // Referral notifications (no longer gives EP, just tracking)
+  // Admin points added notifications
   notifications.forEach(n => {
-    if (n.title && n.title.includes('New Referral')) {
-      transactions.push({
-        id: `ref-${n.id}`,
-        type: 'info',
-        amount: 0,
-        description: n.message,
-        date: n.created_at
-      });
-    }
     if (n.title && n.title.includes('Points Added')) {
       const match = n.message.match(/added (\d+) EP/);
       if (match) {
