@@ -16,13 +16,18 @@ const ALL_TIERS = [
 
 function MyTag() {
   const [tagData, setTagData] = useState(null);
+  const [treeData, setTreeData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTag = async () => {
       try {
-        const { data } = await api.get('/auth/my-tag');
-        setTagData(data);
+        const [tagRes, treeRes] = await Promise.all([
+          api.get('/auth/my-tag'),
+          api.get('/leaderboard/referral-tree')
+        ]);
+        setTagData(tagRes.data);
+        setTreeData(treeRes.data);
       } catch (err) {
         console.error('Failed to fetch tag:', err);
       } finally {
@@ -119,6 +124,72 @@ function MyTag() {
           </div>
         )}
       </div>
+      {/* Referral Tree */}
+      {treeData && treeData.tree.length > 0 && treeData.tree[0].children && treeData.tree[0].children.length > 0 && (
+        <div className="bg-entain-navy rounded-xl border border-entain-blue/20 p-6 mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white font-semibold text-lg">🌳 Your Referral Tree</h2>
+            <span className="text-entain-accent text-sm font-bold">{treeData.totalReferrals} total referral{treeData.totalReferrals !== 1 ? 's' : ''}</span>
+          </div>
+          <div className="overflow-x-auto">
+            {treeData.tree.map(node => (
+              <TreeNode key={node.id} node={node} level={0} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TreeNode({ node, level }) {
+  const [expanded, setExpanded] = useState(true);
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div style={{ marginLeft: level * 24 }}>
+      <div
+        onClick={() => hasChildren && setExpanded(!expanded)}
+        className={`flex items-center gap-2 py-2 px-3 rounded-lg mb-1 transition ${
+          hasChildren ? 'cursor-pointer hover:bg-entain-dark/50' : ''
+        } ${level === 0 ? 'bg-entain-accent/10 border border-entain-accent/30' : ''}`}
+      >
+        {/* Tree connector */}
+        {level > 0 && (
+          <span className="text-entain-blue/50 text-sm">└─</span>
+        )}
+
+        {/* Expand/collapse icon */}
+        {hasChildren && (
+          <span className={`text-gray-400 text-xs transition-transform ${expanded ? 'rotate-90' : ''}`}>▶</span>
+        )}
+        {!hasChildren && level > 0 && <span className="text-gray-600 text-xs w-3">•</span>}
+
+        {/* User info */}
+        <span className={`font-medium text-sm ${level === 0 ? 'text-entain-accent' : 'text-white'}`}>
+          {node.name}
+        </span>
+        {node.department && (
+          <span className="text-gray-500 text-xs">• {node.department}</span>
+        )}
+        {hasChildren && (
+          <span className="text-entain-gold text-xs ml-auto">{node.children.length} referral{node.children.length !== 1 ? 's' : ''}</span>
+        )}
+        {node.joined && level > 0 && (
+          <span className="text-gray-600 text-xs ml-auto">
+            {new Date(node.joined).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+          </span>
+        )}
+      </div>
+
+      {/* Children */}
+      {hasChildren && expanded && (
+        <div className="border-l border-entain-blue/20 ml-4">
+          {node.children.map(child => (
+            <TreeNode key={child.id} node={child} level={level + 1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

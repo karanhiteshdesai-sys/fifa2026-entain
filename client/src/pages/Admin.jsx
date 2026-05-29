@@ -244,6 +244,14 @@ function Admin() {
           ⭐ Reviews
         </button>
         <button
+          onClick={() => setTab('referral-tree')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            tab === 'referral-tree' ? 'bg-entain-accent text-entain-dark' : 'bg-entain-navy text-gray-300'
+          }`}
+        >
+          🌳 Referral Tree
+        </button>
+        <button
           onClick={downloadExcel}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-entain-gold/20 text-entain-gold hover:bg-entain-gold/30 transition"
         >
@@ -834,6 +842,11 @@ function Admin() {
         <ReviewsPanel />
       )}
 
+      {/* Referral Tree Tab */}
+      {tab === 'referral-tree' && (
+        <AdminReferralTree />
+      )}
+
       {/* DM Modal */}
       {dmUser && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] px-4">
@@ -1138,6 +1151,129 @@ function PendingApprovals({ onAction, setMessage }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function AdminReferralTree() {
+  const [treeData, setTreeData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTree();
+    const interval = setInterval(fetchTree, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchTree = async () => {
+    try {
+      const { data } = await api.get('/leaderboard/referral-tree');
+      setTreeData(data);
+    } catch (err) {
+      console.error('Failed to fetch referral tree:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div className="text-gray-400 text-center py-12">Loading referral tree...</div>;
+  if (!treeData) return <div className="text-gray-400 text-center py-12">Failed to load referral tree.</div>;
+
+  return (
+    <div className="space-y-4">
+      {/* Summary */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20 flex items-center justify-between">
+        <div>
+          <h3 className="text-white font-semibold text-lg">🌳 Referral Network</h3>
+          <p className="text-gray-400 text-sm mt-1">Full tree of who referred whom across the platform</p>
+        </div>
+        <div className="text-right">
+          <p className="text-entain-accent text-2xl font-bold">{treeData.totalReferrals}</p>
+          <p className="text-gray-400 text-xs">Total Referrals</p>
+        </div>
+      </div>
+
+      {/* Tree */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+        {treeData.tree.length === 0 ? (
+          <p className="text-gray-500 text-sm text-center py-8">No referrals yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            {treeData.tree.map(node => (
+              <AdminTreeNode key={node.id} node={node} level={0} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="text-gray-600 text-xs text-center">Auto-refreshes every 30 seconds</p>
+    </div>
+  );
+}
+
+function AdminTreeNode({ node, level }) {
+  const [expanded, setExpanded] = useState(level < 2);
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div style={{ marginLeft: level * 24 }}>
+      <div
+        onClick={() => hasChildren && setExpanded(!expanded)}
+        className={`flex items-center gap-2 py-2.5 px-3 rounded-lg mb-1 transition ${
+          hasChildren ? 'cursor-pointer hover:bg-entain-dark/50' : ''
+        } ${level === 0 ? 'bg-entain-accent/10 border border-entain-accent/30' : 'border border-transparent'}`}
+      >
+        {/* Tree connector lines */}
+        {level > 0 && (
+          <span className="text-entain-blue/40 text-sm font-mono">└─</span>
+        )}
+
+        {/* Expand/collapse */}
+        {hasChildren && (
+          <span className={`text-gray-400 text-xs transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`}>▶</span>
+        )}
+        {!hasChildren && level > 0 && <span className="text-gray-600 text-xs w-3">•</span>}
+
+        {/* User avatar circle */}
+        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+          level === 0 ? 'bg-entain-accent text-entain-dark' : 'bg-entain-blue/30 text-white'
+        }`}>
+          {node.name.charAt(0)}
+        </span>
+
+        {/* Name */}
+        <span className={`font-medium text-sm ${level === 0 ? 'text-entain-accent' : 'text-white'}`}>
+          {node.name}
+        </span>
+
+        {/* Department */}
+        {node.department && (
+          <span className="text-gray-500 text-xs">• {node.department}</span>
+        )}
+
+        {/* Referral count badge */}
+        {hasChildren && (
+          <span className="ml-auto bg-entain-gold/20 text-entain-gold text-xs px-2 py-0.5 rounded font-bold">
+            {node.children.length} referral{node.children.length !== 1 ? 's' : ''}
+          </span>
+        )}
+
+        {/* Join date */}
+        {node.joined && (
+          <span className="text-gray-600 text-xs ml-2">
+            {new Date(node.joined).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+          </span>
+        )}
+      </div>
+
+      {/* Children */}
+      {hasChildren && expanded && (
+        <div className="border-l-2 border-entain-blue/20 ml-6">
+          {node.children.map(child => (
+            <AdminTreeNode key={child.id} node={child} level={level + 1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
