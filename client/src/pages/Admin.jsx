@@ -1227,21 +1227,7 @@ function ReviewsPanel() {
         ) : (
           <div className="space-y-3">
             {reviews.map(review => (
-              <div key={review.id} className="bg-entain-dark/50 rounded-lg px-4 py-3 border border-entain-blue/10">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white font-medium text-sm">{review.user_name}</span>
-                    {review.department && <span className="text-gray-500 text-xs">• {review.department}</span>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-entain-gold text-sm">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
-                    <span className="text-gray-500 text-xs">
-                      {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-                {review.comment && <p className="text-gray-300 text-sm mt-1">{review.comment}</p>}
-              </div>
+              <ReviewCard key={review.id} review={review} />
             ))}
           </div>
         )}
@@ -1534,27 +1520,71 @@ function ActivityPanel() {
         ) : (
           <div className="space-y-3 max-h-80 overflow-y-auto">
             {reviews.recent.map(review => (
-              <div key={review.id} className="bg-entain-dark/50 rounded-lg px-4 py-3 border border-entain-blue/10">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white font-medium text-sm">{review.user_name}</span>
-                    {review.department && <span className="text-gray-500 text-xs">• {review.department}</span>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-entain-gold text-sm">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
-                    <span className="text-gray-500 text-xs">
-                      {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-                {review.comment && <p className="text-gray-300 text-sm mt-1">{review.comment}</p>}
-              </div>
+              <ReviewCard key={review.id} review={review} />
             ))}
           </div>
         )}
       </div>
 
       <p className="text-gray-600 text-xs text-center">Auto-refreshes every 10 seconds • Data resets on server restart</p>
+    </div>
+  );
+}
+
+function ReviewCard({ review }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      onClick={() => setExpanded(!expanded)}
+      className="bg-entain-dark/50 rounded-lg px-4 py-3 border border-entain-blue/10 cursor-pointer hover:border-entain-accent/40 hover:bg-entain-dark/70 transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-white font-medium text-sm">{review.user_name}</span>
+          {review.department && <span className="text-gray-500 text-xs">• {review.department}</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-entain-gold text-sm">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+          <span className="text-gray-500 text-xs">
+            {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+          </span>
+          <span className={`text-gray-400 text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}>▼</span>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="mt-3 pt-3 border-t border-entain-blue/20 space-y-2">
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-500">Rating:</span>
+              <span className="text-white ml-2 font-bold">{review.rating}/5</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Department:</span>
+              <span className="text-white ml-2">{review.department || 'N/A'}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Submitted:</span>
+              <span className="text-white ml-2">
+                {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-500">User:</span>
+              <span className="text-white ml-2">{review.user_name}</span>
+            </div>
+          </div>
+          {review.comment ? (
+            <div className="mt-2">
+              <span className="text-gray-500 text-xs">Comment:</span>
+              <p className="text-gray-200 text-sm mt-1 bg-entain-navy/50 rounded-lg px-3 py-2 italic">"{review.comment}"</p>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-xs italic mt-1">No comment provided.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
