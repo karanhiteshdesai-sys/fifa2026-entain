@@ -124,6 +124,17 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
       LIMIT 10
     `);
 
+    // Reviews stats and recent reviews
+    const [reviewStatsRes, recentReviewsRes] = await Promise.all([
+      pool.query('SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM reviews'),
+      pool.query(`
+        SELECT r.id, r.rating, r.comment, r.created_at, u.name as user_name, u.department
+        FROM reviews r JOIN users u ON r.user_id = u.id
+        ORDER BY r.created_at DESC
+        LIMIT 20
+      `)
+    ]);
+
     res.json({
       online: {
         count: onlineUsers.length,
@@ -146,7 +157,12 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
         topBettors: topBettorsRes.rows.map(r => ({ name: r.name, bets: Number(r.bet_count), staked: Number(r.total_staked), wins: Number(r.wins) })),
         registrationsPerDay: registrationsPerDayRes.rows.map(r => ({ date: r.date, count: Number(r.count) }))
       },
-      recentBets: recentBetsRes.rows
+      recentBets: recentBetsRes.rows,
+      reviews: {
+        totalReviews: Number(reviewStatsRes.rows[0].count),
+        averageRating: reviewStatsRes.rows[0].avg_rating ? Math.round(Number(reviewStatsRes.rows[0].avg_rating) * 10) / 10 : 0,
+        recent: recentReviewsRes.rows
+      }
     });
   } catch (err) {
     console.error('Activity stats error:', err);

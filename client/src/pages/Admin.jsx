@@ -1162,6 +1162,7 @@ function ActivityPanel() {
   const stats = activity.stats || { totalUsers: 0, approvedUsers: 0, totalBets: 0, pendingBets: 0, betsToday: 0, activeBettorsToday: 0, totalBettingUsers: 0 };
   const charts = activity.charts || { betsPerDay: [], betOutcomes: [], betPredictions: [], topBettors: [], registrationsPerDay: [] };
   const recentBets = activity.recentBets || [];
+  const reviews = activity.reviews || { totalReviews: 0, averageRating: 0, recent: [] };
 
   const pageLabels = {
     home: '🏠 Home',
@@ -1383,6 +1384,47 @@ function ActivityPanel() {
                 <span className="text-gray-500 text-xs whitespace-nowrap ml-2">
                   {new Date(bet.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                 </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* App Reviews / Ratings */}
+      <div className="bg-entain-navy rounded-xl p-5 border border-entain-blue/20">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-white font-semibold">⭐ App Reviews</h3>
+          <div className="flex items-center gap-3">
+            <span className="text-entain-gold font-bold text-lg">{reviews.averageRating}/5</span>
+            <span className="text-gray-400 text-sm">({reviews.totalReviews} review{reviews.totalReviews !== 1 ? 's' : ''})</span>
+          </div>
+        </div>
+        {reviews.totalReviews > 0 && (
+          <div className="flex items-center gap-1 mb-4">
+            {[1, 2, 3, 4, 5].map(star => (
+              <span key={star} className={`text-lg ${star <= Math.round(reviews.averageRating) ? 'text-entain-gold' : 'text-gray-600'}`}>★</span>
+            ))}
+          </div>
+        )}
+        {reviews.recent.length === 0 ? (
+          <p className="text-gray-500 text-sm">No reviews yet.</p>
+        ) : (
+          <div className="space-y-3 max-h-80 overflow-y-auto">
+            {reviews.recent.map(review => (
+              <div key={review.id} className="bg-entain-dark/50 rounded-lg px-4 py-3 border border-entain-blue/10">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium text-sm">{review.user_name}</span>
+                    {review.department && <span className="text-gray-500 text-xs">• {review.department}</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-entain-gold text-sm">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                    <span className="text-gray-500 text-xs">
+                      {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </div>
+                {review.comment && <p className="text-gray-300 text-sm mt-1">{review.comment}</p>}
               </div>
             ))}
           </div>
