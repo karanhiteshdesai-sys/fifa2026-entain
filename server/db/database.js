@@ -4,7 +4,12 @@ const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://fifa2026_db_user:
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
-  ssl: DATABASE_URL.includes('render.com') ? { rejectUnauthorized: false } : false
+  ssl: DATABASE_URL.includes('render.com') || DATABASE_URL.includes('rds.amazonaws.com')
+    ? { rejectUnauthorized: false }
+    : false,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
 // Initialize tables

@@ -968,15 +968,45 @@ function BroadcastPanel({ setMessage, userCount }) {
 
 function PendingApprovals({ onAction, setMessage }) {
   const [pending, setPending] = useState([]);
+  const [lastChecked, setLastChecked] = useState(null);
+  const [autoApproved, setAutoApproved] = useState(0);
 
   useEffect(() => {
-    fetchPending();
+    fetchAndAutoApprove();
+    // Auto-check and approve new registrations every 120 seconds
+    const interval = setInterval(() => {
+      fetchAndAutoApprove();
+    }, 120000);
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchPending = async () => {
+  const fetchAndAutoApprove = async () => {
     try {
       const { data } = await api.get('/admin/pending-users');
-      setPending(data);
+      setLastChecked(new Date());
+
+      if (data.length > 0) {
+        // Auto-approve all pending users
+        let approvedCount = 0;
+        for (const user of data) {
+          try {
+            await api.post(`/admin/users/${user.id}/approve`);
+            approvedCount++;
+          } catch (err) {
+            console.error(`Failed to auto-approve ${user.name}:`, err);
+          }
+        }
+        if (approvedCount > 0) {
+          setAutoApproved(prev => prev + approvedCount);
+          setMessage(`✅ Auto-approved ${approvedCount} new registration${approvedCount > 1 ? 's' : ''}!`);
+          onAction();
+        }
+        // Refresh pending list (should be empty now)
+        const { data: remaining } = await api.get('/admin/pending-users');
+        setPending(remaining);
+      } else {
+        setPending([]);
+      }
     } catch (err) {
       console.error('Failed to fetch pending users:', err);
     }
@@ -1019,8 +1049,27 @@ function PendingApprovals({ onAction, setMessage }) {
 
   if (pending.length === 0) {
     return (
-      <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20">
-        <p className="text-gray-400 text-sm">No pending registrations.</p>
+      <div className="bg-entain-navy rounded-xl p-4 border border-entain-blue/20 flex items-center justify-between">
+        <div>
+          <p className="text-gray-400 text-sm flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-entain-green animate-pulse" />
+            Auto-approve active — checking every 2 minutes
+          </p>
+          {autoApproved > 0 && (
+            <p className="text-entain-green text-xs mt-1">✅ {autoApproved} user{autoApproved > 1 ? 's' : ''} auto-approved this session</p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {lastChecked && (
+            <span className="text-gray-500 text-xs">Last checked: {lastChecked.toLocaleTimeString()}</span>
+          )}
+          <button
+            onClick={() => fetchAndAutoApprove()}
+            className="text-entain-accent text-xs hover:underline"
+          >
+            🔄 Check now
+          </button>
+        </div>
       </div>
     );
   }
@@ -1031,13 +1080,22 @@ function PendingApprovals({ onAction, setMessage }) {
         <div className="flex items-center gap-3">
           <h3 className="text-white font-semibold">⏳ Pending Approvals</h3>
           <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded">{pending.length} pending</span>
+          <span className="text-gray-500 text-xs">(auto-approve failed for these — approve manually)</span>
         </div>
-        <button
-          onClick={approveAll}
-          className="bg-entain-green text-entain-dark text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-entain-green/90 transition"
-        >
-          ✓ Approve All
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchAndAutoApprove()}
+            className="text-entain-accent text-xs hover:underline"
+          >
+            🔄 Retry
+          </button>
+          <button
+            onClick={approveAll}
+            className="bg-entain-green text-entain-dark text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-entain-green/90 transition"
+          >
+            ✓ Approve All
+          </button>
+        </div>
       </div>
       <div className="divide-y divide-entain-blue/10">
         {pending.map(user => (
