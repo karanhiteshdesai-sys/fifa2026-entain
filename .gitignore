@@ -5,3 +5,4 @@ server/db/fifa2026_data.xlsx
 .env.local
 server/.env
 client/dist/
+client/public/version.json
