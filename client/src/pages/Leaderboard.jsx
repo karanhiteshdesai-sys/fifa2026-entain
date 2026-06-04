@@ -35,6 +35,8 @@ function Leaderboard() {
     if (index === 0) return <span className="text-3xl">🥇</span>;
     if (index === 1) return <span className="text-3xl">🥈</span>;
     if (index === 2) return <span className="text-3xl">🥉</span>;
+    if (index === 3) return <span className="text-2xl">🏅</span>;
+    if (index === 4) return <span className="text-2xl">🎖️</span>;
     return <span className="text-white font-bold text-lg">#{index + 1}</span>;
   };
 
@@ -157,7 +159,7 @@ function Leaderboard() {
                 </tr>
               </thead>
               <tbody>
-                {referralBoard.map((player, index) => (
+                {referralBoard.slice(0, 1).map((player, index) => (
                   <tr key={player.id} className="border-b border-entain-blue/10 hover:bg-entain-blue/10 transition">
                     <td className="px-6 py-4 text-lg">{getMedal(index)}</td>
                     <td className="px-6 py-4">
