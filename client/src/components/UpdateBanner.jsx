@@ -7,13 +7,18 @@ function UpdateBanner() {
   useEffect(() => {
     const checkForUpdates = async () => {
       try {
-        const res = await fetch('/version.json?t=' + Date.now());
+        const res = await fetch('/version.json?t=' + Date.now(), {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
         if (!res.ok) return;
         const data = await res.json();
 
         if (currentVersion.current === null) {
           currentVersion.current = data.version;
+          console.log('[UpdateBanner] Initial version:', data.version);
         } else if (data.version !== currentVersion.current) {
+          console.log('[UpdateBanner] New version detected:', data.version, '(was:', currentVersion.current, ')');
           setShowUpdate(true);
         }
       } catch {
@@ -22,7 +27,7 @@ function UpdateBanner() {
     };
 
     checkForUpdates();
-    const interval = setInterval(checkForUpdates, 60000);
+    const interval = setInterval(checkForUpdates, 30000);
     return () => clearInterval(interval);
   }, []);
 
